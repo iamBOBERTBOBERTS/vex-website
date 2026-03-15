@@ -39,7 +39,8 @@ Luxury automotive marketplace: customer-facing site, build-your-own configurator
 2. **API**
 
    - Copy `apps/api/.env.example` to `apps/api/.env` and set `DATABASE_URL` and `JWT_SECRET`.
-   - Run migrations: `cd apps/api && npx prisma migrate dev`
+   - Run migrations: `cd apps/api && npx prisma migrate deploy` (or `migrate dev` for a fresh DB).
+   - Seed the database (admin user, sample vehicles, inventory): `cd apps/api && npx pnpm run db:seed` or `npx prisma db seed`.
    - Start API: `pnpm dev:api` (or `cd apps/api && npx tsx src/index.ts`)
 
 3. **Shared package** (required before API or apps that use it)
@@ -53,9 +54,23 @@ Luxury automotive marketplace: customer-facing site, build-your-own configurator
    - Optional: add the VEX logo (no background) as `apps/web/public/vex-logo.png` for the header.
    - Start: `pnpm dev:web` → [http://localhost:3000](http://localhost:3000)
 
-5. **CRM**
+5. **CRM** (staff only)
 
+   - Set `NEXT_PUBLIC_API_URL` (and optionally `NEXT_PUBLIC_WEB_URL` for “View on site” links).
+   - After seeding, sign in with **admin@vex.demo** or **staff@vex.demo** (password: `admin-vex-demo` — change in production).
    - Start: `pnpm dev:crm` → [http://localhost:3002](http://localhost:3002)
+
+## Environment variables
+
+| App   | Variable              | Description                    |
+|-------|------------------------|--------------------------------|
+| API   | `DATABASE_URL`         | PostgreSQL connection string   |
+| API   | `JWT_SECRET`           | Secret for signing JWTs         |
+| API   | `PORT`                 | Server port (default 3001)      |
+| API   | `CORS_ORIGIN`          | Allowed origin (e.g. http://localhost:3000) |
+| Web   | `NEXT_PUBLIC_API_URL`  | API base URL (e.g. http://localhost:3001)   |
+| CRM   | `NEXT_PUBLIC_API_URL`  | API base URL                   |
+| CRM   | `NEXT_PUBLIC_WEB_URL`  | Customer site URL (for "View on site" links) |
 
 ## Scripts (from repo root)
 
@@ -67,6 +82,7 @@ Use `pnpm` or `npx pnpm` if pnpm isn’t installed globally:
 | `pnpm dev:web` or `npx pnpm run dev:web` | Start customer site on 3000 |
 | `pnpm dev:crm` or `npx pnpm run dev:crm` | Start CRM on 3002 |
 | `pnpm build` or `npx pnpm run build` | Build all packages |
+| `cd apps/api && pnpm run db:seed` or `npx prisma db seed` | Seed DB (admin, vehicles, inventory) |
 
 ## Logo
 

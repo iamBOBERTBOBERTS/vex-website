@@ -10,6 +10,11 @@ import { shippingRouter } from "./routes/shipping.js";
 import { financingRouter } from "./routes/financing.js";
 import { appraisalsRouter } from "./routes/appraisals.js";
 import { notificationsRouter } from "./routes/notifications.js";
+import { subscriptionsRouter } from "./routes/subscriptions.js";
+import { dealAnalysisRouter } from "./routes/dealAnalysis.js";
+import { leadsRouter } from "./routes/leads.js";
+import { dashboardRouter } from "./routes/dashboard.js";
+import { customersRouter } from "./routes/customers.js";
 
 const app = express();
 
@@ -49,5 +54,10 @@ app.use("/shipping", shippingRouter);
 app.use("/financing", financingRouter);
 app.use("/appraisals", appraisalsRouter);
 app.use("/notifications", notificationsRouter);
+app.use("/subscriptions", subscriptionsRouter);
+app.use("/deal-analysis", dealAnalysisRouter);
+app.use("/leads", leadsRouter);
+app.use("/dashboard", dashboardRouter);
+app.use("/customers", customersRouter);
 
 export { app };

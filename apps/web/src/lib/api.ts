@@ -252,3 +252,58 @@ export async function markNotificationRead(id: string, token: string): Promise<v
   });
   if (!res.ok) throw new Error("Failed to mark read");
 }
+
+export interface SubscriptionItem {
+  id: string;
+  plan: string;
+  status: string;
+  billingInterval: string | null;
+  amount: number | null;
+  expiresAt: string | null;
+  createdAt: string;
+}
+
+export async function getSubscriptions(token: string): Promise<SubscriptionItem[]> {
+  const res = await fetch(`${API_BASE}/subscriptions/me`, { headers: authHeaders(token) });
+  if (!res.ok) throw new Error("Failed to fetch subscriptions");
+  return res.json();
+}
+
+export async function createSubscription(
+  payload: { plan: string; billingInterval?: string; amount?: number },
+  token: string
+): Promise<SubscriptionItem> {
+  const res = await fetch(`${API_BASE}/subscriptions`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json", ...authHeaders(token) },
+    body: JSON.stringify(payload),
+  });
+  if (!res.ok) throw new Error("Failed to subscribe");
+  return res.json();
+}
+
+export async function runDealAnalysis(
+  payload: { vehicle?: unknown; financing?: unknown; shipping?: unknown; addOns?: unknown; totalAmount?: number },
+  token: string
+): Promise<{ recommendations: string[] }> {
+  const res = await fetch(`${API_BASE}/deal-analysis`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json", ...authHeaders(token) },
+    body: JSON.stringify(payload),
+  });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error((err as { message?: string }).message || "Deal analysis failed");
+  }
+  return res.json();
+}
+
+export async function createLead(payload: { source?: string; email?: string; phone?: string; name?: string; vehicleInterest?: string; notes?: string }): Promise<{ id: string }> {
+  const res = await fetch(`${API_BASE}/leads`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload),
+  });
+  if (!res.ok) throw new Error("Failed to submit");
+  return res.json();
+}

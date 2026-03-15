@@ -5,6 +5,8 @@ export * from "./schemas/savedVehicle.js";
 export * from "./schemas/shipping.js";
 export * from "./schemas/financing.js";
 export * from "./schemas/appraisal.js";
+export * from "./schemas/subscription.js";
+export * from "./schemas/lead.js";
 export * from "./types/user.js";
 export * from "./types/vehicle.js";
 export * from "./types/inventory.js";

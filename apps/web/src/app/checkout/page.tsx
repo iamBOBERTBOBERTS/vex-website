@@ -214,6 +214,12 @@ export default function CheckoutPage() {
             </section>
 
             <section className={styles.section}>
+              <h2 className={styles.sectionTitle}>Deal analysis & VIP</h2>
+              <p className={styles.upsellText}>Check My Deal — get expert recommendations on your deal. £99/mo or £750/yr.</p>
+              <Link href="/portal/subscriptions" className={styles.link}>Manage subscriptions in Portal</Link>
+            </section>
+
+            <section className={styles.section}>
               <h2 className={styles.sectionTitle}>Deposit</h2>
               <input type="number" min={0} placeholder="Amount (optional)" value={deposit} onChange={(e) => setDeposit(e.target.value)} className={styles.input} />
             </section>

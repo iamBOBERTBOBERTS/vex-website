@@ -15,6 +15,10 @@
   margin: 0;
 }
 
+html {
+  scroll-behavior: smooth;
+}
+
 html,
 body {
   max-width: 100vw;
@@ -22,6 +26,30 @@ body {
   overflow-x: hidden;
   background-color: var(--bg-primary);
   color: var(--text-secondary);
+}
+
+/* Scroll-reveal: use data-reveal on sections */
+[data-reveal] {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.5s ease, transform 0.5s ease;
+}
+
+[data-reveal].revealed {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Button hover polish */
+button[class*="cta"]:not(:disabled):hover,
+a[class*="cta"]:hover {
+  transform: scale(1.02);
+}
+
+/* Card lift on hover (inventory/build use their own; this is fallback) */
+.card-hover:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(255, 215, 0, 0.15);
 }
 
 a {

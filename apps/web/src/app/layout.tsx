@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Montserrat, Poppins, Inter } from "next/font/google";
 import { BuildProvider } from "@/contexts/BuildContext";
 import { AuthProvider } from "@/contexts/AuthContext";
+import { Footer } from "@/components/Footer";
 import "./globals.css";
 
 const montserrat = Montserrat({
@@ -40,7 +41,10 @@ export default function RootLayout({
     >
       <body style={{ fontFamily: "var(--font-inter)" }}>
         <AuthProvider>
-          <BuildProvider>{children}</BuildProvider>
+          <BuildProvider>
+            {children}
+            <Footer />
+          </BuildProvider>
         </AuthProvider>
       </body>
     </html>
