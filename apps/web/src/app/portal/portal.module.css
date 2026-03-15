@@ -1,0 +1,136 @@
+.main {
+  min-height: 100vh;
+  padding: 2rem;
+  max-width: 720px;
+  margin: 0 auto;
+}
+
+.title {
+  font-family: var(--font-montserrat), sans-serif;
+  font-weight: 700;
+  font-size: 1.75rem;
+  color: var(--text-primary);
+  margin-bottom: 0.25rem;
+}
+
+.greeting {
+  color: var(--text-secondary);
+  margin-bottom: 2rem;
+}
+
+.section {
+  background: var(--bg-card);
+  border-radius: 8px;
+  padding: 1.25rem;
+  margin-bottom: 1.5rem;
+}
+
+.sectionTitle {
+  font-family: var(--font-montserrat), sans-serif;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 1rem;
+}
+
+.list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.card {
+  padding: 0.75rem 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.card:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.cardRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.orderId {
+  font-family: var(--font-montserrat), sans-serif;
+  font-size: 0.9rem;
+  color: var(--text-primary);
+}
+
+.badge {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  padding: 0.2rem 0.5rem;
+  border-radius: 4px;
+  background: rgba(255, 215, 0, 0.15);
+  color: var(--accent);
+}
+
+.cardMeta {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  margin-top: 0.25rem;
+}
+
+.shipment {
+  margin-top: 0.5rem;
+}
+
+.shipmentLine {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+}
+
+.link {
+  color: var(--accent);
+  margin-left: 0.5rem;
+}
+
+.cardLink {
+  color: var(--text-primary);
+  font-weight: 500;
+}
+
+.cardLink:hover {
+  color: var(--accent);
+}
+
+.notifTitle {
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 0.25rem;
+}
+
+.notifBody {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+}
+
+.notifMeta {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  margin-top: 0.25rem;
+}
+
+.card.read {
+  opacity: 0.7;
+}
+
+.empty {
+  color: var(--text-muted);
+  font-size: 0.9rem;
+}
+
+.empty a {
+  color: var(--accent);
+}
+
+.loading {
+  color: var(--text-muted);
+  padding: 2rem 0;
+}

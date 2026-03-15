@@ -70,6 +70,43 @@
   transform: scale(1.02);
 }
 
+.actions {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.ctaSecondary {
+  font-family: var(--font-montserrat), sans-serif;
+  font-weight: 600;
+  font-size: 0.85rem;
+  padding: 0.5rem 1rem;
+  background: transparent;
+  color: var(--accent);
+  border: 1px solid var(--accent);
+  border-radius: 6px;
+  transition: box-shadow 0.2s ease, transform 0.2s ease;
+}
+
+.ctaSecondary:hover {
+  box-shadow: 0 0 16px var(--accent-glow);
+  transform: scale(1.02);
+}
+
+.logout {
+  font-family: var(--font-poppins), sans-serif;
+  font-size: 0.9rem;
+  color: var(--text-muted);
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0.25rem 0;
+}
+
+.logout:hover {
+  color: var(--text-primary);
+}
+
 @media (max-width: 768px) {
   .header {
     flex-wrap: wrap;
