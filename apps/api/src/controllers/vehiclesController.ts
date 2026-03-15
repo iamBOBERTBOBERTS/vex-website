@@ -57,8 +57,10 @@ export async function list(req: Request, res: Response) {
   const make = req.query.make as string | undefined;
   const isActive = req.query.isActive !== "false";
 
+  const where: { isActive: boolean; make?: string } = { isActive };
+  if (make) where.make = make;
   const vehicles = await prisma.vehicle.findMany({
-    where: { isActive, ...(make ? { make }) : {} },
+    where,
     orderBy: [{ make: "asc" }, { model: "asc" }],
   });
 

@@ -5,13 +5,22 @@ function authHeaders(token: string) {
 }
 
 export async function login(email: string, password: string): Promise<{ user: { role: string }; token: string }> {
-  const res = await fetch(`${API_BASE}/auth/login`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ email, password }),
-  });
-  if (!res.ok) throw new Error("Login failed");
-  return res.json();
+  let res: Response;
+  try {
+    res = await fetch(`${API_BASE}/auth/login`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email, password }),
+    });
+  } catch (err) {
+    throw new Error("Cannot reach API. Is it running at " + API_BASE + "?");
+  }
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) {
+    const msg = (data && typeof data.message === "string") ? data.message : "Login failed";
+    throw new Error(msg);
+  }
+  return data;
 }
 
 export async function getMe(token: string): Promise<{ role: string }> {

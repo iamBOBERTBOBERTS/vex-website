@@ -19,9 +19,12 @@ import { customersRouter } from "./routes/customers.js";
 const app = express();
 
 app.use(express.json());
+const corsOrigin = process.env.CORS_ORIGIN;
 app.use(
   cors({
-    origin: process.env.CORS_ORIGIN || "*",
+    origin: corsOrigin
+      ? corsOrigin.split(",").map((o) => o.trim())
+      : true,
   })
 );
 
