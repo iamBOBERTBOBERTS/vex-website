@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useRef } from "react";
+import { useEffect, useLayoutEffect, useMemo, useRef } from "react";
 import * as THREE from "three";
 import { useThree } from "@react-three/fiber";
 import {
@@ -11,9 +11,13 @@ import {
   RoundedBox,
 } from "@react-three/drei";
 import type { ElementRef, MutableRefObject } from "react";
+import { usePrefersReducedMotion } from "@/hooks/usePrefersReducedMotion";
 import type { EditionId, FinishId, PowertrainId } from "./vehicleFinish";
 import { FINISH_PHYSICAL } from "./vehicleFinish";
 import { GltfVehicle } from "./GltfVehicle";
+import { ShowroomFloor } from "./ShowroomFloor";
+import { ShowroomFog } from "./ShowroomFog";
+import { ShowroomPostFX } from "./ShowroomPostFX";
 
 export type CameraPreset = "threeQuarter" | "side" | "front" | "top";
 
@@ -69,7 +73,7 @@ function SportsCar({ finishId, edition, powertrain }: SportsCarProps) {
           metalness={mat.metalness}
           clearcoat={mat.clearcoat}
           clearcoatRoughness={0.12}
-          envMapIntensity={1.15}
+          envMapIntensity={1.28}
         />
       </RoundedBox>
 
@@ -88,7 +92,7 @@ function SportsCar({ finishId, edition, powertrain }: SportsCarProps) {
           thickness={0.4}
           transparent
           opacity={0.92}
-          envMapIntensity={1.4}
+          envMapIntensity={1.55}
         />
       </RoundedBox>
 
@@ -218,6 +222,8 @@ export type VehicleSceneProps = SportsCarProps & {
   gltfUrl?: string | null;
   /** Orbit pivot (glTF is usually centered at origin). */
   cameraTarget?: [number, number, number];
+  /** Premium showroom: filmic lighting stack, fog, optional post-FX & reflective floor. Defaults to `!compact`. */
+  premium?: boolean;
 };
 
 export function VehicleScene({
@@ -230,29 +236,50 @@ export function VehicleScene({
   compact,
   gltfUrl,
   cameraTarget: cameraTargetProp,
+  premium: premiumProp,
 }: VehicleSceneProps) {
   const controlsRef = useRef<ElementRef<typeof OrbitControls>>(null);
+  const keyLightRef = useRef<THREE.SpotLight>(null);
+  const reducedMotion = usePrefersReducedMotion();
   const useGltf = Boolean(gltfUrl?.length);
   const orbitTarget: [number, number, number] =
     cameraTargetProp ?? (useGltf ? [0, 0, 0] : [0, 0.38, 0]);
+  const premium = premiumProp ?? !compact;
+  const effectsOn = premium && !reducedMotion;
+  const showReflectorFloor = premium && !reducedMotion && !compact;
+  const showGrid = !compact && !showReflectorFloor;
+
+  useLayoutEffect(() => {
+    const L = keyLightRef.current;
+    if (L?.shadow) L.shadow.bias = -0.00025;
+  }, []);
 
   return (
     <>
       <color attach="background" args={["#06080c"]} />
-      <ambientLight intensity={useGltf ? 0.28 : 0.35} />
+      <ambientLight intensity={useGltf ? 0.22 : 0.28} />
+      <hemisphereLight intensity={0.18} color="#c4b8a0" groundColor="#080604" />
       <spotLight
+        ref={keyLightRef}
         position={[6, 9, 4]}
         angle={0.42}
         penumbra={0.85}
-        intensity={useGltf ? 1.55 : 1.35}
+        intensity={useGltf ? 1.65 : 1.45}
         castShadow
         shadow-mapSize-width={2048}
         shadow-mapSize-height={2048}
       />
-      <spotLight position={[-5, 4, -3]} angle={0.55} penumbra={1} intensity={0.45} color="#b8a878" />
-      <directionalLight position={[-3, 6, 2]} intensity={0.55} color="#e8e4dc" />
+      <spotLight position={[-5, 4, -3]} angle={0.55} penumbra={1} intensity={0.48} color="#b8a878" />
+      <spotLight
+        position={[4.5, 5.5, -5.5]}
+        angle={0.55}
+        penumbra={0.95}
+        intensity={0.38}
+        color="#d4c4a8"
+      />
+      <directionalLight position={[-3, 6, 2]} intensity={0.5} color="#e8e4dc" />
 
-      <Environment preset={useGltf ? "warehouse" : compact ? "studio" : "city"} />
+      <Environment preset={useGltf ? "warehouse" : compact ? "studio" : "city"} environmentIntensity={useGltf ? 1.05 : 0.9} />
 
       {useGltf && gltfUrl ? (
         <GltfVehicle url={gltfUrl} />
@@ -262,16 +289,19 @@ export function VehicleScene({
         </group>
       )}
 
+      <ShowroomFog enabled={effectsOn} />
+      <ShowroomFloor enabled={showReflectorFloor} />
+
       <ContactShadows
         position={[0, 0, 0]}
-        opacity={useGltf ? 0.62 : 0.55}
+        opacity={showReflectorFloor ? 0.42 : useGltf ? 0.62 : 0.55}
         scale={compact ? 14 : useGltf ? 20 : 17}
         blur={2.4}
         far={9}
         color="#000000"
       />
 
-      {!compact && (
+      {showGrid && (
         <Grid
           position={[0, -0.01, 0]}
           args={[20, 20]}
@@ -286,6 +316,8 @@ export function VehicleScene({
           infiniteGrid
         />
       )}
+
+      <ShowroomPostFX enabled={effectsOn} />
 
       <OrbitControls
         ref={controlsRef}

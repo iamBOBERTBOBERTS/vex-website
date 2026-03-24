@@ -4,6 +4,7 @@ import { Suspense, useCallback, useEffect, useId, useState } from "react";
 import { Canvas } from "@react-three/fiber";
 import { Html, useProgress } from "@react-three/drei";
 import { VehicleScene, getCanvasCamera, type CameraPreset } from "@/components/configurator/VehicleScene";
+import { configureVexRenderer } from "@/components/configurator/rendererSetup";
 import { preloadVehicleGltf } from "@/components/configurator/GltfVehicle";
 import { DEFAULT_PUBLIC_VEHICLE_GLB } from "@/lib/vehicle3d/defaults";
 import type { FinishId } from "@/components/configurator/vehicleFinish";
@@ -80,6 +81,7 @@ export function InventoryVehicleViewer({ modelGlbUrl, modelSource, title }: Prop
           dpr={[1, 2]}
           camera={{ position: cam.position, fov: cam.fov, near: 0.1, far: 120 }}
           gl={{ antialias: true, alpha: false, powerPreference: "high-performance" }}
+          onCreated={({ gl }) => configureVexRenderer(gl)}
         >
           <Suspense fallback={<Loader />}>
             <VehicleScene
@@ -92,6 +94,7 @@ export function InventoryVehicleViewer({ modelGlbUrl, modelSource, title }: Prop
               onPresetApplied={onPresetApplied}
               autoRotate={false}
               compact={false}
+              premium
             />
           </Suspense>
         </Canvas>

@@ -12,6 +12,10 @@
  *
  * **Hyper-realism** comes from: high-quality source GLB (PBR materials), HDR environment, resolution,
  * and capture quality — not from the viewer alone.
+ *
+ * **Viewer stack (web, free OSS):** ACES filmic tone mapping, PMREM via drei `Environment`, soft shadows,
+ * optional bloom/vignette (`@react-three/postprocessing`), reflective floor (`MeshReflectorMaterial`),
+ * exponential fog. Respects `prefers-reduced-motion` (drops post-FX + reflector, keeps grid).
  */
 
 export type VehicleModelSourceApi = "LIBRARY" | "UPLOAD" | "GENERATED_FROM_PHOTOS";

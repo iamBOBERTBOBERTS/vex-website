@@ -4,6 +4,7 @@ import { Suspense, useCallback, useId, useState } from "react";
 import { Canvas } from "@react-three/fiber";
 import { Html, useProgress } from "@react-three/drei";
 import { VehicleScene, getCanvasCamera, type CameraPreset } from "./VehicleScene";
+import { configureVexRenderer } from "./rendererSetup";
 import type { EditionId, FinishId, PowertrainId } from "./vehicleFinish";
 import styles from "./ConfiguratorVehicleCanvas.module.css";
 
@@ -97,6 +98,7 @@ export function ConfiguratorVehicleCanvas({
           dpr={[1, 2]}
           camera={{ position: cam.position, fov: cam.fov, near: 0.1, far: 80 }}
           gl={{ antialias: true, alpha: false, powerPreference: "high-performance" }}
+          onCreated={({ gl }) => configureVexRenderer(gl)}
         >
           <Suspense fallback={<CanvasLoader />}>
             <VehicleScene
