@@ -1,0 +1,239 @@
+/**
+ * Full-viewport atmosphere: mesh gradients, light orbs, sweep, grain, grid.
+ * All layers pointer-events: none; sits under app content (z-index 0).
+ */
+
+.root {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  overflow: hidden;
+  contain: strict;
+}
+
+.layerDeep {
+  position: absolute;
+  inset: -5%;
+  background: radial-gradient(ellipse 100% 75% at 50% -18%, rgba(201, 169, 98, 0.11), transparent 55%),
+    radial-gradient(ellipse 55% 50% at 100% 15%, rgba(232, 204, 122, 0.06), transparent 52%),
+    radial-gradient(ellipse 45% 40% at 0% 85%, rgba(139, 141, 148, 0.06), transparent 48%),
+    linear-gradient(185deg, #070709 0%, #030304 42%, #020203 100%);
+}
+
+.layerMesh {
+  position: absolute;
+  inset: -15%;
+  opacity: 0.55;
+  background: conic-gradient(
+    from 220deg at 50% 45%,
+    rgba(201, 169, 98, 0.09),
+    transparent 32%,
+    rgba(232, 204, 122, 0.05),
+    transparent 58%,
+    rgba(90, 88, 82, 0.06)
+  );
+  filter: blur(72px);
+  animation: ambientMeshDrift 28s ease-in-out infinite;
+}
+
+.layerMeshStatic {
+  animation: none;
+}
+
+@keyframes ambientMeshDrift {
+  0%,
+  100% {
+    transform: rotate(0deg) scale(1);
+    opacity: 0.52;
+  }
+  50% {
+    transform: rotate(8deg) scale(1.04);
+    opacity: 0.62;
+  }
+}
+
+.layerSweep {
+  position: absolute;
+  inset: -30%;
+  opacity: 0.35;
+  background: linear-gradient(
+    118deg,
+    transparent 0%,
+    rgba(201, 169, 98, 0.04) 38%,
+    rgba(255, 252, 245, 0.02) 49%,
+    transparent 54%,
+    rgba(139, 141, 148, 0.05) 78%,
+    transparent 100%
+  );
+  background-size: 220% 220%;
+  animation: ambientSweep 22s ease-in-out infinite;
+}
+
+.layerSweepStatic {
+  animation: none;
+  opacity: 0.22;
+}
+
+@keyframes ambientSweep {
+  0%,
+  100% {
+    background-position: 0% 40%;
+  }
+  50% {
+    background-position: 100% 60%;
+  }
+}
+
+.layerGrid {
+  position: absolute;
+  inset: 0;
+  opacity: 0.32;
+  background-image: linear-gradient(rgba(255, 255, 255, 0.018) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.018) 1px, transparent 1px);
+  background-size: 64px 64px;
+  mask-image: radial-gradient(ellipse 85% 65% at 50% 38%, black 15%, transparent 72%);
+}
+
+.orbs {
+  position: absolute;
+  inset: 0;
+}
+
+.orb {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(64px);
+  mix-blend-mode: screen;
+  will-change: transform;
+}
+
+.orb1 {
+  width: min(55vw, 520px);
+  height: min(55vw, 520px);
+  top: -12%;
+  left: -8%;
+  background: radial-gradient(circle at 40% 40%, rgba(232, 204, 122, 0.35), rgba(201, 169, 98, 0.12) 45%, transparent 70%);
+  animation: orbA 26s ease-in-out infinite;
+}
+
+.orb2 {
+  width: min(48vw, 440px);
+  height: min(48vw, 440px);
+  top: 18%;
+  right: -10%;
+  background: radial-gradient(circle at 50% 50%, rgba(201, 169, 98, 0.22), transparent 65%);
+  animation: orbB 32s ease-in-out infinite;
+}
+
+.orb3 {
+  width: min(42vw, 380px);
+  height: min(42vw, 380px);
+  bottom: 5%;
+  left: 15%;
+  background: radial-gradient(circle at 50% 50%, rgba(139, 141, 148, 0.18), transparent 68%);
+  animation: orbC 24s ease-in-out infinite;
+}
+
+.orb4 {
+  width: min(36vw, 320px);
+  height: min(36vw, 320px);
+  bottom: -5%;
+  right: 22%;
+  background: radial-gradient(circle at 50% 50%, rgba(184, 160, 110, 0.14), transparent 70%);
+  animation: orbD 30s ease-in-out infinite;
+}
+
+.orbStatic {
+  animation: none;
+  opacity: 0.85;
+}
+
+@keyframes orbA {
+  0%,
+  100% {
+    transform: translate(0, 0) scale(1);
+  }
+  50% {
+    transform: translate(4%, 6%) scale(1.06);
+  }
+}
+
+@keyframes orbB {
+  0%,
+  100% {
+    transform: translate(0, 0) scale(1);
+  }
+  50% {
+    transform: translate(-5%, 4%) scale(1.04);
+  }
+}
+
+@keyframes orbC {
+  0%,
+  100% {
+    transform: translate(0, 0);
+  }
+  50% {
+    transform: translate(3%, -4%);
+  }
+}
+
+@keyframes orbD {
+  0%,
+  100% {
+    transform: translate(0, 0) scale(1);
+  }
+  50% {
+    transform: translate(-3%, -5%) scale(1.08);
+  }
+}
+
+.layerGrain {
+  position: absolute;
+  inset: 0;
+  opacity: 0.045;
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.78' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  animation: grainShift 0.12s steps(2) infinite;
+}
+
+.layerGrainStatic {
+  animation: none;
+}
+
+@keyframes grainShift {
+  0% {
+    transform: translate(0, 0);
+  }
+  100% {
+    transform: translate(-2%, -1%);
+  }
+}
+
+.layerVignette {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse 75% 70% at 50% 42%, transparent 25%, rgba(0, 0, 0, 0.5) 100%);
+  mix-blend-mode: multiply;
+  opacity: 0.75;
+}
+
+.reduced .layerMesh,
+.reduced .layerSweep,
+.reduced .layerGrain {
+  opacity: 0.65;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .layerMesh,
+  .layerSweep,
+  .orb,
+  .layerGrain {
+    animation: none !important;
+  }
+
+  .orb {
+    opacity: 0.75;
+  }
+}

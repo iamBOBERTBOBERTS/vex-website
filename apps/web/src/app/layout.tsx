@@ -3,6 +3,7 @@ import { Oswald, Cormorant_Garamond, Inter, Poppins } from "next/font/google";
 import { BuildProvider } from "@/contexts/BuildContext";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { Footer } from "@/components/Footer";
+import { AmbientShell } from "@/components/ambient";
 import "./globals.css";
 
 /* Sleek display + editorial serif — variable names preserved for existing CSS */
@@ -47,6 +48,7 @@ export default function RootLayout({
   return (
     <html lang="en-US" className={`${oswald.variable} ${cormorant.variable} ${inter.variable} ${poppins.variable}`}>
       <body style={{ fontFamily: "var(--font-inter)" }}>
+        <AmbientShell />
         <AuthProvider>
           <BuildProvider>
             {children}
