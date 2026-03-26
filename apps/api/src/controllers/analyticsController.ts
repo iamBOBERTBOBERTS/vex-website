@@ -90,11 +90,3 @@ export async function getAnalytics(req: Request, res: Response) {
   });
 }
 
-
-export async function getOwnerOverview(req: Request, res: Response) {
-  const user = req.user;
-  if (!user) return res.status(401).json({ code: "UNAUTHORIZED", message: "Login required" });
-  if (user.role !== "ADMIN") return res.status(403).json({ code: "FORBIDDEN", message: "Admin role required" });
-
-  return res.status(400).json({ code: "BAD_REQUEST", message: "Use /admin/overview for owner analytics" });
-}

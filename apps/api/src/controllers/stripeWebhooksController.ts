@@ -1,9 +1,7 @@
 import { Request, Response } from "express";
-import { PrismaClient } from "@prisma/client";
 import Stripe from "stripe";
 import type { Stripe as StripeTypes } from "stripe";
-
-const prisma = new PrismaClient();
+import { basePrisma, prisma, runWithTenant } from "../lib/tenant.js";
 
 function getStripe(): Stripe | null {
   const key = process.env.STRIPE_SECRET_KEY;
@@ -53,7 +51,7 @@ export async function stripe(req: Request, res: Response) {
         const billingInterval = session.metadata?.billingInterval === "yearly" ? "yearly" : "monthly";
 
         if (userId && plan) {
-          const user = await prisma.user.findUnique({ where: { id: userId } });
+          const user = await basePrisma.user.findUnique({ where: { id: userId } });
           if (!user) break;
 
           const amount = typeof session.amount_total === "number" ? session.amount_total / 100 : null;
@@ -63,28 +61,38 @@ export async function stripe(req: Request, res: Response) {
           const stripeSubscriptionId = typeof session.subscription === "string" ? session.subscription : null;
 
           if (stripeCheckoutSessionId) {
-            await prisma.subscription.upsert({
-              where: { stripeCheckoutSessionId },
-              create: {
-                tenantId: user.tenantId,
-                userId,
-                plan: plan as "CHECK_MY_DEAL" | "VIP_CONCIERGE",
-                status: "ACTIVE",
-                billingInterval,
-                amount: amount ?? undefined,
-                expiresAt,
-                stripeCheckoutSessionId,
-                stripeCustomerId: stripeCustomerId ?? undefined,
-                stripeSubscriptionId: stripeSubscriptionId ?? undefined,
-              },
-              update: {
-                status: "ACTIVE",
-                billingInterval,
-                amount: amount ?? undefined,
-                expiresAt,
-                stripeCustomerId: stripeCustomerId ?? undefined,
-                stripeSubscriptionId: stripeSubscriptionId ?? undefined,
-              },
+            await runWithTenant(user.tenantId, async () => {
+              const existing = await prisma.subscription.findFirst({
+                where: { stripeCheckoutSessionId },
+              });
+              if (existing) {
+                await prisma.subscription.updateMany({
+                  where: { stripeCheckoutSessionId },
+                  data: {
+                    status: "ACTIVE",
+                    billingInterval,
+                    amount: amount ?? undefined,
+                    expiresAt,
+                    stripeCustomerId: stripeCustomerId ?? undefined,
+                    stripeSubscriptionId: stripeSubscriptionId ?? undefined,
+                  },
+                });
+              } else {
+                await prisma.subscription.create({
+                  data: {
+                    tenant: { connect: { id: user.tenantId } },
+                    user: { connect: { id: userId } },
+                    plan: plan as "CHECK_MY_DEAL" | "VIP_CONCIERGE",
+                    status: "ACTIVE",
+                    billingInterval,
+                    amount: amount ?? undefined,
+                    expiresAt,
+                    stripeCheckoutSessionId,
+                    stripeCustomerId: stripeCustomerId ?? undefined,
+                    stripeSubscriptionId: stripeSubscriptionId ?? undefined,
+                  },
+                });
+              }
             });
           }
         }
@@ -101,13 +109,20 @@ export async function stripe(req: Request, res: Response) {
         const minPeriodEnd = periodEnds.length > 0 ? Math.min(...periodEnds) : null;
         const expiresAt = typeof minPeriodEnd === "number" ? new Date(minPeriodEnd * 1000) : null;
 
-        await prisma.subscription.updateMany({
+        const existing = await basePrisma.subscription.findFirst({
           where: { stripeSubscriptionId },
-          data: {
-            status,
-            expiresAt: expiresAt ?? undefined,
-            stripeCustomerId: typeof sub.customer === "string" ? sub.customer : undefined,
-          },
+          select: { tenantId: true },
+        });
+        if (!existing) break;
+        await runWithTenant(existing.tenantId, async () => {
+          await prisma.subscription.updateMany({
+            where: { stripeSubscriptionId },
+            data: {
+              status,
+              expiresAt: expiresAt ?? undefined,
+              stripeCustomerId: typeof sub.customer === "string" ? sub.customer : undefined,
+            },
+          });
         });
         break;
       }

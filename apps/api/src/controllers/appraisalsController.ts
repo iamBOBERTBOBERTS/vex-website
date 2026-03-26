@@ -277,7 +277,10 @@ export async function valuate(req: Request, res: Response) {
     }
     throw e;
   }
-  const input: ValuationInput = { ...body, tenantId: req.tenantId ?? body.tenantId };
+  if (!req.tenantId) {
+    return res.status(401).json({ data: null, error: { code: "UNAUTHORIZED", message: "Tenant context missing" } });
+  }
+  const input: ValuationInput = { ...body, tenantId: req.tenantId };
   const outcome = await valuationService.getValuation(input);
 
   if (!outcome.success) {

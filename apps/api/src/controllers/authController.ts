@@ -3,7 +3,7 @@ import { Request, Response } from "express";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import type { RegisterInput, LoginInput, RefreshTokenInput } from "@vex/shared";
-import { basePrisma as prisma } from "../lib/tenant.js";
+import { basePrisma } from "../lib/tenant.js";
 import { sendLifecycleNotification } from "../lib/notify.js";
 import { denylistJti, newRefreshToken, storeRefreshToken, consumeRefreshToken } from "../lib/tokenStore.js";
 
@@ -65,16 +65,16 @@ async function issueSession(user: { id: string; email: string; role: string; ten
 export async function register(req: Request, res: Response) {
   const { email, password, name } = req.body as RegisterInput;
 
-  const existing = await prisma.user.findUnique({ where: { email } });
+  const existing = await basePrisma.user.findUnique({ where: { email } });
   if (existing) {
     return res.status(409).json({ code: "CONFLICT", message: "Email already registered" });
   }
 
   const passwordHash = await bcrypt.hash(password, 12);
-  const tenant = await prisma.tenant.create({
+  const tenant = await basePrisma.tenant.create({
     data: { name: `Tenant ${email}` },
   });
-  const user = await prisma.user.create({
+  const user = await basePrisma.user.create({
     data: { tenantId: tenant.id, email, passwordHash, name: name || null, role: "CUSTOMER" },
   });
 
@@ -92,7 +92,7 @@ export async function register(req: Request, res: Response) {
 export async function login(req: Request, res: Response) {
   const { email, password } = req.body as LoginInput;
 
-  const user = await prisma.user.findUnique({ where: { email } });
+  const user = await basePrisma.user.findUnique({ where: { email } });
   if (!user || !(await bcrypt.compare(password, user.passwordHash))) {
     return res.status(401).json({ code: "UNAUTHORIZED", message: "Invalid email or password" });
   }
@@ -108,7 +108,7 @@ export async function refresh(req: Request, res: Response) {
     return res.status(401).json({ code: "UNAUTHORIZED", message: "Invalid refresh token" });
   }
 
-  const user = await prisma.user.findUnique({ where: { id: payload.userId } });
+  const user = await basePrisma.user.findUnique({ where: { id: payload.userId } });
   if (!user || user.email !== payload.email) {
     return res.status(401).json({ code: "UNAUTHORIZED", message: "Invalid refresh token" });
   }
@@ -128,7 +128,7 @@ export async function logout(req: Request, res: Response) {
 export async function me(req: Request, res: Response) {
   if (!req.user) return res.status(401).json({ code: "UNAUTHORIZED", message: "Not authenticated" });
 
-  const user = await prisma.user.findUnique({ where: { id: req.user.userId } });
+  const user = await basePrisma.user.findUnique({ where: { id: req.user.userId } });
   if (!user) return res.status(404).json({ code: "NOT_FOUND", message: "User not found" });
 
   return res.json(toPublicUser(user));
@@ -138,12 +138,12 @@ export async function me(req: Request, res: Response) {
 export async function completeOnboarding(req: Request, res: Response) {
   if (!req.user) return res.status(401).json({ code: "UNAUTHORIZED", message: "Not authenticated" });
 
-  await prisma.tenant.updateMany({
+  await basePrisma.tenant.updateMany({
     where: { id: req.user.tenantId },
     data: { onboardedAt: new Date() },
   });
 
-  const meUser = await prisma.user.findUnique({ where: { id: req.user.userId }, select: { email: true, phone: true } });
+  const meUser = await basePrisma.user.findUnique({ where: { id: req.user.userId }, select: { email: true, phone: true } });
   if (meUser?.email) {
     void sendLifecycleNotification({
       type: "ONBOARDING_COMPLETE",

@@ -13,21 +13,42 @@ type SeedMetrics = {
 export default function SeedMetricsPage() {
   const { token, user } = useAuth();
   const [data, setData] = useState<SeedMetrics | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (!token || user?.role !== "ADMIN") return;
-    getOwnerAdminOverview(token).then((o) => {
-      setData({
-        mrr: o.mrr,
-        activeTenants: o.activeTenants,
-        cohorts: [
-          { name: "Organic", ltv: 18000, churnPct: 6.2, pilotConversionPct: 60 },
-          { name: "Referral", ltv: 22000, churnPct: 4.1, pilotConversionPct: 68 },
-        ],
+    if (!token || user?.role !== "ADMIN") {
+      setData(null);
+      setError("Admin access required.");
+      return;
+    }
+
+    let cancelled = false;
+    setError(null);
+
+    getOwnerAdminOverview(token)
+      .then((o) => {
+        if (cancelled) return;
+        setData({
+          mrr: o.mrr,
+          activeTenants: o.activeTenants,
+          cohorts: [
+            { name: "Organic", ltv: 18000, churnPct: 6.2, pilotConversionPct: 60 },
+            { name: "Referral", ltv: 22000, churnPct: 4.1, pilotConversionPct: 68 },
+          ],
+        });
+      })
+      .catch(() => {
+        if (cancelled) return;
+        setData(null);
+        setError("Failed to load seed metrics.");
       });
-    });
+
+    return () => {
+      cancelled = true;
+    };
   }, [token, user]);
 
+  if (error) return <main style={{ padding: "2rem", color: "#f66" }}>{error}</main>;
   if (!data) return <main style={{ padding: "2rem" }}>Loading seed metrics...</main>;
   return (
     <main style={{ padding: "2rem", maxWidth: 1100, margin: "0 auto" }}>

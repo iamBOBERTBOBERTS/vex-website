@@ -19,7 +19,7 @@ import { getAnalytics } from "@/lib/api";
 import type { AnalyticsResponse } from "@vex/shared";
 
 export default function AnalyticsPage() {
-  const { token } = useAuth();
+  const { token, role, loading } = useAuth();
   const [data, setData] = useState<AnalyticsResponse | null>(null);
   const [err, setErr] = useState<string | null>(null);
 
@@ -38,6 +38,22 @@ export default function AnalyticsPage() {
         { name: "Lost", value: data.leadsByStatus.LOST },
       ]
     : [];
+
+  if (loading) {
+    return (
+      <main style={{ padding: "1.5rem", maxWidth: "1100px", margin: "0 auto" }}>
+        <p style={{ color: "var(--text-muted)" }}>Loading analytics…</p>
+      </main>
+    );
+  }
+  if (!role || (role !== "STAFF" && role !== "ADMIN")) {
+    return (
+      <main style={{ padding: "1.5rem", maxWidth: "1100px", margin: "0 auto" }}>
+        <h1>Forbidden</h1>
+        <p style={{ color: "var(--text-muted)" }}>Staff or admin role required to view analytics.</p>
+      </main>
+    );
+  }
 
   return (
     <main style={{ padding: "1.5rem", maxWidth: "1100px", margin: "0 auto" }}>

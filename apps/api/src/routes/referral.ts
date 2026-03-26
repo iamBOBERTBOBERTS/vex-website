@@ -37,6 +37,9 @@ referralRouter.post("/apply", requireAuth, async (req, res) => {
     where: { codeHash, isActive: true, tenantId: req.user.tenantId },
   });
   if (!referral) return res.status(404).json({ code: "NOT_FOUND", message: "Referral code invalid" });
+  if (referral.tenantId !== req.user.tenantId) {
+    return res.status(403).json({ code: "FORBIDDEN", message: "Referral code does not belong to this tenant" });
+  }
   if (referral.uses >= referral.maxUses) {
     return res.status(409).json({ code: "LIMIT_REACHED", message: "Referral limit reached" });
   }

@@ -194,19 +194,28 @@ export class ValuationService {
       }
       if (!result) result = fallbackFormula(input);
 
-      await prisma.valuationCache.upsert({
-        where: { tenantId_cacheKey: { tenantId: input.tenantId, cacheKey } },
-        create: {
-          tenantId: input.tenantId,
-          cacheKey,
-          payload: result as unknown as object,
-          expiresAt: new Date(Date.now() + valuationConfig.cacheTtlMs),
-        },
-        update: {
-          payload: result as unknown as object,
-          expiresAt: new Date(Date.now() + valuationConfig.cacheTtlMs),
-        },
+      const existingCache = await prisma.valuationCache.findFirst({
+        where: { tenantId: input.tenantId, cacheKey },
+        select: { id: true },
       });
+      if (existingCache) {
+        await prisma.valuationCache.updateMany({
+          where: { id: existingCache.id, tenantId: input.tenantId, cacheKey },
+          data: {
+            payload: result as unknown as object,
+            expiresAt: new Date(Date.now() + valuationConfig.cacheTtlMs),
+          },
+        });
+      } else {
+        await prisma.valuationCache.create({
+          data: {
+            tenantId: input.tenantId,
+            cacheKey,
+            payload: result as unknown as object,
+            expiresAt: new Date(Date.now() + valuationConfig.cacheTtlMs),
+          },
+        });
+      }
 
       valuationCallsTotal.inc({ tenant_id: input.tenantId, source: result.source, outcome: "ok" });
       await prisma.eventLog.create({

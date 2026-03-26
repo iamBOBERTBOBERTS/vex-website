@@ -193,7 +193,7 @@ export async function update(req: Request, res: Response) {
   }
 
   const updated = await prisma.inventory.updateMany({
-    where: { id },
+    where: { id, tenantId: req.tenantId! },
     data: {
       ...(body.location !== undefined && { location: body.location }),
       ...(body.listPrice !== undefined && { listPrice: body.listPrice }),
@@ -219,7 +219,10 @@ export async function update(req: Request, res: Response) {
   });
   if (updated.count === 0) return res.status(404).json({ code: "NOT_FOUND", message: "Inventory item not found" });
 
-  const inventory = await prisma.inventory.findFirst({ where: { id }, include: { vehicle: true } });
+  const inventory = await prisma.inventory.findFirst({
+    where: { id, tenantId: req.tenantId! },
+    include: { vehicle: true },
+  });
   if (!inventory) return res.status(404).json({ code: "NOT_FOUND", message: "Inventory item not found" });
 
   return res.json({ data: toInventory(inventory), error: null });

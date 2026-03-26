@@ -27,8 +27,7 @@ export async function tenantMiddleware(req: Request, res: Response, next: NextFu
     const attempted =
       (req.body && typeof req.body === "object" && "tenantId" in (req.body as Record<string, unknown>)) ||
       (req.query && typeof req.query === "object" && "tenantId" in (req.query as Record<string, unknown>));
-    const allowValuationTenantField = req.path === "/appraisals/valuate" && req.method === "POST";
-    if (attempted && !allowValuationTenantField) {
+    if (attempted) {
       return res.status(403).json({ code: "FORBIDDEN", message: "Do not pass tenantId via request body or query" });
     }
 
@@ -48,6 +47,28 @@ export async function tenantMiddleware(req: Request, res: Response, next: NextFu
         }
         const exists = await basePrisma.tenant.findUnique({ where: { id: override } });
         if (!exists) return res.status(404).json({ code: "NOT_FOUND", message: "Tenant override not found" });
+        if (parsed.data.role === "GROUP_ADMIN") {
+          // GROUP_ADMIN may only override into their own tenant hierarchy.
+          if (override !== parsed.data.tenantId) {
+            let cursor: string | null = override;
+            let allowed = false;
+            for (let i = 0; i < 16 && cursor; i += 1) {
+              const t = await basePrisma.tenant.findFirst({
+                where: { id: cursor },
+                select: { id: true, parentTenantId: true },
+              });
+              if (!t) break;
+              if (t.parentTenantId === parsed.data.tenantId) {
+                allowed = true;
+                break;
+              }
+              cursor = t.parentTenantId;
+            }
+            if (!allowed) {
+              return res.status(403).json({ code: "FORBIDDEN", message: "Tenant override not in GROUP_ADMIN hierarchy" });
+            }
+          }
+        }
         tenantId = override;
       }
     }

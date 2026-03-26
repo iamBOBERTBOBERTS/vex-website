@@ -82,7 +82,9 @@ export async function createStripeCheckoutSession(req: Request, res: Response) {
     success_url: `${origin}/portal/subscriptions?stripe=success`,
     cancel_url: `${origin}/pricing?stripe=cancel`,
     metadata: {
+      tenantId: user.tenantId,
       userId: user.userId,
+      planId: body.plan,
       plan: body.plan,
       billingInterval,
     },

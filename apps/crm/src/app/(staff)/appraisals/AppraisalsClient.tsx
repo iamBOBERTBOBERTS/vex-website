@@ -20,7 +20,7 @@ function vehicleLabel(a: AppraisalOutput) {
 }
 
 export function AppraisalsClient() {
-  const { token } = useAuth();
+  const { token, role, loading } = useAuth();
   const { data, error, isLoading } = useQuery({
     queryKey: ["appraisals", token],
     queryFn: async () => {
@@ -33,6 +33,22 @@ export function AppraisalsClient() {
 
   const items = data?.items ?? [];
   const err = error ? "Failed to load appraisals" : null;
+
+  if (loading) {
+    return (
+      <main style={{ padding: "1.5rem", maxWidth: "1200px", margin: "0 auto" }}>
+        <p style={{ color: "var(--text-muted)" }}>Loading appraisals…</p>
+      </main>
+    );
+  }
+  if (!role || (role !== "STAFF" && role !== "ADMIN")) {
+    return (
+      <main style={{ padding: "1.5rem", maxWidth: "1200px", margin: "0 auto" }}>
+        <h1>Forbidden</h1>
+        <p style={{ color: "var(--text-muted)" }}>Staff or admin role required to view appraisals.</p>
+      </main>
+    );
+  }
 
   return (
     <main style={{ padding: "1.5rem", maxWidth: "1200px", margin: "0 auto" }}>

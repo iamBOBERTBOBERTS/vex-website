@@ -1,6 +1,5 @@
 import "dotenv/config";
 import { app } from "./app.js";
-import { valuationConfig } from "./config/valuation.js";
 import { startObservability } from "./lib/observability.js";
 import { startQueueWorkers } from "./lib/queue.js";
 
@@ -13,8 +12,6 @@ if (missingValuation.length > 0) {
   console.error("Refusing to start to protect valuation reliability and billing guardrails.");
   process.exit(1);
 }
-void valuationConfig;
-
 startObservability();
 startQueueWorkers();
 
