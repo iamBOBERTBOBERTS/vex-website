@@ -11,8 +11,6 @@ import styles from "./build.module.css";
 
 const STEPS = ["Car", "Paint", "Wheels", "Extras", "Review"];
 
-export const dynamic = "force-dynamic";
-
 function BuildPageInner() {
   const searchParams = useSearchParams();
   const inventoryId = searchParams.get("inventoryId");
