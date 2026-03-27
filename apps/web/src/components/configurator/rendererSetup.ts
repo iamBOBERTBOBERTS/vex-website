@@ -4,7 +4,7 @@ import type { WebGLRenderer } from "three";
 /** Filmic tone mapping + soft shadows — call from R3F Canvas `onCreated`. */
 export function configureVexRenderer(gl: WebGLRenderer): void {
   gl.toneMapping = THREE.ACESFilmicToneMapping;
-  gl.toneMappingExposure = 1.08;
+  gl.toneMappingExposure = 1.14;
   gl.outputColorSpace = THREE.SRGBColorSpace;
   gl.shadowMap.enabled = true;
   gl.shadowMap.type = THREE.PCFSoftShadowMap;

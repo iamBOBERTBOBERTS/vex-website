@@ -16,6 +16,7 @@ import {
 } from "@/lib/api";
 import { useAuth } from "@/contexts/AuthContext";
 import { formatUsd } from "@/lib/formatCurrency";
+import { FINISH_SWATCHES } from "@/components/configurator/vehicleFinish";
 import styles from "./checkout.module.css";
 
 function CheckoutPageInner() {
@@ -25,7 +26,16 @@ function CheckoutPageInner() {
   const inventoryId = searchParams.get("inventoryId");
   const tradeInId = searchParams.get("tradeInId");
 
-  const { vehicle, inventoryId: buildInventoryId, selectedOptions, options, totalPrice } = useBuild();
+  const {
+    vehicle,
+    inventoryId: buildInventoryId,
+    selectedOptions,
+    options,
+    totalPrice,
+    finishId,
+    edition,
+    powertrain,
+  } = useBuild();
 
   const [inventoryItem, setInventoryItem] = useState<InventoryItem | null>(null);
   const [loading, setLoading] = useState(true);
@@ -108,6 +118,11 @@ function CheckoutPageInner() {
           ? {
               vehicle: vehicle ? { id: vehicle.id, make: vehicle.make, model: vehicle.model, year: vehicle.year, trimLevel: vehicle.trimLevel } : null,
               selectedOptions: options.filter((o) => selectedOptions[o.category] === o.id).map((o) => ({ id: o.id, category: o.category, name: o.name, priceDelta: o.priceDelta })),
+              configurator: {
+                finishId,
+                edition,
+                powertrain,
+              },
             }
           : undefined,
         totalAmount: effectiveTotal + (shippingQuote?.amount ?? 0),
@@ -206,6 +221,12 @@ function CheckoutPageInner() {
                       {displayVehicle.year}
                       {displayVehicle.trimLevel ? ` · ${displayVehicle.trimLevel}` : ""}
                     </p>
+                    {buildMode && (
+                      <p className={styles.vehicleMeta}>
+                        {edition} · {powertrain} ·{" "}
+                        {FINISH_SWATCHES.find((f) => f.id === finishId)?.label ?? finishId}
+                      </p>
+                    )}
                     <p className={styles.vehiclePrice}>{formatUsd(effectiveTotal)}</p>
                   </div>
                 )}

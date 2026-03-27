@@ -3,12 +3,17 @@
 import React, { createContext, useContext, useState, useCallback } from "react";
 import type { Vehicle } from "@/lib/api";
 import type { ConfigOption } from "@/lib/api";
+import type { EditionId, FinishId, PowertrainId } from "@/components/configurator/vehicleFinish";
 
 export interface BuildState {
   vehicle: Vehicle | null;
   inventoryId: string | null;
   selectedOptions: Record<string, string>;
   options: ConfigOption[];
+  /** Visual + order snapshot — synced with 3D configurator */
+  finishId: FinishId;
+  edition: EditionId;
+  powertrain: PowertrainId;
 }
 
 const defaultState: BuildState = {
@@ -16,6 +21,9 @@ const defaultState: BuildState = {
   inventoryId: null,
   selectedOptions: {},
   options: [],
+  finishId: "rosso",
+  edition: "Launch",
+  powertrain: "V12",
 };
 
 type BuildContextValue = BuildState & {
@@ -23,6 +31,9 @@ type BuildContextValue = BuildState & {
   setInventoryId: (id: string | null) => void;
   setSelectedOption: (category: string, optionId: string) => void;
   setOptions: (opts: ConfigOption[]) => void;
+  setFinishId: (id: FinishId) => void;
+  setEdition: (e: EditionId) => void;
+  setPowertrain: (p: PowertrainId) => void;
   totalPrice: number;
   reset: () => void;
 };
@@ -33,7 +44,27 @@ export function BuildProvider({ children }: { children: React.ReactNode }) {
   const [state, setState] = useState<BuildState>(defaultState);
 
   const setVehicle = useCallback((vehicle: Vehicle | null) => {
-    setState((s) => ({ ...s, vehicle, options: [], selectedOptions: {} }));
+    setState((s) => ({
+      ...s,
+      vehicle,
+      options: [],
+      selectedOptions: {},
+      finishId: "rosso",
+      edition: "Launch",
+      powertrain: "V12",
+    }));
+  }, []);
+
+  const setFinishId = useCallback((finishId: FinishId) => {
+    setState((s) => ({ ...s, finishId }));
+  }, []);
+
+  const setEdition = useCallback((edition: EditionId) => {
+    setState((s) => ({ ...s, edition }));
+  }, []);
+
+  const setPowertrain = useCallback((powertrain: PowertrainId) => {
+    setState((s) => ({ ...s, powertrain }));
   }, []);
 
   const setInventoryId = useCallback((inventoryId: string | null) => {
@@ -67,6 +98,9 @@ export function BuildProvider({ children }: { children: React.ReactNode }) {
     setInventoryId,
     setSelectedOption,
     setOptions,
+    setFinishId,
+    setEdition,
+    setPowertrain,
     totalPrice,
     reset,
   };

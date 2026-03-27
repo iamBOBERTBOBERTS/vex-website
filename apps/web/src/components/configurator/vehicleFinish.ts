@@ -26,3 +26,11 @@ export const FINISH_SWATCHES: { id: FinishId; label: string }[] = [
   { id: "nero", label: "Nero metallic" },
   { id: "oro", label: "Oro champagne" },
 ];
+
+/** Map builder / API paint option copy to showroom finish (3D + pricing selection). */
+export function paintOptionNameToFinishId(name: string): FinishId {
+  const lower = name.toLowerCase();
+  if (lower.includes("nero") || lower.includes("black") || lower.includes("obsidian")) return "nero";
+  if (lower.includes("oro") || lower.includes("gold") || lower.includes("champagne")) return "oro";
+  return "rosso";
+}

@@ -18,6 +18,12 @@ import { ShowroomFloor } from "./ShowroomFloor";
 import { ShowroomFog } from "./ShowroomFog";
 import { ShowroomPostFX } from "./ShowroomPostFX";
 
+const EDITION_ENV_INTENSITY: Record<EditionId, number> = {
+  Launch: 1.22,
+  Heritage: 1.1,
+  Track: 1.3,
+};
+
 export type CameraPreset = "threeQuarter" | "side" | "front" | "top";
 
 /** Default canvas + preset positions: full viewer is tighter (larger car in frame). */
@@ -26,23 +32,23 @@ export function getCanvasCamera(compact: boolean | undefined): {
   fov: number;
 } {
   if (compact) {
-    return { position: [4.6, 1.85, 5.2], fov: 40 };
+    return { position: [3.15, 1.42, 3.55], fov: 42 };
   }
-  return { position: [3.65, 1.45, 4.1], fov: 36 };
+  return { position: [3.05, 1.22, 3.38], fov: 38 };
 }
 
 const PRESET_COMPACT: Record<CameraPreset, [number, number, number]> = {
-  threeQuarter: [4.6, 1.85, 5.2],
-  side: [7.2, 1.35, 0.15],
-  front: [0.1, 1.55, 6.8],
-  top: [0.2, 8.4, 0.35],
+  threeQuarter: [3.15, 1.42, 3.55],
+  side: [5.4, 1.2, 0.12],
+  front: [0.08, 1.28, 5.1],
+  top: [0.15, 6.2, 0.28],
 };
 
 const PRESET_FULL: Record<CameraPreset, [number, number, number]> = {
-  threeQuarter: [3.65, 1.45, 4.1],
-  side: [5.95, 1.12, 0.12],
-  front: [0.08, 1.28, 5.65],
-  top: [0.12, 6.75, 0.28],
+  threeQuarter: [3.05, 1.22, 3.38],
+  side: [5.15, 1.05, 0.1],
+  front: [0.06, 1.18, 4.85],
+  top: [0.12, 6.0, 0.25],
 };
 
 function CameraRig({
@@ -94,6 +100,9 @@ export type VehicleSceneProps = {
 };
 
 export function VehicleScene({
+  finishId,
+  edition,
+  powertrain,
   cameraPreset,
   onPresetApplied,
   autoRotate,
@@ -130,8 +139,8 @@ export function VehicleScene({
         penumbra={0.85}
         intensity={1.65}
         castShadow
-        shadow-mapSize-width={2048}
-        shadow-mapSize-height={2048}
+        shadow-mapSize-width={3072}
+        shadow-mapSize-height={3072}
       />
       <spotLight position={[-5, 4, -3]} angle={0.55} penumbra={1} intensity={0.48} color="#b8a878" />
       <spotLight
@@ -143,9 +152,14 @@ export function VehicleScene({
       />
       <directionalLight position={[-3, 6, 2]} intensity={0.5} color="#e8e4dc" />
 
-      <Environment preset="warehouse" environmentIntensity={1.05} />
+      <Environment preset="city" environmentIntensity={EDITION_ENV_INTENSITY[edition]} />
 
-      <GltfVehicle url={gltfUrl || DEFAULT_PUBLIC_VEHICLE_GLB} />
+      <GltfVehicle
+        url={gltfUrl || DEFAULT_PUBLIC_VEHICLE_GLB}
+        finishId={finishId}
+        edition={edition}
+        powertrain={powertrain}
+      />
 
       <ShowroomFog enabled={effectsOn} />
       <ShowroomFloor enabled={showReflectorFloor} />
@@ -183,8 +197,8 @@ export function VehicleScene({
         enableDamping
         enablePan={false}
         dampingFactor={0.06}
-        minDistance={compact ? 4 : 1.75}
-        maxDistance={compact ? 14 : 15}
+        minDistance={compact ? 2.35 : 1.18}
+        maxDistance={compact ? 14 : 14}
         minPolarAngle={0.28}
         maxPolarAngle={Math.PI / 2.05}
         maxAzimuthAngle={Infinity}

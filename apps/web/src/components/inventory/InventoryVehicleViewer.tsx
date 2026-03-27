@@ -78,7 +78,7 @@ export function InventoryVehicleViewer({ modelGlbUrl, modelSource, title }: Prop
       <div className={styles.canvasWrap}>
         <Canvas
           shadows
-          dpr={[1, 2]}
+          dpr={[1, 2.25]}
           camera={{ position: cam.position, fov: cam.fov, near: 0.1, far: 120 }}
           gl={{ antialias: true, alpha: false, powerPreference: "high-performance" }}
           onCreated={({ gl }) => configureVexRenderer(gl)}

@@ -14,15 +14,15 @@ export function ShowroomPostFX({ enabled }: ShowroomPostFXProps) {
   if (!enabled) return null;
 
   return (
-    <EffectComposer multisampling={0} enableNormalPass={false}>
+    <EffectComposer multisampling={4} enableNormalPass={false}>
       <Bloom
-        intensity={0.42}
-        luminanceThreshold={0.62}
-        luminanceSmoothing={0.035}
+        intensity={0.26}
+        luminanceThreshold={0.72}
+        luminanceSmoothing={0.028}
         mipmapBlur
-        radius={0.5}
+        radius={0.42}
       />
-      <Vignette eskil={false} offset={0.12} darkness={0.38} />
+      <Vignette eskil={false} offset={0.1} darkness={0.32} />
     </EffectComposer>
   );
 }

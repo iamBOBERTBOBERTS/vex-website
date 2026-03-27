@@ -34,7 +34,7 @@ const IMAGE = {
 
 /** glTF demo for 3D viewer — replace per listing with photogrammetry output URL when ready */
 const LIBRARY_DEMO_GLB =
-  "https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Assets/main/Models/CarConcept/glTF-Binary/CarConcept.glb";
+  "https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Assets/main/Models/ToyCar/glTF-Binary/ToyCar.glb";
 
 type VehicleSeed = {
   make: string;
@@ -394,6 +394,20 @@ async function main() {
     console.log("Sample lead:", lead.id);
   } else {
     console.log("Leads already present, skipping sample lead.");
+  }
+
+  const paintOptCount = await prisma.configurationOption.count({
+    where: { tenantId: demoTenant.id, category: "PAINT" },
+  });
+  if (paintOptCount === 0) {
+    await prisma.configurationOption.createMany({
+      data: [
+        { tenantId: demoTenant.id, vehicleId: null, category: "PAINT", name: "Rosso corsa", priceDelta: 0, isRequired: false },
+        { tenantId: demoTenant.id, vehicleId: null, category: "PAINT", name: "Nero metallic", priceDelta: 2500, isRequired: false },
+        { tenantId: demoTenant.id, vehicleId: null, category: "PAINT", name: "Oro champagne", priceDelta: 4500, isRequired: false },
+      ],
+    });
+    console.log("Seeded PAINT configuration options.");
   }
 }
 

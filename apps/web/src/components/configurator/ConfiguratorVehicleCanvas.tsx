@@ -129,7 +129,7 @@ export function ConfiguratorVehicleCanvas({
         <Canvas
           className={styles.canvas}
           shadows
-          dpr={[1, 2]}
+          dpr={[1, 2.25]}
           camera={{ position: cam.position, fov: cam.fov, near: 0.1, far: 80 }}
           gl={{ antialias: true, alpha: false, powerPreference: "high-performance" }}
           onCreated={({ gl }) => configureVexRenderer(gl)}
