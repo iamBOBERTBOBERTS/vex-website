@@ -112,6 +112,7 @@ app.get("/", (_req, res) => {
     message: "VEX backend is live — luxury whips, no cap",
     endpoints: {
       health: "GET /health → server check",
+      platformEngines: "GET /public/platform-engines → engine snapshot (public)",
       auth: [
         "POST /auth/register → create account",
         "POST /auth/login → get JWT",

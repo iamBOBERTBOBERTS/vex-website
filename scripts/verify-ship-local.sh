@@ -32,6 +32,12 @@ if [[ -z "${DATABASE_URL:-}" ]]; then
 fi
 
 echo "==> Node $(node --version) | cwd: $ROOT"
+# After Docker/sudo builds, root-owned dist/ breaks turbo — fix before build when needed.
+if [[ -d "$ROOT/packages/shared/dist" ]] && ! [[ -w "$ROOT/packages/shared/dist" ]]; then
+  echo "==> packages/shared/dist not writable; running fix:perms"
+  pnpm run fix:perms
+fi
+
 echo "==> turbo build"
 pnpm -w turbo run build
 
