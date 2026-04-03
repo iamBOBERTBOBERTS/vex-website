@@ -10,8 +10,6 @@ import type { AppraisalOutput } from "@vex/shared";
 import { AppraisalPdfButton } from "@/components/AppraisalPdfButton";
 import { useAuth } from "@/contexts/AuthContext";
 import {
-  addAppraisalToInventory,
-  createErpOrder,
   deleteAppraisalRecord,
   getAppraisalById,
   getCurrentTenantBilling,
@@ -29,6 +27,17 @@ type FormValues = {
   value?: number | null;
 };
 
+function dealDeskLabel(status: string) {
+  const s = String(status).toLowerCase();
+  if (s === "pending") return "Open";
+  if (s === "open") return "Open";
+  if (s === "accepted") return "Accepted";
+  if (s === "rejected") return "Rejected";
+  if (s === "negotiating") return "Negotiating";
+  if (s === "closed") return "Closed";
+  return status;
+}
+
 export default function AppraisalDetailPage() {
   const { id } = useParams<{ id: string }>();
   const router = useRouter();
@@ -39,9 +48,6 @@ export default function AppraisalDetailPage() {
   const [customers, setCustomers] = useState<{ id: string; label: string }[]>([]);
   const [loadErr, setLoadErr] = useState<string | null>(null);
   const [submitErr, setSubmitErr] = useState<string | null>(null);
-  const [dealDeskStatus, setDealDeskStatus] = useState<
-    "OPEN" | "ACCEPTED" | "REJECTED" | "NEGOTIATING" | "CLOSED"
-  >("OPEN");
   const [dealDeskNote, setDealDeskNote] = useState("");
   const [dealDeskFeedback, setDealDeskFeedback] = useState<string | null>(null);
 
@@ -123,9 +129,7 @@ export default function AppraisalDetailPage() {
     }
   };
 
-  const onDealDeskUpdate = async (
-    nextStatus: "OPEN" | "ACCEPTED" | "REJECTED" | "NEGOTIATING" | "CLOSED" = dealDeskStatus
-  ) => {
+  const onDealDeskUpdate = async (nextStatus: "ACCEPTED" | "REJECTED" | "CLOSED") => {
     if (!token || !id) return;
     setSubmitErr(null);
     setDealDeskFeedback(null);
@@ -134,45 +138,15 @@ export default function AppraisalDetailPage() {
         status: nextStatus,
         note: dealDeskNote || undefined,
       });
-      setDealDeskStatus(nextStatus);
       setAppraisal((prev) => (prev ? { ...prev, status: nextStatus.toLowerCase() } : prev));
       const hasCloseArtifacts = Boolean(response?.dealDesk?.orderId || response?.dealDesk?.inventoryId);
       setDealDeskFeedback(
-        hasCloseArtifacts ? `Deal desk ${nextStatus}. Inventory and deal record created.` : `Deal desk ${nextStatus}.`
+        nextStatus === "CLOSED" && hasCloseArtifacts
+          ? "Closed: order created, usage billed, revenue event logged."
+          : `Deal desk: ${nextStatus}.`
       );
     } catch (e) {
       setSubmitErr(e instanceof Error ? e.message : "Deal desk update failed");
-    }
-  };
-
-  const onAddToInventory = async () => {
-    if (!token || !id) return;
-    setSubmitErr(null);
-    setDealDeskFeedback(null);
-    try {
-      const response = await addAppraisalToInventory(token, id, {
-        listPrice: appraisal?.value ?? undefined,
-      });
-      setDealDeskFeedback(`Added to inventory (${response.inventoryId}).`);
-    } catch (e) {
-      setSubmitErr(e instanceof Error ? e.message : "Failed to add appraisal to inventory");
-    }
-  };
-
-  const onCreateOrder = async () => {
-    if (!token || !id) return;
-    setSubmitErr(null);
-    setDealDeskFeedback(null);
-    try {
-      const response = await createErpOrder(token, {
-        appraisalId: id,
-        listPrice: appraisal?.value ?? undefined,
-      });
-      setDealDeskFeedback(
-        `ERP order ${response.order.id.slice(0, 8)}… and invoice ${response.invoice.invoiceNumber} created.`
-      );
-    } catch (e) {
-      setSubmitErr(e instanceof Error ? e.message : "Failed to create ERP order");
     }
   };
 
@@ -226,33 +200,22 @@ export default function AppraisalDetailPage() {
           padding: "0.8rem",
         }}
       >
-        <h2 style={{ fontSize: "0.95rem", marginBottom: "0.35rem" }}>Deal Desk</h2>
-        <div style={{ display: "flex", gap: "0.5rem", alignItems: "center" }}>
-          <select value={dealDeskStatus} onChange={(e) => setDealDeskStatus(e.target.value as typeof dealDeskStatus)}>
-            <option value="OPEN">Open</option>
-            <option value="ACCEPTED">Accepted</option>
-            <option value="REJECTED">Rejected</option>
-            <option value="NEGOTIATING">Negotiating</option>
-            <option value="CLOSED">Closed</option>
-          </select>
-          <button type="button" onClick={() => void onDealDeskUpdate()}>
-            Update deal desk
-          </button>
-          <button type="button" onClick={() => void onAddToInventory()}>
-            Add to Inventory
-          </button>
-          <button type="button" onClick={() => void onCreateOrder()}>
-            Create Order
-          </button>
-        </div>
+        <h2 style={{ fontSize: "0.95rem", marginBottom: "0.35rem" }}>Deal desk</h2>
+        <p style={{ fontSize: "0.85rem", color: "var(--text-muted)", marginBottom: "0.5rem" }}>
+          Status:{" "}
+          <strong>{dealDeskLabel(appraisal.status)}</strong>
+          <span style={{ marginLeft: "0.5rem", opacity: 0.85 }}>
+            (Close creates order + billing usage + revenue log)
+          </span>
+        </p>
         <textarea
           rows={2}
-          placeholder="Internal note"
+          placeholder="Internal note (optional)"
           value={dealDeskNote}
           onChange={(e) => setDealDeskNote(e.target.value)}
           style={{ width: "100%", marginTop: "0.5rem" }}
         />
-        <div style={{ display: "flex", gap: "0.5rem", marginTop: "0.5rem" }}>
+        <div style={{ display: "flex", flexWrap: "wrap", gap: "0.5rem", marginTop: "0.5rem" }}>
           <button type="button" onClick={() => void onDealDeskUpdate("ACCEPTED")}>
             Accept
           </button>

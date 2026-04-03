@@ -20,6 +20,18 @@ function vehicleLabel(a: AppraisalOutput) {
   return "—";
 }
 
+/** Aligns with deal desk states (public quick appraisals start as pending → Open). */
+function dealDeskLabel(status: string) {
+  const s = String(status).toLowerCase();
+  if (s === "pending") return "Open";
+  if (s === "open") return "Open";
+  if (s === "accepted") return "Accepted";
+  if (s === "rejected") return "Rejected";
+  if (s === "negotiating") return "Negotiating";
+  if (s === "closed") return "Closed";
+  return status;
+}
+
 export function AppraisalsClient() {
   const { token, role, loading } = useAuth();
   const [newAlert, setNewAlert] = useState<string | null>(null);
@@ -97,8 +109,7 @@ export function AppraisalsClient() {
               <th>Vehicle</th>
               <th>Customer</th>
               <th>Value</th>
-              <th>Status</th>
-              <th>Deal Desk</th>
+              <th>Deal desk</th>
               <th>Date</th>
               <th />
             </tr>
@@ -109,8 +120,7 @@ export function AppraisalsClient() {
                 <td>{vehicleLabel(a)}</td>
                 <td>{a.customer ? a.customer.name ?? a.customer.email ?? "—" : "—"}</td>
                 <td>{a.value != null ? `$${a.value.toLocaleString()}` : "—"}</td>
-                <td>{a.status}</td>
-                <td>{String(a.status).toUpperCase()}</td>
+                <td>{dealDeskLabel(a.status)}</td>
                 <td>{new Date(a.createdAt).toLocaleString()}</td>
                 <td>
                   <Link href={`/appraisals/${a.id}`}>Open deal desk</Link>

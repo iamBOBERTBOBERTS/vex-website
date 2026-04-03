@@ -1,3 +1,7 @@
+/**
+ * Public quick appraisal — pilot entry: creates a tenant-scoped Appraisal + usage telemetry (no JWT).
+ * Flow continues in CRM: /appraisals → deal desk Accept/Reject/Close → Order + usage + RevenueEvent.
+ */
 import { Request, Response } from "express";
 import type { QuickAppraisalInput } from "@vex/shared";
 import { prisma, runWithTenant, findTenantByCustomDomain, normalizeHost } from "../lib/tenant.js";
