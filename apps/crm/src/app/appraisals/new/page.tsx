@@ -215,7 +215,7 @@ function NewAppraisalPageInner() {
           <h2 style={{ fontSize: "1rem", marginBottom: "0.5rem" }}>Auto valuation</h2>
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.5rem" }}>
             <input placeholder="VIN (optional)" value={valForm.vin ?? ""} onChange={(e) => setValForm((v) => ({ ...v, vin: e.target.value.toUpperCase() }))} onBlur={scheduleValuation} />
-            <input placeholder="ZIP" value={valForm.zipCode} onChange={(e) => setValForm((v) => ({ ...v, zipCode: e.target.value.slice(0,5) }))} onBlur={scheduleValuation} />
+            <input placeholder="ZIP" value={valForm.zipCode} onChange={(e) => setValForm((v) => ({ ...v, zipCode: e.target.value.slice(0, 5) }))} onBlur={scheduleValuation} />
             <input placeholder="Make" value={valForm.make} onChange={(e) => setValForm((v) => ({ ...v, make: e.target.value }))} onBlur={scheduleValuation} />
             <input placeholder="Model" value={valForm.model} onChange={(e) => setValForm((v) => ({ ...v, model: e.target.value }))} onBlur={scheduleValuation} />
             <input type="number" placeholder="Year" value={valForm.year} onChange={(e) => setValForm((v) => ({ ...v, year: Number(e.target.value) }))} onBlur={scheduleValuation} />
@@ -232,9 +232,18 @@ function NewAppraisalPageInner() {
           </div>
           {valuation && (
             <div style={{ marginTop: "0.65rem", display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "0.5rem" }}>
-              <div style={{ padding: "0.5rem", border: "1px solid rgba(255,255,255,0.12)", borderRadius: 6 }}>Low<br/>${valuation.valueLow.toLocaleString()}</div>
-              <div style={{ padding: "0.5rem", border: "1px solid rgba(255,255,255,0.12)", borderRadius: 6 }}>Avg<br/>${valuation.valueAvg.toLocaleString()}</div>
-              <div style={{ padding: "0.5rem", border: "1px solid rgba(255,255,255,0.12)", borderRadius: 6 }}>High<br/>${valuation.valueHigh.toLocaleString()}</div>
+              <div style={{ padding: "0.5rem", border: "1px solid rgba(255,255,255,0.12)", borderRadius: 6 }}>
+                Low
+                <br />${valuation.valueLow.toLocaleString()}
+              </div>
+              <div style={{ padding: "0.5rem", border: "1px solid rgba(255,255,255,0.12)", borderRadius: 6 }}>
+                Avg
+                <br />${valuation.valueAvg.toLocaleString()}
+              </div>
+              <div style={{ padding: "0.5rem", border: "1px solid rgba(255,255,255,0.12)", borderRadius: 6 }}>
+                High
+                <br />${valuation.valueHigh.toLocaleString()}
+              </div>
             </div>
           )}
           {valuation && <p style={{ marginTop: "0.4rem", color: "var(--text-muted)", fontSize: "0.85rem" }}>Source: {valuation.source} · Confidence: {valuation.confidence}%</p>}
@@ -269,7 +278,13 @@ function NewAppraisalPageInner() {
 
 export default function NewAppraisalPage() {
   return (
-    <Suspense fallback={<main style={{ padding: "1.5rem" }}><p style={{ color: "var(--text-muted)" }}>Loading…</p></main>}>
+    <Suspense
+      fallback={
+        <main style={{ padding: "1.5rem" }}>
+          <p style={{ color: "var(--text-muted)" }}>Loading…</p>
+        </main>
+      }
+    >
       <NewAppraisalPageInner />
     </Suspense>
   );

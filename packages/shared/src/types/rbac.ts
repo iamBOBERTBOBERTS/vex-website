@@ -24,6 +24,11 @@ export function isCrmPortalRole(role: string): boolean {
   return role === Role.STAFF || role === Role.ADMIN || role === "GROUP_ADMIN";
 }
 
+/** Deal desk pilot routes: STAFF + ADMIN only (tenant deal desk / public appraisal queue). */
+export function isDealDeskRole(role: string): boolean {
+  return role === Role.STAFF || role === Role.ADMIN;
+}
+
 export const ROLE_PERMISSIONS: Readonly<Record<ApiRole, readonly string[]>> = {
   CUSTOMER: [
     "appraisal:create:own",

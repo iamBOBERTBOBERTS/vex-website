@@ -72,7 +72,7 @@ async function main() {
 
   const [usage, revenueEvent, order, closedAppraisal] = await Promise.all([
     systemPrisma.usageLog.findFirst({
-      where: { tenantId: tenantA.id, kind: "deal_desk_close", meta: { path: ["appraisalId"], equals: appraisalA.id } },
+      where: { tenantId: tenantA.id, kind: "erp_order_create", meta: { path: ["appraisalId"], equals: appraisalA.id } },
       orderBy: { createdAt: "desc" },
     }),
     systemPrisma.eventLog.findFirst({

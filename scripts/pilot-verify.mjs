@@ -2,6 +2,7 @@
 /**
  * Runtime smoke for a deployed API. Set PILOT_VERIFY_API_URL to the API origin (e.g. https://api.example.com).
  * Optional: PILOT_VERIFY_BRANDING_DOMAIN=dealer.example.com to check /public/branding.
+ * Optional: PILOT_VERIFY_INTERNAL_KEY=<same as API INTERNAL_PILOT_METRICS_KEY> to verify GET /dealer/pilots.
  *
  * If PILOT_VERIFY_API_URL is unset, exits 0 (skip) so CI / morning-gate stay green without a live deploy.
  * Set PILOT_VERIFY_STRICT=true to fail when the URL is missing (release pipelines).
@@ -81,6 +82,40 @@ async function main() {
   if (typeof r.api !== "string" || !r.api.includes("vex")) {
     console.error("pilot-verify: GET / unexpected payload (missing api:@vex marker):", r);
     process.exit(1);
+  }
+
+  /** Same value as API INTERNAL_PILOT_METRICS_KEY — optional smoke for GET /dealer/pilots */
+  const pilotMetricsKey = (process.env.PILOT_VERIFY_INTERNAL_KEY ?? "").trim();
+  if (pilotMetricsKey) {
+    const mpRes = await fetch(`${base}/dealer/pilots`, {
+      headers: { Accept: "application/json", "x-internal-key": pilotMetricsKey },
+    });
+    const mpText = await mpRes.text();
+    let mpJson;
+    try {
+      mpJson = JSON.parse(mpText);
+    } catch {
+      console.error("pilot-verify: GET /dealer/pilots expected JSON:", mpText.slice(0, 300));
+      process.exit(1);
+    }
+    if (!mpRes.ok) {
+      console.error("pilot-verify: GET /dealer/pilots HTTP", mpRes.status, mpJson);
+      process.exit(1);
+    }
+    const d = mpJson?.data;
+    if (
+      !d ||
+      typeof d.activePilots !== "number" ||
+      typeof d.totalPilotAppraisals !== "number" ||
+      typeof d.firstBillingEvents !== "number"
+    ) {
+      console.error("pilot-verify: GET /dealer/pilots unexpected shape:", mpJson);
+      process.exit(1);
+    }
+    console.log(
+      "pilot-verify: GET /dealer/pilots OK",
+      `(activePilots=${d.activePilots}, appraisals=${d.totalPilotAppraisals})`
+    );
   }
 
   const brandingDomain = process.env.PILOT_VERIFY_BRANDING_DOMAIN?.trim();

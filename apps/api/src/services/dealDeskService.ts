@@ -1,5 +1,5 @@
 import type { PrismaClient } from "@prisma/client";
-import { InventorySource, OrderStatus, OrderType } from "@prisma/client";
+import { InventorySource } from "@prisma/client";
 
 type DealDeskStatus = "OPEN" | "ACCEPTED" | "REJECTED" | "NEGOTIATING" | "CLOSED";
 
@@ -99,21 +99,6 @@ async function ensureInventoryForAppraisal(prisma: PrismaClient, input: AddToInv
   });
 }
 
-async function pickOrderUserId(prisma: PrismaClient, tenantId: string, appraisalId: string): Promise<string | null> {
-  const appraisal = await prisma.appraisal.findFirst({
-    where: { id: appraisalId, tenantId },
-    include: { customer: { select: { userId: true } } },
-  });
-  if (appraisal?.customer?.userId) return appraisal.customer.userId;
-
-  const fallback = await prisma.user.findFirst({
-    where: { tenantId, role: { in: ["ADMIN", "GROUP_ADMIN", "STAFF"] } },
-    select: { id: true },
-    orderBy: { createdAt: "asc" },
-  });
-  return fallback?.id ?? null;
-}
-
 export async function addAppraisalToInventory(prisma: PrismaClient, input: AddToInventoryInput) {
   return ensureInventoryForAppraisal(prisma, input);
 }
@@ -132,51 +117,14 @@ export async function updateDealDeskStatus(prisma: PrismaClient, input: DealDesk
 
   let inventoryId: string | null = null;
   let orderId: string | null = null;
-  if (isClosed) {
-    const inventory = await ensureInventoryForAppraisal(prisma, {
-      tenantId: input.tenantId,
-      appraisalId: input.appraisalId,
-      actorUserId: input.actorUserId,
-      listPrice: Number(appraisal.value ?? 0),
-    });
-    inventoryId = inventory.id;
+  let invoiceNumber: string | null = null;
 
-    const orderUserId = await pickOrderUserId(prisma, input.tenantId, input.appraisalId);
-    if (orderUserId) {
-      const existingOrder = await prisma.order.findFirst({
-        where: {
-          tenantId: input.tenantId,
-          inventoryId: inventory.id,
-          type: OrderType.INVENTORY,
-        },
-        select: { id: true },
-      });
-      if (existingOrder) {
-        orderId = existingOrder.id;
-      } else {
-        const order = await prisma.order.create({
-          data: {
-            tenantId: input.tenantId,
-            userId: orderUserId,
-            type: OrderType.INVENTORY,
-            inventoryId: inventory.id,
-            vehicleId: inventory.vehicleId,
-            status: OrderStatus.CONFIRMED,
-            totalAmount: Number(appraisal.value ?? 0),
-          },
-          select: { id: true },
-        });
-        orderId = order.id;
-      }
-    }
-  }
-
-  await prisma.$transaction([
-    prisma.appraisal.updateMany({
+  const deskWrites = (tx: PrismaClient) => [
+    tx.appraisal.updateMany({
       where: { id: input.appraisalId, tenantId: input.tenantId },
       data: { status: normalizedStatus },
     }),
-    prisma.eventLog.create({
+    tx.eventLog.create({
       data: {
         tenantId: input.tenantId,
         type: "deal_desk.updated",
@@ -188,7 +136,7 @@ export async function updateDealDeskStatus(prisma: PrismaClient, input: DealDesk
         },
       },
     }),
-    prisma.auditLog.create({
+    tx.auditLog.create({
       data: {
         tenantId: input.tenantId,
         actorId: input.actorUserId,
@@ -200,10 +148,11 @@ export async function updateDealDeskStatus(prisma: PrismaClient, input: DealDesk
           note: input.note ?? null,
           inventoryId,
           orderId,
+          invoiceNumber,
         },
       },
     }),
-    prisma.notification.create({
+    tx.notification.create({
       data: {
         tenantId: input.tenantId,
         userId: input.actorUserId,
@@ -212,37 +161,26 @@ export async function updateDealDeskStatus(prisma: PrismaClient, input: DealDesk
         body: `Appraisal ${input.appraisalId} marked ${input.status}.`,
       },
     }),
-    ...(isClosed
-      ? [
-          prisma.usageLog.create({
-            data: {
-              tenantId: input.tenantId,
-              kind: "deal_desk_close",
-              quantity: 1,
-              amountUsd: Number(appraisal.value ?? 0),
-              meta: {
-                appraisalId: input.appraisalId,
-                inventoryId,
-                orderId,
-              },
-            },
-          }),
-          prisma.eventLog.create({
-            data: {
-              tenantId: input.tenantId,
-              type: "RevenueEvent",
-              payload: {
-                appraisalId: input.appraisalId,
-                inventoryId,
-                orderId,
-                amountUsd: Number(appraisal.value ?? 0),
-                actorUserId: input.actorUserId,
-              },
-            },
-          }),
-        ]
-      : []),
-  ]);
+  ];
+
+  if (isClosed) {
+    /** Single interactive transaction: ERP order + inventory + billing + revenue + ERP audit + appraisal status + deal_desk + DEAL_DESK audit + in-app notification. */
+    const { createErpOrderFromAppraisal } = await import("./erpService.js");
+    await prisma.$transaction(async (tx) => {
+      const erp = await createErpOrderFromAppraisal(tx as unknown as PrismaClient, {
+        tenantId: input.tenantId,
+        appraisalId: input.appraisalId,
+        actorUserId: input.actorUserId,
+        listPrice: Number(appraisal.value ?? 0),
+      });
+      inventoryId = erp.inventoryId;
+      orderId = erp.order.id;
+      invoiceNumber = erp.invoice.invoiceNumber;
+      await Promise.all(deskWrites(tx as unknown as PrismaClient));
+    });
+  } else {
+    await prisma.$transaction(deskWrites(prisma));
+  }
 
   return {
     appraisalId: input.appraisalId,
@@ -250,5 +188,6 @@ export async function updateDealDeskStatus(prisma: PrismaClient, input: DealDesk
     note: input.note ?? null,
     inventoryId,
     orderId,
+    invoiceNumber,
   };
 }

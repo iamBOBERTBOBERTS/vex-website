@@ -143,7 +143,8 @@ export async function createErpOrderFromAppraisal(prisma: PrismaClient, input: C
       createdAt: created.createdAt,
     };
 
-    await prisma.$transaction([
+    /** Parallel writes on the same client/transaction — no nested `$transaction` (caller may wrap whole close in one interactive transaction). */
+    await Promise.all([
       prisma.usageLog.create({
         data: {
           tenantId: input.tenantId,

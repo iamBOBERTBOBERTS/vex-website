@@ -206,7 +206,7 @@ export async function createOrder(
 
 export async function listAppraisals(token: string) {
   const res = await fetch(`${API_BASE}/dealer/appraisals`, { headers: authHeaders(token) });
-  if (!res.ok) throw new Error("Failed to load appraisals");
+  if (!res.ok) throw new Error(await readApiErrorMessage(res, "Failed to load appraisals"));
   return unwrap(await res.json()) as { items: AppraisalOutput[]; total: number; limit: number; offset: number };
 }
 
@@ -222,7 +222,7 @@ export async function createAppraisalRecord(token: string, data: CreateAppraisal
 
 export async function getAppraisalById(token: string, id: string) {
   const res = await fetch(`${API_BASE}/dealer/appraisals/${id}`, { headers: authHeaders(token) });
-  if (!res.ok) throw new Error("Failed to load appraisal");
+  if (!res.ok) throw new Error(await readApiErrorMessage(res, "Failed to load appraisal"));
   return unwrap(await res.json()) as AppraisalOutput;
 }
 
@@ -246,10 +246,7 @@ export async function openAppraisalDealDesk(
     headers: { "Content-Type": "application/json", ...authHeaders(token) },
     body: JSON.stringify(data),
   });
-  if (!res.ok) {
-    const err = await res.json().catch(() => ({}));
-    throw new Error(typeof err.message === "string" ? err.message : "Failed to update deal desk");
-  }
+  if (!res.ok) throw new Error(await readApiErrorMessage(res, "Failed to update deal desk"));
   return unwrap(await res.json());
 }
 

@@ -6,7 +6,7 @@ import { mapAppraisalToOutput } from "../lib/appraisalMapper.js";
 import { sendLifecycleNotification } from "../lib/notify.js";
 import { ValuationService } from "../lib/valuation.js";
 import { enqueueAppraisalPdfGenerate } from "../lib/queue.js";
-import { isDealerStaffRole } from "../lib/dealerRole.js";
+import { isDealDeskAppraisalRole, isDealerStaffRole } from "../lib/dealerRole.js";
 import { addAppraisalToInventory, updateDealDeskStatus } from "../services/dealDeskService.js";
 
 const valuationService = new ValuationService();
@@ -46,8 +46,8 @@ async function computeValueForVehicle(vehicleId: string): Promise<number | null>
 export async function list(req: Request, res: Response) {
   const user = req.user;
   if (!user) return res.status(401).json({ code: "UNAUTHORIZED", message: "Login required" });
-  if (!isDealerStaffRole(user.role)) {
-    return res.status(403).json({ code: "FORBIDDEN", message: "Staff or admin required" });
+  if (!isDealDeskAppraisalRole(user.role)) {
+    return res.status(403).json({ code: "FORBIDDEN", message: "Deal desk requires staff or admin role." });
   }
 
   const limit = Math.min(Number(req.query.limit) || 50, 100);
@@ -146,13 +146,13 @@ export async function create(req: Request, res: Response) {
 export async function getById(req: Request, res: Response) {
   const user = req.user;
   if (!user) return res.status(401).json({ code: "UNAUTHORIZED", message: "Login required" });
-  if (!isDealerStaffRole(user.role)) {
-    return res.status(403).json({ code: "FORBIDDEN", message: "Staff or admin required" });
+  if (!isDealDeskAppraisalRole(user.role)) {
+    return res.status(403).json({ code: "FORBIDDEN", message: "Deal desk requires staff or admin role." });
   }
 
   const { id } = req.params;
   const appraisal = await prisma.appraisal.findFirst({
-    where: { id },
+    where: { id, tenantId: req.tenantId! },
     include: {
       vehicle: { select: { id: true, make: true, model: true, trimLevel: true, year: true } },
       customer: { select: { id: true, name: true, email: true, phone: true } },
@@ -353,8 +353,8 @@ export async function valuate(req: Request, res: Response) {
 export async function openDealDesk(req: Request, res: Response) {
   const user = req.user;
   if (!user) return res.status(401).json({ code: "UNAUTHORIZED", message: "Login required" });
-  if (!isDealerStaffRole(user.role)) {
-    return res.status(403).json({ code: "FORBIDDEN", message: "Staff or admin required" });
+  if (!isDealDeskAppraisalRole(user.role)) {
+    return res.status(403).json({ code: "FORBIDDEN", message: "Deal desk requires staff or admin role." });
   }
   if (!req.tenantId) {
     return res.status(401).json({ code: "UNAUTHORIZED", message: "Tenant context missing" });
@@ -380,6 +380,7 @@ export async function openDealDesk(req: Request, res: Response) {
           note: result.note,
           inventoryId: result.inventoryId,
           orderId: result.orderId,
+          invoiceNumber: result.invoiceNumber ?? null,
           updatedBy: user.userId,
           updatedAt: new Date().toISOString(),
         },
@@ -397,8 +398,8 @@ export async function openDealDesk(req: Request, res: Response) {
 export async function addToInventoryFromAppraisal(req: Request, res: Response) {
   const user = req.user;
   if (!user) return res.status(401).json({ code: "UNAUTHORIZED", message: "Login required" });
-  if (!isDealerStaffRole(user.role)) {
-    return res.status(403).json({ code: "FORBIDDEN", message: "Staff or admin required" });
+  if (!isDealDeskAppraisalRole(user.role)) {
+    return res.status(403).json({ code: "FORBIDDEN", message: "Deal desk requires staff or admin role." });
   }
   if (!req.tenantId) {
     return res.status(401).json({ code: "UNAUTHORIZED", message: "Tenant context missing" });
