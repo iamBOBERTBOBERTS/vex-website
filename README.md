@@ -94,6 +94,8 @@ If you add or change workspace packages, run `pnpm install` again so `pnpm-lock.
 | API   | `PORT`                 | Server port (default 3001)      |
 | API   | `CORS_ORIGIN`          | Allowed origin (e.g. http://localhost:3000) |
 | Web   | `NEXT_PUBLIC_API_URL`  | API base URL (e.g. http://localhost:3001)   |
+| Web   | `INTERNAL_PILOT_METRICS_KEY` | Same value as API — enables `/api/investor/pilot-network` (server proxy to `GET /dealer/pilots`). Optional locally; set in staging/prod for live pilot counters on `/investor` and `/investor-deck`. |
+| Web   | `INTERNAL_API_URL` | Optional server-only API origin for that proxy (defaults to `NEXT_PUBLIC_API_URL`). |
 | Web   | `NEXT_PUBLIC_SITE_URL` | Public site origin for metadata / Open Graph (e.g. https://your-domain.com). Falls back to `VERCEL_URL` on Vercel, else `http://localhost:3000`. |
 | Web   | `NEXT_PUBLIC_HERO_VIDEO_URL` | Optional: looped hero background video URL (muted). Omit for gradient + 3D only. |
 | Web   | `NEXT_PUBLIC_HERO_VIDEO_POSTER` | Optional: poster image for hero video. |

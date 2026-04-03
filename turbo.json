@@ -19,7 +19,9 @@
   "globalPassThroughEnv": [
     "NEXT_PUBLIC_*",
     "VALUATION_*",
-    "STRIPE_*"
+    "STRIPE_*",
+    "INTERNAL_PILOT_METRICS_KEY",
+    "INTERNAL_API_URL"
   ],
   "tasks": {
     "build": {

@@ -1,6 +1,6 @@
 # Deploy (API + data stores)
 
-This folder is **API-first**: Postgres and Redis run here; `apps/web` and `apps/crm` should be hosted on a second platform (Vercel, Fly.io, Railway, …) with the same `NEXT_PUBLIC_API_URL` pointing at this API.
+This folder is **API-first**: Postgres and Redis run here; `apps/web` and `apps/crm` should be hosted on a second platform (Vercel, Fly.io, Railway, …) with the same `NEXT_PUBLIC_API_URL` pointing at this API. For investor-facing live pilot counters, also set **`INTERNAL_PILOT_METRICS_KEY`** on the API and on `apps/web` to the same value (see repo root `README.md` env table).
 
 ## Compose
 

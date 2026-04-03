@@ -3,6 +3,13 @@
 import { useEffect, useMemo, useState } from "react";
 import { getInvestorPackageByToken } from "@/lib/api";
 
+type PilotNet = {
+  activePilots: number;
+  totalPilotAppraisals: number;
+  firstBillingEvents: number;
+  generatedAt: string;
+};
+
 type InvestorPackage = {
   generatedAt: string;
   tenantCount: number;
@@ -10,16 +17,13 @@ type InvestorPackage = {
   mrr: number;
   usageRevenueUsd: number;
   highlights: string[];
-  pilotNetwork?: {
-    activePilots: number;
-    totalPilotAppraisals: number;
-    firstBillingEvents: number;
-    generatedAt: string;
-  };
+  pilotNetwork?: PilotNet;
 };
 
 export default function InvestorPage() {
   const [data, setData] = useState<InvestorPackage | null>(null);
+  const [livePilot, setLivePilot] = useState<PilotNet | null>(null);
+  const [pilotErr, setPilotErr] = useState<string | null>(null);
   const [err, setErr] = useState<string | null>(null);
   const token = useMemo(() => {
     if (typeof window === "undefined") return "";
@@ -32,11 +36,27 @@ export default function InvestorPage() {
     getInvestorPackageByToken(token).then(setData).catch((e) => setErr(e instanceof Error ? e.message : "Failed"));
   }, [token]);
 
+  useEffect(() => {
+    void fetch("/api/investor/pilot-network")
+      .then(async (r) => {
+        const j = (await r.json().catch(() => ({}))) as { data?: PilotNet; message?: string; code?: string };
+        if (!r.ok) {
+          setPilotErr(j.message ?? j.code ?? "Live pilot metrics unavailable");
+          return;
+        }
+        if (j.data && typeof j.data.activePilots === "number") setLivePilot(j.data);
+      })
+      .catch(() => setPilotErr("Could not load live pilot network metrics"));
+  }, []);
+
+  const pilot = livePilot ?? data?.pilotNetwork ?? null;
+
   return (
     <main style={{ maxWidth: 980, margin: "0 auto", padding: "2rem 1rem" }}>
       <h1>Investor Data Room (View Only)</h1>
       {!token && <p>Missing investor token.</p>}
       {err && <p style={{ color: "#f66" }}>{err}</p>}
+      {pilotErr && <p style={{ color: "#f90", fontSize: "0.9rem" }}>{pilotErr}</p>}
       {data && (
         <>
           <p>Generated: {new Date(data.generatedAt).toLocaleString()}</p>
@@ -50,19 +70,25 @@ export default function InvestorPage() {
               <div style={{ fontSize: "1.6rem", fontWeight: 700 }}>${(data.mrr * 12).toLocaleString()}</div>
             </div>
           </div>
-          {data.pilotNetwork && (
-            <div style={{ marginTop: "1rem", display: "grid", gridTemplateColumns: "repeat(3,minmax(120px,1fr))", gap: "0.75rem" }}>
-              <div style={{ background: "#10141f", borderRadius: 8, padding: "0.85rem" }}>
-                <div style={{ opacity: 0.75, fontSize: "0.8rem" }}>Active pilots</div>
-                <div style={{ fontSize: "1.25rem", fontWeight: 700 }}>{data.pilotNetwork.activePilots}</div>
-              </div>
-              <div style={{ background: "#10141f", borderRadius: 8, padding: "0.85rem" }}>
-                <div style={{ opacity: 0.75, fontSize: "0.8rem" }}>Pilot appraisals</div>
-                <div style={{ fontSize: "1.25rem", fontWeight: 700 }}>{data.pilotNetwork.totalPilotAppraisals}</div>
-              </div>
-              <div style={{ background: "#10141f", borderRadius: 8, padding: "0.85rem" }}>
-                <div style={{ opacity: 0.75, fontSize: "0.8rem" }}>First billing</div>
-                <div style={{ fontSize: "1.25rem", fontWeight: 700 }}>{data.pilotNetwork.firstBillingEvents}</div>
+          {pilot && (
+            <div style={{ marginTop: "1rem" }}>
+              <p style={{ fontSize: "0.85rem", color: "var(--text-muted, #888)", marginBottom: "0.5rem" }}>
+                Pilot network · updated {new Date(pilot.generatedAt).toLocaleString()}
+                {livePilot ? " · live endpoint" : " · embedded in investor package"}
+              </p>
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(3,minmax(120px,1fr))", gap: "0.75rem" }}>
+                <div style={{ background: "#10141f", borderRadius: 8, padding: "0.85rem" }}>
+                  <div style={{ opacity: 0.75, fontSize: "0.8rem" }}>Active pilots</div>
+                  <div style={{ fontSize: "1.25rem", fontWeight: 700 }}>{pilot.activePilots}</div>
+                </div>
+                <div style={{ background: "#10141f", borderRadius: 8, padding: "0.85rem" }}>
+                  <div style={{ opacity: 0.75, fontSize: "0.8rem" }}>Pilot appraisals</div>
+                  <div style={{ fontSize: "1.25rem", fontWeight: 700 }}>{pilot.totalPilotAppraisals}</div>
+                </div>
+                <div style={{ background: "#10141f", borderRadius: 8, padding: "0.85rem" }}>
+                  <div style={{ opacity: 0.75, fontSize: "0.8rem" }}>First billing</div>
+                  <div style={{ fontSize: "1.25rem", fontWeight: 700 }}>{pilot.firstBillingEvents}</div>
+                </div>
               </div>
             </div>
           )}
