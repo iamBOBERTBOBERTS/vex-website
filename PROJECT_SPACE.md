@@ -57,15 +57,15 @@ Use this file as the primary command center for execution.
 
 ## Day 1 Execution Checklist
 
-- [ ] Run gate commands in order:
-  - `pnpm -w turbo run build`
-  - `pnpm --filter @vex/api run test:e2e`
-  - `pnpm run ship:gate`
-  - `PILOT_VERIFY_API_URL=https://your-staging-api pnpm run pilot:verify`
+- [x] Run gate commands in order (log 2026-04-02, this workspace):
+  - [x] `pnpm -w turbo run build` — green (all 5 packages).
+  - [x] `pnpm --filter @vex/api run test:e2e` — green after E2E scripts use `systemPrisma` + scoped `prisma` from `lib/tenant.ts` (raw `PrismaClient()` had no `$use` tenant merge).
+  - [ ] `pnpm run ship:gate` — red here with `P1000` on `prisma migrate deploy` (Postgres at `127.0.0.1:5432` rejected credentials). Re-run with valid `DATABASE_URL` matching your DB (e.g. `deploy/docker-compose.yml`).
+  - [ ] `PILOT_VERIFY_API_URL=https://your-staging-api pnpm run pilot:verify` — red: placeholder host `your-staging-api` → `ENOTFOUND`. Re-run with a real deployed API origin.
 - [ ] If any command is red, fix gate blockers before feature work.
 - [ ] Trust layer tasks:
-  - [ ] Implement AsyncLocalStorage wrapper in `apps/api/src/lib/tenantScope.ts`.
-  - [ ] Add route-level RBAC guard coverage using `docs/TENANT_RBAC.md`.
-  - [ ] Ensure Prisma queries execute through tenant-scoped client paths.
-- [ ] Pass/Fail target: `pnpm --filter @vex/api run test:e2e` green with zero cross-tenant leakage.
+  - [x] AsyncLocalStorage / tenant context wrapper in `apps/api/src/lib/tenantScope.ts` (delegates to `runWithTenant` / `getTenantId`).
+  - [ ] Add route-level RBAC guard coverage using `docs/TENANT_RBAC.md` (ongoing audit; shim in `apps/api/src/middleware/rbac.ts`).
+  - [ ] Ensure Prisma queries execute through tenant-scoped client paths (controllers + scripts; E2E now asserts scoped reads).
+- [x] Pass/Fail target: `pnpm --filter @vex/api run test:e2e` green with zero cross-tenant leakage (appraisal + inventory isolation scripts).
 - [ ] Pilot outreach: send one-line offer to 3 Cavin contacts and log status in this file.
