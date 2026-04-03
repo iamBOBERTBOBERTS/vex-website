@@ -20,7 +20,9 @@
     "release:pilot-check": "pnpm -w turbo run build && pnpm --filter @vex/api run test:e2e",
     "ship:gate": "bash scripts/ship-gate.sh",
     "pilot:verify": "node scripts/pilot-verify.mjs",
-    "smoke:cdk-drive": "pnpm --filter @vex/api run smoke:cdk-drive"
+    "smoke:cdk-drive": "pnpm --filter @vex/api run smoke:cdk-drive",
+    "git:save": "bash scripts/git-save.sh",
+    "git:save:verify": "bash scripts/git-save-verify.sh"
   },
   "engines": {
     "node": ">=20"

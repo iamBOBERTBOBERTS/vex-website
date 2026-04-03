@@ -17,6 +17,7 @@ Build a best-in-class **B2B SaaS platform for auto dealers** (CRM + Inventory + 
 - **Multi-tenant isolation on every API route** (no cross-tenant reads/writes).
 - **RBAC on every route** (at minimum: `CUSTOMER | STAFF | ADMIN`).
 - **Before any commit**: `pnpm -w turbo run build` must pass.
+- **After substantive edits**: commit and push with `pnpm run git:save -- "type: short message"` (or `pnpm run git:save:verify -- "…"` to run build first). Set `GIT_AUTHOR_EMAIL` / `GIT_AUTHOR_NAME` if `user.email` / `user.name` are unset.
 - **API/shared TypeScript**: keep types safe in shared/core; allow looser typing in route/controller edges only when necessary.
 - **Stripe/webhooks**: verify signatures, keep handlers idempotent, never trust client-provided prices.
 

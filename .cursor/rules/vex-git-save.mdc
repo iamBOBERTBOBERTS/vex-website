@@ -1,0 +1,15 @@
+---
+description: Commit and push workflow after substantive code changes
+alwaysApply: false
+---
+
+# Git save (commit + push)
+
+When you finish a task that changes tracked files and the user expects work on `main` / `origin` to stay current:
+
+1. Prefer **`pnpm run git:save:verify -- "type: short summary"`** so `pnpm -w turbo run build` runs before commit (matches [AGENTS.md](mdc:AGENTS.md)).
+2. If the user explicitly wants a fast save or only docs/config, **`pnpm run git:save -- "type: short summary"`** is acceptable.
+3. If `git config user.email` / `user.name` are unset, use one-shot env: `GIT_AUTHOR_EMAIL=… GIT_AUTHOR_NAME=… pnpm run git:save:verify -- "…"`.
+4. Do not commit secrets (`.env`, `.env.local`); they should remain gitignored.
+
+If push fails (auth), report the error; the commit may still exist locally.

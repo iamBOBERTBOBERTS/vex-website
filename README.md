@@ -140,6 +140,8 @@ Use `pnpm` or `npx pnpm` if pnpm isn’t installed globally:
 | `pnpm run release:pilot-check` | Turbo build + appraisal E2E (needs `DATABASE_URL`) |
 | `pnpm run ship:gate` | Generate + build + migrate + appraisal E2E — same bar as CI ([docs/PILOT_SHIP.md](docs/PILOT_SHIP.md)) |
 | `pnpm run pilot:verify` | After API is deployed: set `PILOT_VERIFY_API_URL`, then run ([docs/PILOT_SHIP.md](docs/PILOT_SHIP.md) Step 5) |
+| `pnpm run git:save -- "type: message"` | Stage all, commit, push current branch (default message if omitted). Use `GIT_SAVE_MSG` or pass a message after `--`. |
+| `pnpm run git:save:verify -- "type: message"` | Run `pnpm -w turbo run build`, then same as `git:save` (recommended before sharing). |
 | `cd apps/api && pnpm run db:seed` or `npx prisma db seed` | Seed DB (admin, vehicles, inventory) |
 
 ## Logo
