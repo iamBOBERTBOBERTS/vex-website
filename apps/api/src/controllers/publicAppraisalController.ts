@@ -38,16 +38,26 @@ export async function postQuickAppraisal(req: Request, res: Response) {
     source: "quick_estimate",
   });
 
-  const appraisal = await runWithTenant(tenantId, () =>
-    prisma.appraisal.create({
+  const appraisal = await runWithTenant(tenantId, async () => {
+    const row = await prisma.appraisal.create({
       data: {
         tenantId,
         value,
         notes,
         status: "completed",
       },
-    })
-  );
+    });
+    await prisma.usageLog.create({
+      data: {
+        tenantId,
+        kind: "QUICK_APPRAISAL",
+        quantity: 1,
+        amountUsd: 0,
+        meta: { source: "quick_estimate", appraisalId: row.id },
+      },
+    });
+    return row;
+  });
 
   return res.status(201).json({
     data: mapAppraisalToOutput(appraisal),

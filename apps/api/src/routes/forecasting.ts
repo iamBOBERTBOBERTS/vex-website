@@ -5,8 +5,8 @@ import { buildMrrForecast, buildScenarioModel } from "../lib/forecasting.js";
 
 export const forecastingRouter: Router = Router();
 
-forecastingRouter.get("/mrr", requireAuth, requireRole("ADMIN", "GROUP_ADMIN"), async (_req, res) => {
-  const forecast = await buildMrrForecast();
+forecastingRouter.get("/mrr", requireAuth, requireRole("ADMIN", "GROUP_ADMIN"), async (req, res) => {
+  const forecast = await buildMrrForecast(req.tenantId!);
   return res.json({ data: forecast, error: null });
 });
 

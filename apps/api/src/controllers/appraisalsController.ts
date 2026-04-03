@@ -6,6 +6,7 @@ import { mapAppraisalToOutput } from "../lib/appraisalMapper.js";
 import { sendLifecycleNotification } from "../lib/notify.js";
 import { ValuationService } from "../lib/valuation.js";
 import { enqueueAppraisalPdfGenerate } from "../lib/queue.js";
+import { isDealerStaffRole } from "../lib/dealerRole.js";
 
 const valuationService = new ValuationService();
 
@@ -44,7 +45,7 @@ async function computeValueForVehicle(vehicleId: string): Promise<number | null>
 export async function list(req: Request, res: Response) {
   const user = req.user;
   if (!user) return res.status(401).json({ code: "UNAUTHORIZED", message: "Login required" });
-  if (user.role !== "STAFF" && user.role !== "ADMIN") {
+  if (!isDealerStaffRole(user.role)) {
     return res.status(403).json({ code: "FORBIDDEN", message: "Staff or admin required" });
   }
 
@@ -73,7 +74,7 @@ export async function list(req: Request, res: Response) {
 export async function create(req: Request, res: Response) {
   const user = req.user;
   if (!user) return res.status(401).json({ code: "UNAUTHORIZED", message: "Login required" });
-  if (user.role !== "STAFF" && user.role !== "ADMIN") {
+  if (!isDealerStaffRole(user.role)) {
     return res.status(403).json({ code: "FORBIDDEN", message: "Staff or admin required" });
   }
 
@@ -144,7 +145,7 @@ export async function create(req: Request, res: Response) {
 export async function getById(req: Request, res: Response) {
   const user = req.user;
   if (!user) return res.status(401).json({ code: "UNAUTHORIZED", message: "Login required" });
-  if (user.role !== "STAFF" && user.role !== "ADMIN") {
+  if (!isDealerStaffRole(user.role)) {
     return res.status(403).json({ code: "FORBIDDEN", message: "Staff or admin required" });
   }
 
@@ -164,7 +165,7 @@ export async function getById(req: Request, res: Response) {
 export async function update(req: Request, res: Response) {
   const user = req.user;
   if (!user) return res.status(401).json({ code: "UNAUTHORIZED", message: "Login required" });
-  if (user.role !== "STAFF" && user.role !== "ADMIN") {
+  if (!isDealerStaffRole(user.role)) {
     return res.status(403).json({ code: "FORBIDDEN", message: "Staff or admin required" });
   }
 
@@ -240,7 +241,7 @@ export async function update(req: Request, res: Response) {
 export async function remove(req: Request, res: Response) {
   const user = req.user;
   if (!user) return res.status(401).json({ code: "UNAUTHORIZED", message: "Login required" });
-  if (user.role !== "STAFF" && user.role !== "ADMIN") {
+  if (!isDealerStaffRole(user.role)) {
     return res.status(403).json({ code: "FORBIDDEN", message: "Staff or admin required" });
   }
 
@@ -264,7 +265,7 @@ export async function remove(req: Request, res: Response) {
 export async function valuate(req: Request, res: Response) {
   const user = req.user;
   if (!user) return res.status(401).json({ code: "UNAUTHORIZED", message: "Login required" });
-  if (user.role !== "STAFF" && user.role !== "ADMIN") {
+  if (!isDealerStaffRole(user.role)) {
     return res.status(403).json({ code: "FORBIDDEN", message: "Staff or admin required" });
   }
 

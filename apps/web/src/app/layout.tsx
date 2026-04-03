@@ -7,7 +7,8 @@ import { QueryProvider } from "@/providers/QueryProvider";
 import { Footer } from "@/components/Footer";
 import { SkipToContent } from "@/components/SkipToContent";
 import { AmbientShell } from "@/components/ambient";
-import { ButtonSoundFX, CursorFX, MagneticFX, ParallaxBackdrop, RouteTransitionFX } from "@/components/fx";
+import { CinematicMotionProvider, LuxuryEdgeAccent, SceneAwareFx } from "@/components/fx";
+import { getSiteUrl } from "@/lib/siteUrl";
 import "./globals.css";
 
 /**
@@ -55,7 +56,10 @@ const outfit = Outfit({
   weight: ["400", "500", "600", "700"],
 });
 
+const siteUrl = getSiteUrl();
+
 export const metadata: Metadata = {
+  metadataBase: siteUrl,
   title: "VEX | Vortex Exotic Exchange",
   description:
     "The private exchange for exotic vehicles — curated lots, sealed bids, and white-glove delivery for collectors worldwide.",
@@ -65,6 +69,7 @@ export const metadata: Metadata = {
     title: "VEX Dealer Platform",
     description: "CRM + inventory + portal + appraisals for modern auto dealers.",
     type: "website",
+    url: siteUrl,
     images: [{ url: "/og-vex-appraisals.png", width: 1200, height: 630 }],
   },
   twitter: {
@@ -87,21 +92,20 @@ export default function RootLayout({
       <body style={{ fontFamily: "var(--font-inter), system-ui, sans-serif" }}>
         <SkipToContent />
         <AmbientShell />
-        <ParallaxBackdrop />
-        <MagneticFX />
-        <RouteTransitionFX />
-        <CursorFX />
-        <ButtonSoundFX />
-        <TenantThemeProvider>
-          <QueryProvider>
-            <AuthProvider>
-              <BuildProvider>
-                {children}
-                <Footer />
-              </BuildProvider>
-            </AuthProvider>
-          </QueryProvider>
-        </TenantThemeProvider>
+        <CinematicMotionProvider>
+          <LuxuryEdgeAccent />
+          <SceneAwareFx />
+          <TenantThemeProvider>
+            <QueryProvider>
+              <AuthProvider>
+                <BuildProvider>
+                  {children}
+                  <Footer />
+                </BuildProvider>
+              </AuthProvider>
+            </QueryProvider>
+          </TenantThemeProvider>
+        </CinematicMotionProvider>
       </body>
     </html>
   );

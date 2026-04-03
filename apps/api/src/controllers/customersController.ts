@@ -1,11 +1,12 @@
 import { Request, Response } from "express";
 import { prisma } from "../lib/tenant.js";
 import type { CreateCustomerInput, UpdateCustomerInput } from "@vex/shared";
+import { isDealerStaffRole } from "../lib/dealerRole.js";
 
 export async function list(req: Request, res: Response) {
   const user = req.user;
   if (!user) return res.status(401).json({ code: "UNAUTHORIZED", message: "Login required" });
-  if (user.role !== "STAFF" && user.role !== "ADMIN") {
+  if (!isDealerStaffRole(user.role)) {
     return res.status(403).json({ code: "FORBIDDEN", message: "Staff or admin required" });
   }
 
@@ -27,7 +28,7 @@ export async function list(req: Request, res: Response) {
 export async function getById(req: Request, res: Response) {
   const user = req.user;
   if (!user) return res.status(401).json({ code: "UNAUTHORIZED", message: "Login required" });
-  if (user.role !== "STAFF" && user.role !== "ADMIN") {
+  if (!isDealerStaffRole(user.role)) {
     return res.status(403).json({ code: "FORBIDDEN", message: "Staff or admin required" });
   }
 
@@ -56,7 +57,7 @@ export async function getById(req: Request, res: Response) {
 export async function create(req: Request, res: Response) {
   const user = req.user;
   if (!user) return res.status(401).json({ code: "UNAUTHORIZED", message: "Login required" });
-  if (user.role !== "STAFF" && user.role !== "ADMIN") return res.status(403).json({ code: "FORBIDDEN", message: "Staff or admin required" });
+  if (!isDealerStaffRole(user.role)) return res.status(403).json({ code: "FORBIDDEN", message: "Staff or admin required" });
 
   const body = req.body as CreateCustomerInput;
   const customer = await prisma.customer.create({
@@ -73,7 +74,7 @@ export async function create(req: Request, res: Response) {
 export async function update(req: Request, res: Response) {
   const user = req.user;
   if (!user) return res.status(401).json({ code: "UNAUTHORIZED", message: "Login required" });
-  if (user.role !== "STAFF" && user.role !== "ADMIN") return res.status(403).json({ code: "FORBIDDEN", message: "Staff or admin required" });
+  if (!isDealerStaffRole(user.role)) return res.status(403).json({ code: "FORBIDDEN", message: "Staff or admin required" });
 
   const { id } = req.params;
   const body = req.body as UpdateCustomerInput;
@@ -93,7 +94,7 @@ export async function update(req: Request, res: Response) {
 export async function remove(req: Request, res: Response) {
   const user = req.user;
   if (!user) return res.status(401).json({ code: "UNAUTHORIZED", message: "Login required" });
-  if (user.role !== "STAFF" && user.role !== "ADMIN") return res.status(403).json({ code: "FORBIDDEN", message: "Staff or admin required" });
+  if (!isDealerStaffRole(user.role)) return res.status(403).json({ code: "FORBIDDEN", message: "Staff or admin required" });
 
   const { id } = req.params;
   const deleted = await prisma.customer.deleteMany({ where: { id } });

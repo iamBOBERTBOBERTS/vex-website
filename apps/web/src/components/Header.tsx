@@ -9,14 +9,16 @@ import styles from "./Header.module.css";
 
 /** Short labels, few choices — easier to scan on every screen size. */
 const NAV_LINKS = [
-  { href: "/collections", label: "Collections" },
-  { href: "/build", label: "Build" },
-  { href: "/#pillars", label: "How it works" },
-  { href: "/contact", label: "Contact" },
+  { href: "/#universe", label: "01 Universe" },
+  { href: "/collections", label: "02 Collections" },
+  { href: "/build", label: "03 Build" },
+  { href: "/#pillars", label: "04 Process" },
+  { href: "/contact", label: "05 Contact" },
 ] as const;
 
 export function Header() {
   const pathname = usePathname();
+  const [activeChapter, setActiveChapter] = useState<string>("/#universe");
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const [logoError, setLogoError] = useState(false);
@@ -36,6 +38,28 @@ export function Header() {
       document.body.style.overflow = prev;
     };
   }, [menuOpen]);
+
+  useEffect(() => {
+    if (pathname !== "/") {
+      setActiveChapter(pathname);
+      return;
+    }
+    const ids = ["universe", "pillars", "configure", "test-drive"];
+    const obs = new IntersectionObserver(
+      (entries) => {
+        const active = entries
+          .filter((entry) => entry.isIntersecting)
+          .sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
+        if (active?.target?.id) setActiveChapter(`/#${active.target.id}`);
+      },
+      { rootMargin: "-45% 0px -45% 0px", threshold: [0.2, 0.45, 0.7] }
+    );
+    ids.forEach((id) => {
+      const el = document.getElementById(id);
+      if (el) obs.observe(el);
+    });
+    return () => obs.disconnect();
+  }, [pathname]);
 
   return (
     <header className={`${styles.header} ${scrolled ? styles.scrolled : ""}`}>
@@ -62,7 +86,7 @@ export function Header() {
             key={href}
             href={href}
             className={styles.navLink}
-            aria-current={href.startsWith("/") && pathname === href ? "page" : undefined}
+            aria-current={activeChapter === href || pathname === href ? "page" : undefined}
           >
             {label}
           </Link>
@@ -114,7 +138,7 @@ export function Header() {
                   key={href}
                   href={href}
                   className={styles.drawerLink}
-                  aria-current={href.startsWith("/") && pathname === href ? "page" : undefined}
+                  aria-current={activeChapter === href || pathname === href ? "page" : undefined}
                   onClick={() => setMenuOpen(false)}
                 >
                   {label}

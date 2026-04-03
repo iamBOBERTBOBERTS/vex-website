@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import type { CreateLeadInput, UpdateLeadInput } from "@vex/shared";
 import { prisma } from "../lib/tenant.js";
+import { isDealerStaffRole } from "../lib/dealerRole.js";
 
 function requireStaff(req: Request, res: Response): boolean {
   const user = req.user;
@@ -8,7 +9,7 @@ function requireStaff(req: Request, res: Response): boolean {
     res.status(401).json({ code: "UNAUTHORIZED", message: "Login required" });
     return false;
   }
-  if (user.role !== "STAFF" && user.role !== "ADMIN") {
+  if (!isDealerStaffRole(user.role)) {
     res.status(403).json({ code: "FORBIDDEN", message: "Staff or admin required" });
     return false;
   }
@@ -65,7 +66,7 @@ export async function list(req: Request, res: Response) {
 export async function create(req: Request, res: Response) {
   const body = req.body as CreateLeadInput;
   const user = req.user;
-  const isStaff = user && (user.role === "STAFF" || user.role === "ADMIN");
+  const isStaff = user && isDealerStaffRole(user.role);
 
   const lead = await prisma.lead.create({
     data: {

@@ -5,4 +5,4 @@ import * as analyticsController from "../controllers/analyticsController.js";
 
 export const analyticsRouter: Router = Router();
 
-analyticsRouter.get("/", requireAuth, requireRole("STAFF", "ADMIN"), analyticsController.getAnalytics);
+analyticsRouter.get("/", requireAuth, requireRole("STAFF", "ADMIN", "GROUP_ADMIN"), analyticsController.getAnalytics);

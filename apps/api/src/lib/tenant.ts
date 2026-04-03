@@ -22,9 +22,16 @@ function requireTenantOrThrow(): string {
   return tenantId;
 }
 
+/** Models keyed by `tenantId` column */
 function mergeWhere(where: unknown, tenantId: string): unknown {
   if (!where || typeof where !== "object") return { tenantId };
   return { AND: [where, { tenantId }] };
+}
+
+/** `Tenant` rows are keyed by primary key `id` (the tenant id). */
+function mergeTenantRowWhere(where: unknown, tenantId: string): unknown {
+  if (!where || typeof where !== "object") return { id: tenantId };
+  return { AND: [where, { id: tenantId }] };
 }
 
 function forceTenantData(data: unknown, tenantId: string): unknown {
@@ -37,27 +44,55 @@ function forceTenantCreateManyData(data: unknown, tenantId: string): unknown {
   return forceTenantData(data, tenantId);
 }
 
-/** Raw Prisma client (no tenant `$use` scoping). Use only for explicit system paths (e.g. auth bootstrap, queue workers wrapping `runWithTenant`). */
-export const basePrisma = new PrismaClient();
+/**
+ * Unscoped client: auth-by-email, onboarding transactions, Stripe/system lookups, middleware bootstrap.
+ * No `$use` — every query must be explicitly constrained.
+ */
+export const systemPrisma = new PrismaClient();
 
 /**
- * Prisma middleware that enforces tenant scoping by default.
- *
- * IMPORTANT:
- * - Safe, type-preserving actions are auto-scoped.
- * - Unsafe unique actions (findUnique/update/delete/upsert) are intentionally blocked to prevent cross-tenant leaks.
- *   Use findFirst/updateMany/deleteMany with natural keys, or introduce explicit scoped helpers.
+ * Tenant-scoped application client. Requires AsyncLocalStorage tenant context (set by `tenantMiddleware` / `runWithTenant`).
+ * Do **not** use for `GET /health` — use `healthPrisma` (`lib/healthPrisma.ts`).
  */
-basePrisma.$use(async (params, next) => {
-  if (params.model === "Tenant") return next(params);
-
+const tenantScopedClient = new PrismaClient();
+tenantScopedClient.$use(async (params, next) => {
   const tenantId = requireTenantOrThrow();
   const action = params.action;
+  const model = params.model;
 
-  // Safe reads
+  if (model === "Tenant") {
+    if (action === "create") {
+      throw new Error("Tenant.create must use systemPrisma (bootstrap / onboard only)");
+    }
+    if (action === "findMany" || action === "findFirst" || action === "findFirstOrThrow") {
+      params.args = { ...params.args, where: mergeTenantRowWhere(params.args?.where, tenantId) };
+      return next(params);
+    }
+    if (action === "count" || action === "aggregate" || action === "groupBy") {
+      params.args = { ...params.args, where: mergeTenantRowWhere(params.args?.where, tenantId) };
+      return next(params);
+    }
+    if (action === "updateMany" || action === "deleteMany") {
+      params.args = { ...params.args, where: mergeTenantRowWhere(params.args?.where, tenantId) };
+      if (action === "updateMany") {
+        params.args = { ...params.args, data: params.args?.data };
+      }
+      return next(params);
+    }
+    if (
+      action === "findUnique" ||
+      action === "findUniqueOrThrow" ||
+      action === "update" ||
+      action === "delete" ||
+      action === "upsert"
+    ) {
+      throw new Error(`Unsafe Prisma action for Tenant model: ${action}. Use systemPrisma or findFirst.`);
+    }
+    return next(params);
+  }
+
   if (action === "findMany" || action === "findFirst" || action === "findFirstOrThrow") {
-    const merged = mergeWhere(params.args?.where, tenantId);
-    params.args = { ...params.args, where: merged };
+    params.args = { ...params.args, where: mergeWhere(params.args?.where, tenantId) };
     return next(params);
   }
 
@@ -66,7 +101,6 @@ basePrisma.$use(async (params, next) => {
     return next(params);
   }
 
-  // Safe writes
   if (action === "create") {
     params.args = { ...params.args, data: forceTenantData(params.args?.data, tenantId) };
     return next(params);
@@ -85,7 +119,6 @@ basePrisma.$use(async (params, next) => {
     return next(params);
   }
 
-  // Block unsafe unique operations until explicit, audited helpers exist.
   if (
     action === "findUnique" ||
     action === "findUniqueOrThrow" ||
@@ -93,24 +126,28 @@ basePrisma.$use(async (params, next) => {
     action === "delete" ||
     action === "upsert"
   ) {
-    throw new Error(`Unsafe Prisma action for multi-tenant mode: ${params.model}.${action}. Use scoped patterns (findFirst/updateMany/deleteMany).`);
+    throw new Error(
+      `Unsafe Prisma action for multi-tenant mode: ${params.model}.${action}. Use findFirst/updateMany/deleteMany.`
+    );
   }
 
   return next(params);
 });
 
-export const prisma = basePrisma;
+export const prisma = tenantScopedClient;
 
 /**
- * Rare admin override: returns a client that is scoped to a specific tenantId via AsyncLocalStorage.
+ * @deprecated Use `systemPrisma` for unscoped access or `prisma` inside `runWithTenant`.
+ */
+export const basePrisma = systemPrisma;
+
+/**
+ * Rare admin override: run `fn` with tenant context so `prisma` queries auto-scope.
  */
 export function withTenantScope<T>(tenantId: string, fn: (scoped: PrismaClient) => Promise<T> | T): Promise<T> | T {
   return runWithTenant(tenantId, () => fn(prisma));
 }
 
-/**
- * Convenience for places that need a scoped client instance (keeps callsites tidy).
- */
 export function scopedPrisma(tenantId: string): PrismaClient {
   return prisma.$extends({
     name: "tenantScopeClient",
@@ -137,7 +174,7 @@ export async function findTenantByCustomDomain(host: string): Promise<{
 } | null> {
   const key = normalizeHost(host);
   if (!key) return null;
-  const tenant = await basePrisma.tenant.findFirst({
+  const tenant = await systemPrisma.tenant.findFirst({
     where: { customDomain: key },
     select: { id: true, name: true, customDomain: true, themeJson: true },
   });
@@ -172,4 +209,3 @@ export async function getTenantBranding(tenantId: string): Promise<TenantBrandin
     })
   );
 }
-

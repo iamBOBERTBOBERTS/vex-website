@@ -13,7 +13,7 @@ governanceRouter.get("/board-pack", requireAuth, requireRole("ADMIN", "GROUP_ADM
   return res.json({ data: pack, error: null });
 });
 
-governanceRouter.post("/equity-grants", requireAuth, requireRole("ADMIN"), async (req, res) => {
+governanceRouter.post("/equity-grants", requireAuth, requireRole("ADMIN", "GROUP_ADMIN"), async (req, res) => {
   const grant = await createEquityGrant(req.tenantId!, req.body);
   return res.status(201).json({ data: grant, error: null });
 });

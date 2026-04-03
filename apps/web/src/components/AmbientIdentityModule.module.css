@@ -1,0 +1,42 @@
+.module {
+  position: fixed;
+  right: 1rem;
+  bottom: 1rem;
+  z-index: 60;
+  min-width: 13rem;
+  padding: 0.75rem 0.8rem;
+  border-radius: 12px;
+  border: 1px solid var(--line-gold);
+  background: rgba(9, 9, 12, 0.72);
+  backdrop-filter: blur(10px);
+}
+
+.label {
+  font-size: 0.67rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+.track {
+  margin-top: 0.2rem;
+  color: var(--text-primary);
+  font-size: 0.88rem;
+}
+
+.toggle {
+  margin-top: 0.45rem;
+  min-height: 32px;
+  padding: 0.25rem 0.55rem;
+  border-radius: 8px;
+  border: 1px solid var(--line);
+  background: rgba(255, 255, 255, 0.03);
+  color: var(--text-secondary);
+  font-size: 0.74rem;
+}
+
+@media (max-width: 720px) {
+  .module {
+    display: none;
+  }
+}

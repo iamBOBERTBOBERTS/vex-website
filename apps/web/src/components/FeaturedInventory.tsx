@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { getInventory, type InventoryItem } from "@/lib/api";
 import { formatUsd } from "@/lib/formatCurrency";
+import { ImmersiveVehicleCard } from "@/components/ImmersiveVehicleCard";
 import styles from "./FeaturedInventory.module.css";
 
 function imageUrl(item: InventoryItem): string | null {
@@ -48,28 +49,21 @@ export function FeaturedInventory() {
           const url = imageUrl(item);
           const lot = String(index + 1).padStart(3, "0");
           return (
-            <Link key={item.id} href={`/inventory/${item.id}`} className={styles.card}>
-              <div className={styles.cardImage}>
-                <span className={styles.lotTag}>LOT · {lot}</span>
-                {url ? (
-                  <img src={url} alt="" loading="lazy" className={styles.img} />
-                ) : (
-                  <div className={styles.placeholder}>No image</div>
-                )}
-              </div>
-              <div className={styles.cardBody}>
-                <span className={styles.badge}>{item.source === "PRIVATE_SELLER" ? "Private" : "Company"}</span>
-                <h3 className={styles.cardTitle}>
-                  {item.vehicle?.make} {item.vehicle?.model}
-                </h3>
-                <p className={styles.cardMeta}>
-                  {item.vehicle?.year}
-                  {item.location ? ` · ${item.location}` : ""}
-                </p>
-                <p className={styles.cardPrice}>{formatUsd(item.listPrice)}</p>
-                <span className={styles.cta}>View details</span>
-              </div>
-            </Link>
+            <ImmersiveVehicleCard
+              key={item.id}
+              inventoryId={item.id}
+              href={`/inventory/${item.id}`}
+              imageUrl={url}
+              lotTag={`LOT · ${lot}`}
+              badge={item.source === "PRIVATE_SELLER" ? "Private" : "Company"}
+              badges={["Verified history", "Enclosed shipping"]}
+              title={`${item.vehicle?.make ?? ""} ${item.vehicle?.model ?? ""}`.trim()}
+              meta={`${item.vehicle?.year ?? ""}${item.location ? ` · ${item.location}` : ""}`.trim()}
+              price={formatUsd(item.listPrice)}
+              cta="View details"
+              className={styles.card}
+              imageClassName={styles.cardImage}
+            />
           );
         })}
       </div>

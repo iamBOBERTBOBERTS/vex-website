@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useAuth } from "@/contexts/AuthContext";
 import { createCustomer, getCustomers } from "@/lib/api";
+import { VexDataTable, VexPageHeader, VexPanel } from "@vex/ui";
 
 export default function CustomersPage() {
   const { token } = useAuth();
@@ -38,15 +39,15 @@ export default function CustomersPage() {
   };
 
   return (
-    <main style={{ padding: "1.5rem", maxWidth: "1000px", margin: "0 auto" }}>
-      <h1 style={{ marginBottom: "1rem", color: "var(--text-primary)" }}>Customers</h1>
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr auto", gap: "0.5rem", marginBottom: "1rem" }}>
+    <main className="crm-shell">
+      <VexPageHeader title="Customers" subtitle="Trusted relationships across your VEX universe." />
+      <VexPanel style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr auto", gap: "0.5rem", marginBottom: "1rem", padding: "0.8rem" }}>
         <input value={name} onChange={(e) => setName(e.target.value)} placeholder="Name" />
         <input value={email} onChange={(e) => setEmail(e.target.value)} placeholder="Email" />
         <input value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="Phone" />
-        <button type="button" onClick={onCreate}>Add</button>
-      </div>
-      <table>
+        <button type="button" onClick={onCreate} className="crm-btn crm-btn-primary">Add</button>
+      </VexPanel>
+      <VexDataTable>
         <thead>
           <tr>
             <th>Name</th>
@@ -69,7 +70,7 @@ export default function CustomersPage() {
             </tr>
           ))}
         </tbody>
-      </table>
+      </VexDataTable>
       {items.length === 0 && <p style={{ color: "var(--text-muted)", marginTop: "1rem" }}>No customers.</p>}
     </main>
   );

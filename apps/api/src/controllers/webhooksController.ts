@@ -1,13 +1,12 @@
 import { Request, Response } from "express";
-import { PrismaClient } from "@prisma/client";
+import { systemPrisma } from "../lib/tenant.js";
 
-const prisma = new PrismaClient();
 const WEBHOOK_SECRET = process.env.WEBHOOK_SECRET;
 const WEBHOOK_TENANT_ID = process.env.WEBHOOK_TENANT_ID;
 
 async function resolveWebhookTenantId(): Promise<string | null> {
   if (WEBHOOK_TENANT_ID) return WEBHOOK_TENANT_ID;
-  const first = await prisma.tenant.findFirst({ select: { id: true } });
+  const first = await systemPrisma.tenant.findFirst({ select: { id: true } });
   return first?.id ?? null;
 }
 
@@ -42,7 +41,7 @@ export async function sms(req: Request, res: Response) {
   const tenantId = await resolveWebhookTenantId();
   if (!tenantId) return res.status(503).json({ code: "NOT_CONFIGURED", message: "No tenant available for webhook leads" });
 
-  const lead = await prisma.lead.create({
+  const lead = await systemPrisma.lead.create({
     data: {
       tenantId,
       source: "SMS",
@@ -74,7 +73,7 @@ export async function email(req: Request, res: Response) {
   const tenantId = await resolveWebhookTenantId();
   if (!tenantId) return res.status(503).json({ code: "NOT_CONFIGURED", message: "No tenant available for webhook leads" });
 
-  const lead = await prisma.lead.create({
+  const lead = await systemPrisma.lead.create({
     data: {
       tenantId,
       source: "EMAIL",

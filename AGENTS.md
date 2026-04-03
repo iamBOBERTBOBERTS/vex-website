@@ -46,10 +46,14 @@ Build a best-in-class **B2B SaaS platform for auto dealers** (CRM + Inventory + 
 - **CRM**: `/appraisals` list, `/appraisals/new`, `/appraisals/[id]` with shared Zod + `react-hook-form`; PDF via `@react-pdf/renderer` (`AppraisalPdfButton`).
 - **Onboarding**: `POST /auth/onboarding/complete` sets `Tenant.onboardedAt`; wizard surfaces in CRM + web portal until dismissed.
 - **Health**: `GET /health` includes DB ping (`db: ok|error`).
-- **E2E**: `pnpm --filter @vex/api run test:e2e:appraisal` — creates two tenants + appraisal; asserts DB rows (SQL) cannot appear under the wrong `tenant_id`.
+- **E2E**: `pnpm --filter @vex/api run test:e2e` — appraisal + inventory isolation (SQL + scoped `findFirst`); `test:e2e:appraisal` / `test:e2e:inventory` run subsets.
 
 ## Required Verification Commands
 - Build: `pnpm -w turbo run build`
+- **Ordered pilot process:** `docs/PILOT_SHIP.md` (branch protection, migrate, deploy, then runtime verify)
+- **Ship bar (local mirror of CI):** `pnpm run ship:gate` with `DATABASE_URL` set — runs `db:generate`, `turbo build`, `prisma migrate deploy`, `test:e2e` (see `scripts/ship-gate.sh`). Do not confuse with `release:pilot-check` (build + E2E only, no migrate).
+- **Dealer-ready (deployed API):** `PILOT_VERIFY_API_URL=https://… pnpm run pilot:verify`
+- **External gap docs:** if a memo claims “no Stripe / no tenant layer,” see `docs/ENGINEERING_REALITY.md` and verify the tree before re-scoping work.
 - API only: `pnpm --filter @vex/api run build`
 - Web only: `pnpm --filter @vex/web run build`
 - CRM only: `pnpm --filter @vex/crm run build`

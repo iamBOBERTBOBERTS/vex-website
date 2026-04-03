@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 import { prisma } from "../lib/tenant.js";
 import { optionalJson } from "../utils/prismaJson.js";
 import type { CreateOrderInput, UpdateOrderInput } from "@vex/shared";
-import { requireAuth } from "../middleware/auth.js";
+import { isDealerStaffRole } from "../lib/dealerRole.js";
 
 function toShipment(s: { id: string; carrier: string | null; trackingUrl: string | null; status: string; estimatedDelivery: Date | null; quoteAmount: unknown; origin: string | null; destination: string | null }) {
   return {
@@ -89,7 +89,7 @@ export async function list(req: Request, res: Response) {
   const user = req.user;
   if (!user) return res.status(401).json({ code: "UNAUTHORIZED", message: "Login required" });
 
-  const isStaff = user.role === "STAFF" || user.role === "ADMIN";
+  const isStaff = isDealerStaffRole(user.role);
   const status = req.query.status as string | undefined;
   const limit = Math.min(Number(req.query.limit) || 20, 100);
   const offset = Number(req.query.offset) || 0;
@@ -119,7 +119,7 @@ export async function getById(req: Request, res: Response) {
   const order = await prisma.order.findFirst({ where: { id }, include: { shipments: true } });
   if (!order) return res.status(404).json({ code: "NOT_FOUND", message: "Order not found" });
 
-  const isStaff = user.role === "STAFF" || user.role === "ADMIN";
+  const isStaff = isDealerStaffRole(user.role);
   if (!isStaff && order.userId !== user.userId) {
     return res.status(403).json({ code: "FORBIDDEN", message: "Not your order" });
   }
@@ -137,7 +137,7 @@ export async function update(req: Request, res: Response) {
   const existing = await prisma.order.findFirst({ where: { id } });
   if (!existing) return res.status(404).json({ code: "NOT_FOUND", message: "Order not found" });
 
-  const isStaff = user.role === "STAFF" || user.role === "ADMIN";
+  const isStaff = isDealerStaffRole(user.role);
   if (!isStaff && existing.userId !== user.userId) {
     return res.status(403).json({ code: "FORBIDDEN", message: "Not your order" });
   }
@@ -162,7 +162,7 @@ export async function update(req: Request, res: Response) {
 export async function remove(req: Request, res: Response) {
   const user = req.user;
   if (!user) return res.status(401).json({ code: "UNAUTHORIZED", message: "Login required" });
-  if (user.role !== "STAFF" && user.role !== "ADMIN") {
+  if (!isDealerStaffRole(user.role)) {
     return res.status(403).json({ code: "FORBIDDEN", message: "Staff or admin required" });
   }
   const { id } = req.params;

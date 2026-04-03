@@ -1,10 +1,11 @@
 import { Request, Response } from "express";
 import { prisma } from "../lib/tenant.js";
+import { isDealerStaffRole } from "../lib/dealerRole.js";
 
 export async function stats(req: Request, res: Response) {
   const user = req.user;
   if (!user) return res.status(401).json({ code: "UNAUTHORIZED", message: "Login required" });
-  if (user.role !== "STAFF" && user.role !== "ADMIN") {
+  if (!isDealerStaffRole(user.role)) {
     return res.status(403).json({ code: "FORBIDDEN", message: "Staff or admin required" });
   }
 

@@ -30,12 +30,12 @@ export default function CRMLoginPage() {
     }
   };
 
-  if (loading) return <div style={{ padding: "2rem", color: "var(--text-muted)" }}>Loading…</div>;
+  if (loading) return <div className="crm-shell" style={{ padding: "2rem 0", color: "var(--text-muted)" }}>Loading...</div>;
 
   return (
     <div style={{ minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center", padding: "2rem" }}>
-      <form onSubmit={handleSubmit} style={{ width: "100%", maxWidth: "320px" }}>
-        <h1 style={{ marginBottom: "0.5rem", color: "var(--text-primary)" }}>VEX CRM</h1>
+      <form onSubmit={handleSubmit} className="crm-panel crm-panel-strong" style={{ width: "100%", maxWidth: "360px", padding: "1.2rem" }}>
+        <h1 style={{ marginBottom: "0.5rem", color: "var(--text-primary)", letterSpacing: "0.02em" }}>VEX CRM</h1>
         <p style={{ marginBottom: "1.5rem", color: "var(--text-muted)", fontSize: "0.9rem" }}>Staff sign in</p>
         <label style={{ display: "block", marginBottom: "0.5rem", fontSize: "0.9rem" }}>Email</label>
         <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required style={{ width: "100%", marginBottom: "1rem" }} />
@@ -49,8 +49,8 @@ export default function CRMLoginPage() {
             Open <a href="http://localhost:3001/health" target="_blank" rel="noopener noreferrer" style={{ color: "var(--accent)" }}>http://localhost:3001/health</a> in a new tab to check if the API is running. Restart the CRM dev server after changing <code style={{ fontSize: "0.75rem" }}>.env.local</code>.
           </p>
         )}
-        <button type="submit" disabled={submitting} style={{ width: "100%", padding: "0.6rem", background: "var(--accent)", color: "#0d0d0d", border: "none", borderRadius: "6px", fontWeight: 600 }}>
-          {submitting ? "Signing in…" : "Sign in"}
+        <button type="submit" disabled={submitting} className="crm-btn crm-btn-primary" style={{ width: "100%" }}>
+          {submitting ? "Signing in..." : "Sign in"}
         </button>
       </form>
     </div>

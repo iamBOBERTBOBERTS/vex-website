@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { IterationFeedbackSchema } from "@vex/shared";
 import { requireAuth } from "../middleware/auth.js";
-import { requireRole } from "../middleware/requireRole.js";
+import { requireAnyAuthenticatedRole, requireRole } from "../middleware/requireRole.js";
 import { validateBody } from "../middleware/validate.js";
 import { prisma } from "../lib/tenant.js";
 import { PilotAnalyticsService } from "../lib/iteration.js";
@@ -24,7 +24,7 @@ iterationRouter.get("/backlog", requireAuth, requireRole("ADMIN", "GROUP_ADMIN")
   return res.json({ data: rows, error: null });
 });
 
-iterationRouter.post("/feedback", requireAuth, validateBody(IterationFeedbackSchema), async (req, res) => {
+iterationRouter.post("/feedback", requireAuth, requireAnyAuthenticatedRole(), validateBody(IterationFeedbackSchema), async (req, res) => {
   const body = req.body as { category: string; severity: string; title: string; details: string; source: string };
   const item = await prisma.iterationBacklog.create({
     data: {

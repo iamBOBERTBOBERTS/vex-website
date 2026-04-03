@@ -1,6 +1,13 @@
 import { Header } from "@/components/Header";
 import "./home-landing.css";
-import { Hero } from "@/components/Hero";
+import {
+  AutonomousAgentsShowcase,
+  DealerProgramHero,
+  MarketplaceSubletTeaser,
+  PaymentOrchestrationBar,
+} from "@/components/landing";
+import { ScrollStorySection } from "@/components/ScrollStorySection";
+import { AmbientIdentityModule } from "@/components/AmbientIdentityModule";
 import { PrestigeMarquee } from "@/components/PrestigeMarquee";
 import { ExoticPillars } from "@/components/ExoticPillars";
 import { ConfiguratorPreview } from "@/components/ConfiguratorPreview";
@@ -13,8 +20,13 @@ export default function HomePage() {
   return (
     <>
       <Header />
+      <AmbientIdentityModule />
       <main id="main-content" className="home-main home-landing" aria-label="Vortex Exotic Exchange home">
-        <Hero />
+        <DealerProgramHero />
+        <AutonomousAgentsShowcase />
+        <MarketplaceSubletTeaser />
+        <PaymentOrchestrationBar />
+        <ScrollStorySection />
         <PrestigeMarquee />
         <ExoticPillars />
         <ConfiguratorPreview />

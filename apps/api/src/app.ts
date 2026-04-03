@@ -59,9 +59,23 @@ const corsOrigin = process.env.CORS_ORIGIN;
 const isProd = process.env.NODE_ENV === "production";
 app.use(
   cors({
-    origin: isProd && corsOrigin
-      ? corsOrigin.split(",").map((o) => o.trim())
-      : true,
+    origin: (origin, callback) => {
+      if (!isProd) {
+        callback(null, true);
+        return;
+      }
+      const raw = (corsOrigin ?? "").trim();
+      const list = raw.split(",").map((o) => o.trim()).filter(Boolean);
+      if (!raw || raw === "*" || list.length === 0) {
+        callback(null, false);
+        return;
+      }
+      if (!origin || list.includes(origin)) {
+        callback(null, true);
+        return;
+      }
+      callback(null, false);
+    },
   })
 );
 

@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import { InventorySource, InventoryStatus, Prisma } from "@prisma/client";
 import type { CreateInventoryInput, UpdateInventoryInput } from "@vex/shared";
-import { requireAuth } from "../middleware/auth.js";
+import { isDealerStaffRole } from "../lib/dealerRole.js";
 import { optionalJson } from "../utils/prismaJson.js";
 import { prisma } from "../lib/tenant.js";
 
@@ -138,7 +138,7 @@ export async function create(req: Request, res: Response) {
   if (!user) {
     return res.status(401).json({ code: "UNAUTHORIZED", message: "Login required" });
   }
-  if (body.source === "COMPANY" && user.role !== "STAFF" && user.role !== "ADMIN") {
+  if (body.source === "COMPANY" && !isDealerStaffRole(user.role)) {
     return res.status(403).json({ code: "FORBIDDEN", message: "Only staff can add company inventory" });
   }
 
@@ -180,7 +180,7 @@ export async function update(req: Request, res: Response) {
     return res.status(404).json({ code: "NOT_FOUND", message: "Inventory item not found" });
   }
 
-  const isStaff = user && (user.role === "STAFF" || user.role === "ADMIN");
+  const isStaff = user && isDealerStaffRole(user.role);
   const isOwner = user && existing.listedByUserId === user.userId;
   if (!isStaff && !isOwner) {
     return res.status(403).json({ code: "FORBIDDEN", message: "Not allowed to update this listing" });
@@ -231,7 +231,7 @@ export async function update(req: Request, res: Response) {
 export async function remove(req: Request, res: Response) {
   const user = req.user;
   if (!user) return res.status(401).json({ code: "UNAUTHORIZED", message: "Login required" });
-  if (user.role !== "STAFF" && user.role !== "ADMIN") {
+  if (!isDealerStaffRole(user.role)) {
     return res.status(403).json({ code: "FORBIDDEN", message: "Staff or admin required" });
   }
   const { id } = req.params;

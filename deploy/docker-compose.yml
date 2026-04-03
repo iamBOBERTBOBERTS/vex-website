@@ -1,0 +1,69 @@
+# Production-style stack: Postgres + Redis + API. Next.js apps (web/crm) are deployed separately
+# with the same NEXT_PUBLIC_API_URL (see README → Production deployment).
+#
+# Required env for API container (use env_file or your secret manager):
+#   JWT_SECRET              — strong random secret (never commit)
+#   DATABASE_URL            — postgresql://vex:...@postgres:5432/vex
+#   DIRECT_DATABASE_URL     — same as DATABASE_URL for migrate when not using a pooler
+#   REDIS_URL               — redis://redis:6379
+#   CORS_ORIGIN             — comma-separated origins, e.g. https://app.dealer.com,https://crm.dealer.com
+#   STRIPE_SECRET_KEY, STRIPE_WEBHOOK_SECRET, STRIPE_PRICE_* (see apps/api/.env.example)
+#   EDMUNDS_API_KEY, EDMUNDS_SECRET, MARKETCHECK_API_KEY
+#   NODE_ENV=production
+# Do NOT set SKIP_VALUATION_ENV_CHECK in production.
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: vex
+      POSTGRES_PASSWORD: vex
+      POSTGRES_DB: vex
+    ports:
+      - "5432:5432"
+    volumes:
+      - vex_pg:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U vex -d vex"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+  api:
+    build:
+      context: ..
+      dockerfile: deploy/Dockerfile.api
+    ports:
+      - "3001:3001"
+    environment:
+      NODE_ENV: production
+      PORT: "3001"
+      DATABASE_URL: postgresql://vex:vex@postgres:5432/vex
+      DIRECT_DATABASE_URL: postgresql://vex:vex@postgres:5432/vex
+      REDIS_URL: redis://redis:6379
+      # Set secrets via `deploy/.env` (auto-loaded when you run compose from `deploy/`) or your orchestrator.
+      JWT_SECRET: ${JWT_SECRET:-}
+      CORS_ORIGIN: ${CORS_ORIGIN:-}
+      EDMUNDS_API_KEY: ${EDMUNDS_API_KEY:-}
+      EDMUNDS_SECRET: ${EDMUNDS_SECRET:-}
+      MARKETCHECK_API_KEY: ${MARKETCHECK_API_KEY:-}
+      STRIPE_SECRET_KEY: ${STRIPE_SECRET_KEY:-}
+      STRIPE_WEBHOOK_SECRET: ${STRIPE_WEBHOOK_SECRET:-}
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+volumes:
+  vex_pg:

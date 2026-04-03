@@ -9,12 +9,13 @@ type LiquidityScenario = {
   monthsToTarget: number;
 };
 
-export async function simulateLiquidity(): Promise<{
+export async function simulateLiquidity(tenantId: string): Promise<{
   generatedAt: string;
   acquisition: LiquidityScenario;
   ipo: LiquidityScenario;
 }> {
   const tenants = await prisma.tenant.findMany({
+    where: { id: tenantId },
     select: { billingTier: true, stripeSubscriptionStatus: true },
   });
   const active = tenants.filter((t) => t.stripeSubscriptionStatus && t.stripeSubscriptionStatus !== "CANCELED");

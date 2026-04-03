@@ -8,6 +8,25 @@ on:
 jobs:
   verify-and-deploy:
     runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: vex
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres -d vex"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    env:
+      DATABASE_URL: postgresql://postgres:postgres@localhost:5432/vex
+      DIRECT_DATABASE_URL: postgresql://postgres:postgres@localhost:5432/vex
+      JWT_SECRET: ci-deploy-workflow-not-production
+      SKIP_VALUATION_ENV_CHECK: "1"
     steps:
       - uses: actions/checkout@v4
       - uses: pnpm/action-setup@v4
@@ -19,10 +38,23 @@ jobs:
           cache: pnpm
       - name: Install
         run: pnpm install --frozen-lockfile
+      - name: Prisma generate
+        run: pnpm --filter @vex/api run db:generate
+      - name: Migrate (API E2E prerequisite)
+        working-directory: apps/api
+        run: pnpm exec prisma migrate deploy
       - name: Security scan
         run: pnpm audit --prod
       - name: Build
         run: pnpm -w turbo run build
+      - name: Install Playwright browsers
+        run: pnpm --filter @vex/web exec playwright install --with-deps chromium
+      - name: Web e2e
+        run: pnpm --filter @vex/web run test:e2e
+      - name: Web accessibility
+        run: pnpm --filter @vex/web run test:a11y
+      - name: Lighthouse CI
+        run: pnpm --filter @vex/web run test:lighthouse
       - name: API e2e
         run: pnpm --filter @vex/api run test:e2e
       - name: Trivy filesystem scan

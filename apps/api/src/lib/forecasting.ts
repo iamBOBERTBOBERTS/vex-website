@@ -7,8 +7,9 @@ function monthlyAmountForTier(tier: string): number {
   return 49;
 }
 
-export async function buildMrrForecast() {
+export async function buildMrrForecast(tenantId: string) {
   const tenants = await prisma.tenant.findMany({
+    where: { id: tenantId },
     select: { billingTier: true, stripeSubscriptionStatus: true },
   });
   const active = tenants.filter((t) => t.stripeSubscriptionStatus && t.stripeSubscriptionStatus !== "CANCELED");

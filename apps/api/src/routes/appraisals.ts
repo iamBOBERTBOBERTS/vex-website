@@ -7,18 +7,18 @@ import * as appraisalsController from "../controllers/appraisalsController.js";
 
 export const appraisalsRouter: Router = Router();
 
-appraisalsRouter.get("/", requireAuth, requireRole("STAFF", "ADMIN"), appraisalsController.list);
+appraisalsRouter.get("/", requireAuth, requireRole("STAFF", "ADMIN", "GROUP_ADMIN"), appraisalsController.list);
 appraisalsRouter.post(
   "/",
   requireAuth,
-  requireRole("STAFF", "ADMIN"),
+  requireRole("STAFF", "ADMIN", "GROUP_ADMIN"),
   validateBody(createAppraisalSchema),
   appraisalsController.create
 );
 appraisalsRouter.post(
   "/valuate",
   requireAuth,
-  requireRole("STAFF", "ADMIN"),
+  requireRole("STAFF", "ADMIN", "GROUP_ADMIN"),
   validateBody(ValuationInputSchema),
   appraisalsController.valuate
 );
@@ -26,9 +26,9 @@ appraisalsRouter.post(
 appraisalsRouter.put(
   "/:id",
   requireAuth,
-  requireRole("STAFF", "ADMIN"),
+  requireRole("STAFF", "ADMIN", "GROUP_ADMIN"),
   validateBody(updateAppraisalSchema),
   appraisalsController.update
 );
-appraisalsRouter.delete("/:id", requireAuth, requireRole("STAFF", "ADMIN"), appraisalsController.remove);
-appraisalsRouter.get("/:id", requireAuth, requireRole("STAFF", "ADMIN"), appraisalsController.getById);
+appraisalsRouter.delete("/:id", requireAuth, requireRole("STAFF", "ADMIN", "GROUP_ADMIN"), appraisalsController.remove);
+appraisalsRouter.get("/:id", requireAuth, requireRole("STAFF", "ADMIN", "GROUP_ADMIN"), appraisalsController.getById);

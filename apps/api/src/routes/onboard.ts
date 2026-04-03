@@ -11,7 +11,7 @@ import {
   type OnboardingStartInput,
 } from "@vex/shared";
 import { enqueueProvisionTenant } from "../lib/queue.js";
-import { basePrisma, prisma, runWithTenant } from "../lib/tenant.js";
+import { systemPrisma, prisma, runWithTenant } from "../lib/tenant.js";
 
 export const onboardRouter: Router = Router();
 
@@ -58,12 +58,12 @@ onboardRouter.post("/start", validateBody(onboardingStartSchema), async (req, re
   }
   const body = req.body as OnboardingStartInput;
 
-  const existing = await basePrisma.user.findUnique({ where: { email: body.email } });
+  const existing = await systemPrisma.user.findUnique({ where: { email: body.email } });
   if (existing) {
     return res.status(409).json({ code: "CONFLICT", message: "Email already exists" });
   }
 
-  const created = await basePrisma.$transaction(async (tx) => {
+  const created = await systemPrisma.$transaction(async (tx) => {
     const tenant = await tx.tenant.create({
       data: { name: body.dealerName, billingTier: "STARTER", stripeSubscriptionStatus: "TRIAL" },
     });
@@ -178,12 +178,12 @@ onboardRouter.post("/pilot", validateBody(PilotOnboardSchema), async (req, res) 
   if (!allowIp(ip)) {
     return res.status(429).json({ code: "RATE_LIMITED", message: "Too many onboarding attempts from this IP." });
   }
-  const existing = await basePrisma.user.findUnique({ where: { email: body.email } });
+  const existing = await systemPrisma.user.findUnique({ where: { email: body.email } });
   if (existing) {
     return res.status(409).json({ code: "CONFLICT", message: "Email already exists" });
   }
 
-  const created = await basePrisma.$transaction(async (tx) => {
+  const created = await systemPrisma.$transaction(async (tx) => {
     const tenant = await tx.tenant.create({
       data: {
         name: body.dealerName,

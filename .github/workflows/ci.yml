@@ -1,0 +1,59 @@
+# Required bar for “mergeable / shippable”: builds cleanly and proves tenant isolation against a real Postgres.
+name: ci
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  build-and-api-e2e:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: vex
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres -d vex"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+
+    env:
+      DATABASE_URL: postgresql://postgres:postgres@localhost:5432/vex
+      DIRECT_DATABASE_URL: postgresql://postgres:postgres@localhost:5432/vex
+      JWT_SECRET: ci-ship-gate-not-a-real-secret
+      SKIP_VALUATION_ENV_CHECK: "1"
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 9
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+
+      - name: Install
+        run: pnpm install --frozen-lockfile
+
+      - name: Prisma generate
+        run: pnpm --filter @vex/api run db:generate
+
+      - name: Migrate
+        working-directory: apps/api
+        run: pnpm exec prisma migrate deploy
+
+      - name: Build (monorepo)
+        run: pnpm -w turbo run build
+
+      - name: API tenant isolation E2E
+        run: pnpm --filter @vex/api run test:e2e

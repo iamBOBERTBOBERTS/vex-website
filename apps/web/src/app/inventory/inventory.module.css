@@ -176,6 +176,21 @@
   margin-top: 0.5rem;
 }
 
+.loadMore {
+  margin: 1.2rem auto 0;
+  display: block;
+  min-height: 44px;
+  padding: 0.7rem 1.1rem;
+  border-radius: 10px;
+  border: 1px solid var(--line-gold);
+  background: rgba(201, 169, 98, 0.08);
+  color: var(--text-primary);
+  font-family: var(--font-montserrat), sans-serif;
+  font-size: 0.78rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
 @media (max-width: 900px) {
   .main {
     grid-template-columns: 1fr;

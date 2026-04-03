@@ -4,12 +4,14 @@ import Link from "next/link";
 import { useReveal } from "@/hooks/useReveal";
 import { ExoticVisualization } from "@/components/ExoticVisualization";
 import { HeroScrollHint } from "@/components/HeroScrollHint";
+import { HeroCinematicLayer } from "@/components/HeroCinematicLayer";
 import styles from "./Hero.module.css";
 
 export function Hero() {
   const revealRef = useReveal<HTMLDivElement>();
   return (
     <section className={styles.hero} aria-labelledby="hero-heading">
+      <HeroCinematicLayer />
       <div className={styles.ambient} aria-hidden />
       <div className={styles.overlay} />
       <div className={styles.vignette} aria-hidden />
@@ -19,14 +21,14 @@ export function Hero() {
             <span className={styles.badge}>VEX</span>
             <span className={styles.lot}>Exotic cars</span>
           </div>
-          <p className={styles.kicker}>Buy and sell exotic cars with clear pricing and trusted delivery.</p>
+          <p className={styles.kicker}>Welcome to the VEX universe - where provenance meets velocity.</p>
           <h1 className={styles.headline} id="hero-heading">
             <span className={styles.headlineGradient}>Rare metal.</span>
             <br />
             <span className={styles.headlineSolid}>No compromise.</span>
           </h1>
           <p className={styles.subhead}>
-            Browse listings, place a bid, or build your spec — then track everything in one place.
+            Move through curated chapters: discover collectible inventory, craft your exact configuration, and close with concierge precision.
           </p>
           <div className={styles.ctas}>
             <Link href="/inventory" className={styles.ctaPrimary} data-magnetic="true">

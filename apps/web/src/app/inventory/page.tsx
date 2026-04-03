@@ -1,10 +1,10 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import Link from "next/link";
 import { Header } from "@/components/Header";
 import { getInventory, type InventoryItem, type GetInventoryParams } from "@/lib/api";
 import { formatUsd } from "@/lib/formatCurrency";
+import { ImmersiveVehicleCard } from "@/components/ImmersiveVehicleCard";
 import styles from "./inventory.module.css";
 
 export default function InventoryPage() {
@@ -146,28 +146,31 @@ export default function InventoryPage() {
               <p className={styles.count}>{total} vehicle{total !== 1 ? "s" : ""} found</p>
               <div className={styles.grid}>
                 {items.map((item) => (
-                  <Link key={item.id} href={`/inventory/${item.id}`} className={styles.card}>
-                    <div className={styles.cardImage}>
-                      {imageUrl(item) ? (
-                        <img src={imageUrl(item)!} alt="" loading="lazy" />
-                      ) : (
-                        <div className={styles.placeholder}>No image</div>
-                      )}
-                    </div>
-                    <div className={styles.cardBody}>
-                      <span className={styles.badge}>{item.source === "PRIVATE_SELLER" ? "Private" : "Company"}</span>
-                      <h3 className={styles.cardTitle}>
-                        {item.vehicle?.make} {item.vehicle?.model}
-                      </h3>
-                      <p className={styles.cardMeta}>
-                        {item.vehicle?.year} {item.location ? ` · ${item.location}` : ""}
-                      </p>
-                      <p className={styles.cardPrice}>{formatUsd(item.listPrice)}</p>
-                      <span className={styles.cardCta}>View details</span>
-                    </div>
-                  </Link>
+                  <ImmersiveVehicleCard
+                    key={item.id}
+                    inventoryId={item.id}
+                    href={`/inventory/${item.id}`}
+                    imageUrl={imageUrl(item)}
+                    badge={item.source === "PRIVATE_SELLER" ? "Private" : "Company"}
+                    badges={["Verified history", "Enclosed shipping"]}
+                    title={`${item.vehicle?.make ?? ""} ${item.vehicle?.model ?? ""}`.trim()}
+                    meta={`${item.vehicle?.year ?? ""}${item.location ? ` · ${item.location}` : ""}`.trim()}
+                    price={formatUsd(item.listPrice)}
+                    cta="View details"
+                    className={styles.card}
+                    imageClassName={styles.cardImage}
+                  />
                 ))}
               </div>
+              {items.length < total ? (
+                <button
+                  type="button"
+                  className={styles.loadMore}
+                  onClick={() => setFilters((prev) => ({ ...prev, limit: Math.min((prev.limit ?? 20) + 12, 96) }))}
+                >
+                  Load more vehicles
+                </button>
+              ) : null}
             </>
           )}
         </section>

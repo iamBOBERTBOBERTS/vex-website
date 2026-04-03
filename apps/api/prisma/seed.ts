@@ -409,6 +409,13 @@ async function main() {
     });
     console.log("Seeded PAINT configuration options.");
   }
+
+  console.log(
+    "\nPilot / CI (repo root):  pnpm run ship:gate     # needs DATABASE_URL — runs test:e2e (appraisal + inventory)\n" +
+      "Deployed API smoke:      PILOT_VERIFY_API_URL=https://… pnpm run pilot:verify\n" +
+      "Tenant/RBAC notes:       docs/TENANT_RBAC.md\n" +
+      "Ordered runbook:           docs/PILOT_SHIP.md\n",
+  );
 }
 
 main()

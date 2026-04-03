@@ -1,0 +1,50 @@
+.wrap {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  overflow: hidden;
+}
+
+.ring,
+.ringAlt {
+  position: absolute;
+  width: 55vmax;
+  height: 55vmax;
+  border-radius: 50%;
+  border: 1px solid rgba(201, 169, 98, 0.1);
+  filter: blur(0.2px);
+  animation: drift 18s linear infinite;
+}
+
+.ring {
+  right: -18vmax;
+  top: -22vmax;
+}
+
+.ringAlt {
+  left: -22vmax;
+  bottom: -20vmax;
+  border-color: rgba(139, 141, 148, 0.12);
+  animation-duration: 24s;
+  animation-direction: reverse;
+}
+
+@keyframes drift {
+  0% {
+    transform: translate3d(0, 0, 0) rotate(0deg);
+  }
+  50% {
+    transform: translate3d(0, 1.2vmax, 0) rotate(180deg);
+  }
+  100% {
+    transform: translate3d(0, 0, 0) rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ring,
+  .ringAlt {
+    animation: none;
+  }
+}

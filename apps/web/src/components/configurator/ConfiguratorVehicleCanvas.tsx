@@ -6,6 +6,7 @@ import { Html, useProgress } from "@react-three/drei";
 import { VehicleScene, getCanvasCamera, type CameraPreset } from "./VehicleScene";
 import { configureVexRenderer } from "./rendererSetup";
 import type { EditionId, FinishId, PowertrainId } from "./vehicleFinish";
+import { useAdaptiveEffects } from "@/hooks/useAdaptiveEffects";
 import styles from "./ConfiguratorVehicleCanvas.module.css";
 
 export type ConfiguratorVehicleCanvasProps = {
@@ -68,6 +69,7 @@ export function ConfiguratorVehicleCanvas({
   const [cameraPreset, setCameraPreset] = useState<CameraPreset | null>(null);
   const [autoRotate, setAutoRotate] = useState(false);
   const hintId = useId();
+  const { maxDpr } = useAdaptiveEffects();
   const cam = getCanvasCamera(compact);
   const controlledPreset = cameraPresetOverride !== undefined;
   const controlledRotate = autoRotateOverride !== undefined;
@@ -129,7 +131,7 @@ export function ConfiguratorVehicleCanvas({
         <Canvas
           className={styles.canvas}
           shadows
-          dpr={[1, 2.25]}
+          dpr={[1, maxDpr]}
           camera={{ position: cam.position, fov: cam.fov, near: 0.1, far: 80 }}
           gl={{ antialias: true, alpha: false, powerPreference: "high-performance" }}
           onCreated={({ gl }) => configureVexRenderer(gl)}

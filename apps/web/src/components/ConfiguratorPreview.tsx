@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useState } from "react";
 import { useReveal } from "@/hooks/useReveal";
 import { ConfiguratorVehicleCanvas } from "@/components/configurator/ConfiguratorVehicleCanvas";
+import type { CameraPreset } from "@/components/configurator/VehicleScene";
 import {
   FINISH_CSS_GRADIENT,
   FINISH_SWATCHES,
@@ -21,6 +22,12 @@ export function ConfiguratorPreview() {
   const [edition, setEdition] = useState<EditionId>("Launch");
   const [powertrain, setPowertrain] = useState<PowertrainId>("V12");
   const [finish, setFinish] = useState<FinishId>("rosso");
+  const [cameraPreset, setCameraPreset] = useState<CameraPreset | null>(null);
+  const [autoRotate, setAutoRotate] = useState(false);
+  const basePrice = edition === "Track" ? 348000 : edition === "Heritage" ? 312000 : 279000;
+  const powertrainPrice = powertrain === "Hybrid" ? 42000 : powertrain === "Twin-turbo V8" ? 18000 : 0;
+  const finishPrice = finish === "oro" ? 6500 : finish === "nero" ? 4800 : 3000;
+  const livePrice = basePrice + powertrainPrice + finishPrice;
 
   const finishGlow = FINISH_CSS_GRADIENT[finish];
 
@@ -38,7 +45,15 @@ export function ConfiguratorPreview() {
         <div className={styles.preview} style={{ "--finish": finishGlow } as React.CSSProperties}>
           <div className={styles.previewGlow} aria-hidden />
           <div className={styles.previewViewer}>
-            <ConfiguratorVehicleCanvas finishId={finish} edition={edition} powertrain={powertrain} />
+            <ConfiguratorVehicleCanvas
+              finishId={finish}
+              edition={edition}
+              powertrain={powertrain}
+              cameraPresetOverride={cameraPreset}
+              autoRotateOverride={autoRotate}
+              onAutoRotateChange={setAutoRotate}
+              onCameraPresetChange={setCameraPreset}
+            />
           </div>
           <ul className={styles.chips}>
             <li>
@@ -58,6 +73,20 @@ export function ConfiguratorPreview() {
           </ul>
         </div>
         <div className={styles.controls}>
+          <fieldset className={styles.fieldset}>
+            <legend className={styles.legend}>Camera choreography</legend>
+            <div className={styles.btnRow}>
+              <button type="button" className={styles.option} onClick={() => setCameraPreset("threeQuarter")}>
+                Hero angle
+              </button>
+              <button type="button" className={styles.option} onClick={() => setCameraPreset("side")}>
+                Profile
+              </button>
+              <button type="button" className={styles.option} onClick={() => setAutoRotate((v) => !v)}>
+                {autoRotate ? "Stop motion" : "Start motion"}
+              </button>
+            </div>
+          </fieldset>
           <fieldset className={styles.fieldset}>
             <legend className={styles.legend}>Edition</legend>
             <div className={styles.btnRow}>
@@ -107,6 +136,11 @@ export function ConfiguratorPreview() {
           <Link href="/build" className={styles.cta}>
             Open full configurator →
           </Link>
+          <div className={styles.confidencePanel}>
+            <p className={styles.confidenceTitle}>Live build estimate</p>
+            <p className={styles.confidenceValue}>${livePrice.toLocaleString("en-US")}</p>
+            <p className={styles.confidenceMeta}>Financing and enclosed shipping options available at checkout.</p>
+          </div>
         </div>
       </div>
     </section>

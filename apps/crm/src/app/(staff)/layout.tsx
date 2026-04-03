@@ -16,7 +16,15 @@ export default function StaffLayout({ children }: { children: React.ReactNode })
     }
   }, [loading, token, router]);
 
-  if (loading) return <div style={{ padding: "2rem", color: "var(--text-muted)" }}>Loading…</div>;
+  if (loading) {
+    return (
+      <main className="crm-shell">
+        <div className="crm-panel" style={{ padding: "1rem", color: "var(--text-muted)" }}>
+          Loading workspace...
+        </div>
+      </main>
+    );
+  }
   if (!token) return null;
 
   return (

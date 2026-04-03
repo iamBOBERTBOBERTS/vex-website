@@ -14,8 +14,23 @@
 }
 
 @media (min-width: 960px) {
-  .layout {
-    grid-template-columns: minmax(320px, 420px) minmax(0, 1fr);
+  .layoutWithVehicle {
+    grid-template-columns: minmax(300px, 420px) minmax(0, 1fr);
+  }
+}
+
+@media (min-width: 1280px) {
+  .layoutWithVehicle {
+    grid-template-columns: minmax(280px, 400px) minmax(0, 1fr) minmax(260px, 320px);
+  }
+}
+
+@media (min-width: 960px) and (max-width: 1279px) {
+  .commissionSheet {
+    grid-column: 1 / -1;
+    max-width: 36rem;
+    justify-self: center;
+    width: 100%;
   }
 }
 
@@ -251,38 +266,6 @@
   gap: 0.75rem;
 }
 
-.optionCard {
-  background: var(--bg-card);
-  border: 2px solid rgba(255, 255, 255, 0.08);
-  border-radius: 8px;
-  padding: 1rem;
-  text-align: left;
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-.optionCard:hover {
-  border-color: var(--accent);
-}
-
-.optionCard.selected {
-  border-color: var(--accent);
-  background: var(--accent-08);
-}
-
-.optionName {
-  font-weight: 500;
-  color: var(--text-primary);
-  display: block;
-}
-
-.optionPrice {
-  font-size: 0.85rem;
-  color: var(--accent);
-  margin-top: 0.25rem;
-  display: block;
-}
-
 .noOptions {
   color: var(--text-muted);
   margin-bottom: 1rem;
@@ -353,3 +336,43 @@
   color: var(--text-muted);
   padding: 3rem;
 }
+
+.cameraTour {
+  border: 1px solid var(--line-gold, rgba(201, 169, 98, 0.22));
+  border-radius: 10px;
+  padding: 0.65rem 0.75rem;
+  background: rgba(201, 169, 98, 0.05);
+}
+
+.cameraTourLabel {
+  display: block;
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--text-muted);
+  margin-bottom: 0.45rem;
+}
+
+.cameraTourRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+}
+
+.cameraTourBtn {
+  font-family: var(--font-poppins), sans-serif;
+  font-size: 0.76rem;
+  padding: 0.4rem 0.65rem;
+  border-radius: 6px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(8, 10, 14, 0.85);
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: border-color 0.2s ease, color 0.2s ease;
+}
+
+.cameraTourBtn:hover {
+  border-color: var(--accent-30, rgba(201, 169, 98, 0.3));
+  color: var(--text-primary);
+}
+

@@ -20,7 +20,10 @@ scalingRouter.get("/overview", requireAuth, requireRole("GROUP_ADMIN"), async (r
     if (cached) return res.json({ data: JSON.parse(cached), error: null });
   }
   const [tenants, partnerRevenue, marketingConversions] = await Promise.all([
-    prisma.tenant.findMany({ select: { billingTier: true, stripeSubscriptionStatus: true } }),
+    prisma.tenant.findMany({
+      where: { id: req.tenantId! },
+      select: { billingTier: true, stripeSubscriptionStatus: true },
+    }),
     prisma.usageLog.aggregate({ where: { kind: "partner_payout" }, _sum: { amountUsd: true } }),
     prisma.growthMetric.aggregate({ where: { key: "marketing_conversion" }, _sum: { value: true } }),
   ]);

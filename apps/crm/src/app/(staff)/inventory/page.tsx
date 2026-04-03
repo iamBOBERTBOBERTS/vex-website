@@ -54,45 +54,47 @@ export default function InventoryPage() {
   };
 
   return (
-    <main style={{ padding: "1.5rem", maxWidth: "1000px", margin: "0 auto" }}>
-      <h1 style={{ marginBottom: "1rem", color: "var(--text-primary)" }}>Inventory</h1>
-      <p style={{ marginBottom: "1rem", color: "var(--text-muted)", fontSize: "0.9rem" }}>
+    <main className="crm-shell">
+      <h1 className="crm-title" style={{ marginBottom: "0.4rem" }}>Inventory</h1>
+      <p className="crm-subtitle" style={{ marginBottom: "1rem" }}>
         Manage from API or <a href={`${API_BASE.replace(/\/$/, "")}/inventory`} target="_blank" rel="noopener noreferrer">API docs</a>.
       </p>
-      <div style={{ display: "grid", gridTemplateColumns: "1.5fr 1fr 1fr auto", gap: "0.5rem", marginBottom: "1rem" }}>
+      <div className="crm-panel" style={{ display: "grid", gridTemplateColumns: "1.5fr 1fr 1fr auto", gap: "0.55rem", marginBottom: "1rem", padding: "0.8rem" }}>
         <input value={vehicleId} onChange={(e) => setVehicleId(e.target.value)} placeholder="Vehicle ID" />
         <input value={listPrice} onChange={(e) => setListPrice(e.target.value)} placeholder="List price" />
         <input value={location} onChange={(e) => setLocation(e.target.value)} placeholder="Location" />
-        <button type="button" onClick={onCreate}>Add</button>
+        <button type="button" onClick={onCreate} className="crm-btn crm-btn-primary">Add</button>
       </div>
-      <table>
-        <thead>
-          <tr>
-            <th>Vehicle</th>
-            <th>Source</th>
-            <th>Price</th>
-            <th>Location</th>
-            <th>Status</th>
-            <th></th>
-          </tr>
-        </thead>
-        <tbody>
-          {items.map((i) => (
-            <tr key={i.id}>
-              <td>{i.vehicle ? `${i.vehicle.make} ${i.vehicle.model} ${i.vehicle.year}` : "—"}</td>
-              <td>{i.source}</td>
-              <td>${i.listPrice.toLocaleString("en-US")}</td>
-              <td>{i.location || "—"}</td>
-              <td>{i.status}</td>
-              <td>
-                <Link href={`/appraisals/new?vehicleId=${encodeURIComponent(i.vehicleId)}`}>Appraise</Link>
-                {" · "}
-                <a href={`${WEB_URL}/inventory/${i.id}`} target="_blank" rel="noopener noreferrer">View on site</a>
-              </td>
+      <div className="crm-panel" style={{ padding: "0.45rem 0.8rem 0.8rem" }}>
+        <table>
+          <thead>
+            <tr>
+              <th>Vehicle</th>
+              <th>Source</th>
+              <th>Price</th>
+              <th>Location</th>
+              <th>Status</th>
+              <th></th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {items.map((i) => (
+              <tr key={i.id}>
+                <td>{i.vehicle ? `${i.vehicle.make} ${i.vehicle.model} ${i.vehicle.year}` : "—"}</td>
+                <td>{i.source}</td>
+                <td>${i.listPrice.toLocaleString("en-US")}</td>
+                <td>{i.location || "—"}</td>
+                <td>{i.status}</td>
+                <td>
+                  <Link href={`/appraisals/new?vehicleId=${encodeURIComponent(i.vehicleId)}`}>Appraise</Link>
+                  {" · "}
+                  <a href={`${WEB_URL}/inventory/${i.id}`} target="_blank" rel="noopener noreferrer">View on site</a>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
       {items.length === 0 && <p style={{ color: "var(--text-muted)", marginTop: "1rem" }}>No inventory.</p>}
     </main>
   );

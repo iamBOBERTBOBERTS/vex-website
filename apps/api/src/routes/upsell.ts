@@ -1,13 +1,13 @@
 import { Router } from "express";
 import { UpsellOfferSchema, UsageEventSchema } from "@vex/shared";
 import { requireAuth } from "../middleware/auth.js";
-import { requireRole } from "../middleware/requireRole.js";
+import { requireAnyAuthenticatedRole, requireRole } from "../middleware/requireRole.js";
 import { validateBody } from "../middleware/validate.js";
 import { prisma } from "../lib/tenant.js";
 
 export const upsellRouter: Router = Router();
 
-upsellRouter.post("/usage", requireAuth, validateBody(UsageEventSchema), async (req, res) => {
+upsellRouter.post("/usage", requireAuth, requireAnyAuthenticatedRole(), validateBody(UsageEventSchema), async (req, res) => {
   const body = req.body as { kind: string; quantity: number; amountUsd?: number; refId?: string };
   const dedupeKey = body.refId ? `${body.kind}:${body.refId}` : null;
   if (dedupeKey) {

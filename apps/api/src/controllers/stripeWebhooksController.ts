@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import Stripe from "stripe";
 import type { Stripe as StripeTypes } from "stripe";
-import { basePrisma, prisma, runWithTenant } from "../lib/tenant.js";
+import { systemPrisma, prisma, runWithTenant } from "../lib/tenant.js";
 
 function getStripe(): Stripe | null {
   const key = process.env.STRIPE_SECRET_KEY;
@@ -51,7 +51,7 @@ export async function stripe(req: Request, res: Response) {
         const billingInterval = session.metadata?.billingInterval === "yearly" ? "yearly" : "monthly";
 
         if (userId && plan) {
-          const user = await basePrisma.user.findUnique({ where: { id: userId } });
+          const user = await systemPrisma.user.findUnique({ where: { id: userId } });
           if (!user) break;
 
           const amount = typeof session.amount_total === "number" ? session.amount_total / 100 : null;
@@ -123,7 +123,7 @@ export async function stripe(req: Request, res: Response) {
         const minPeriodEnd = periodEnds.length > 0 ? Math.min(...periodEnds) : null;
         const expiresAt = typeof minPeriodEnd === "number" ? new Date(minPeriodEnd * 1000) : null;
 
-        const existing = await basePrisma.subscription.findFirst({
+        const existing = await systemPrisma.subscription.findFirst({
           where: { stripeSubscriptionId },
           select: { tenantId: true },
         });

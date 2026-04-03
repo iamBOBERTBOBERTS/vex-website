@@ -1,4 +1,5 @@
 import "dotenv/config";
+import { assertProductionReady } from "./lib/productionEnv.js";
 import { app } from "./app.js";
 import { startObservability } from "./lib/observability.js";
 import { startQueueWorkers } from "./lib/queue.js";
@@ -7,11 +8,24 @@ const PORT = Number(process.env.PORT) || 3001;
 
 const requiredValuationEnvs = ["EDMUNDS_API_KEY", "EDMUNDS_SECRET", "MARKETCHECK_API_KEY"] as const;
 const missingValuation = requiredValuationEnvs.filter((k) => !process.env[k]);
+const skipValuationEnvCheck =
+  process.env.SKIP_VALUATION_ENV_CHECK === "1" || process.env.SKIP_VALUATION_ENV_CHECK === "true";
 if (missingValuation.length > 0) {
-  console.error("Missing valuation API env vars:", missingValuation.join(", "));
-  console.error("Refusing to start to protect valuation reliability and billing guardrails.");
-  process.exit(1);
+  if (skipValuationEnvCheck) {
+    console.warn(
+      "SKIP_VALUATION_ENV_CHECK is set; starting without valuation API env vars:",
+      missingValuation.join(", "),
+      "(never use this in production)"
+    );
+  } else {
+    console.error("Missing valuation API env vars:", missingValuation.join(", "));
+    console.error("Refusing to start to protect valuation reliability and billing guardrails.");
+    process.exit(1);
+  }
 }
+
+assertProductionReady();
+
 startObservability();
 startQueueWorkers();
 

@@ -1,6 +1,7 @@
 import { Router } from "express";
 import { validateBody } from "../middleware/validate.js";
 import { requireAuth } from "../middleware/auth.js";
+import { requireAnyAuthenticatedRole, requireRole } from "../middleware/requireRole.js";
 import { createPortalSessionSchema } from "@vex/shared";
 import { getStripeClient } from "../lib/stripe.js";
 import { prisma } from "../lib/tenant.js";
@@ -17,11 +18,10 @@ pricingRouter.get("/plans", async (_req, res) => {
   return res.json({ data: { plans: PLANS }, error: null });
 });
 
-pricingRouter.get("/current", requireAuth, async (req, res) => {
-  const user = req.user;
-  if (!user) return res.status(401).json({ code: "UNAUTHORIZED", message: "Login required" });
+pricingRouter.get("/current", requireAuth, requireAnyAuthenticatedRole(), async (req, res) => {
+  if (!req.user || !req.tenantId) return res.status(401).json({ code: "UNAUTHORIZED", message: "Login required" });
   const tenant = await prisma.tenant.findFirst({
-    where: { id: user.tenantId },
+    where: { id: req.tenantId },
     select: {
       id: true,
       name: true,
@@ -36,30 +36,35 @@ pricingRouter.get("/current", requireAuth, async (req, res) => {
   return res.json({ data: tenant, error: null });
 });
 
-pricingRouter.post("/portal/session", requireAuth, validateBody(createPortalSessionSchema), async (req, res) => {
-  const user = req.user;
-  if (!user) return res.status(401).json({ code: "UNAUTHORIZED", message: "Login required" });
+pricingRouter.post(
+  "/portal/session",
+  requireAuth,
+  requireRole("ADMIN", "GROUP_ADMIN"),
+  validateBody(createPortalSessionSchema),
+  async (req, res) => {
+    if (!req.user || !req.tenantId) return res.status(401).json({ code: "UNAUTHORIZED", message: "Login required" });
 
-  const tenant = await prisma.tenant.findFirst({
-    where: { id: user.tenantId },
-    select: { stripeCustomerId: true },
-  });
-  if (!tenant?.stripeCustomerId) {
-    return res.status(400).json({
-      code: "MISSING_STRIPE_CUSTOMER",
-      message: "No Stripe customer linked to this tenant yet.",
+    const tenant = await prisma.tenant.findFirst({
+      where: { id: req.tenantId },
+      select: { stripeCustomerId: true },
     });
-  }
+    if (!tenant?.stripeCustomerId) {
+      return res.status(400).json({
+        code: "MISSING_STRIPE_CUSTOMER",
+        message: "No Stripe customer linked to this tenant yet.",
+      });
+    }
 
-  const body = req.body as { returnUrl?: string };
-  const stripe = getStripeClient();
-  const returnUrl = body.returnUrl || `${process.env.PUBLIC_WEB_URL || "http://localhost:3000"}/portal/subscriptions`;
+    const body = req.body as { returnUrl?: string };
+    const stripe = getStripeClient();
+    const returnUrl = body.returnUrl || `${process.env.PUBLIC_WEB_URL || "http://localhost:3000"}/portal/subscriptions`;
 
-  const session = await stripe.billingPortal.sessions.create({
-    customer: tenant.stripeCustomerId,
-    return_url: returnUrl,
-  });
+    const session = await stripe.billingPortal.sessions.create({
+      customer: tenant.stripeCustomerId,
+      return_url: returnUrl,
+    });
 
-  return res.status(201).json({ data: { url: session.url }, error: null });
-});
+    return res.status(201).json({ data: { url: session.url }, error: null });
+  },
+);
 

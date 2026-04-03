@@ -12,7 +12,11 @@
     "build": "turbo run build",
     "build:api": "pnpm --filter @vex/api build",
     "build:web": "pnpm --filter @vex/web build",
-    "build:crm": "pnpm --filter @vex/crm build"
+    "build:crm": "pnpm --filter @vex/crm build",
+    "quality:web": "pnpm --filter @vex/web run test:e2e && pnpm --filter @vex/web run test:a11y && pnpm --filter @vex/web run test:lighthouse",
+    "release:pilot-check": "pnpm -w turbo run build && pnpm --filter @vex/api run test:e2e",
+    "ship:gate": "bash scripts/ship-gate.sh",
+    "pilot:verify": "node scripts/pilot-verify.mjs"
   },
   "engines": {
     "node": ">=20"

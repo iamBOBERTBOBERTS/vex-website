@@ -17,6 +17,7 @@ import {
 import { useAuth } from "@/contexts/AuthContext";
 import { getAnalytics } from "@/lib/api";
 import type { AnalyticsResponse } from "@vex/shared";
+import { VexChartShell, VexMetricCard, VexPageHeader, VexPanel } from "@vex/ui";
 
 export default function AnalyticsPage() {
   const { token, role, loading } = useAuth();
@@ -41,14 +42,16 @@ export default function AnalyticsPage() {
 
   if (loading) {
     return (
-      <main style={{ padding: "1.5rem", maxWidth: "1100px", margin: "0 auto" }}>
-        <p style={{ color: "var(--text-muted)" }}>Loading analytics…</p>
+      <main className="crm-shell">
+        <VexPanel style={{ padding: "1rem" }}>
+          <p style={{ color: "var(--text-muted)" }}>Loading analytics...</p>
+        </VexPanel>
       </main>
     );
   }
   if (!role || (role !== "STAFF" && role !== "ADMIN")) {
     return (
-      <main style={{ padding: "1.5rem", maxWidth: "1100px", margin: "0 auto" }}>
+      <main className="crm-shell">
         <h1>Forbidden</h1>
         <p style={{ color: "var(--text-muted)" }}>Staff or admin role required to view analytics.</p>
       </main>
@@ -56,13 +59,13 @@ export default function AnalyticsPage() {
   }
 
   return (
-    <main style={{ padding: "1.5rem", maxWidth: "1100px", margin: "0 auto" }}>
+    <main className="crm-shell">
       <div style={{ marginBottom: "1rem", display: "flex", alignItems: "center", gap: "1rem" }}>
         <Link href="/dashboard" style={{ fontSize: "0.9rem", color: "var(--text-muted)" }}>
           ← Dashboard
         </Link>
       </div>
-      <h1 style={{ marginBottom: "1.25rem", color: "var(--text-primary)" }}>Analytics</h1>
+      <VexPageHeader title="Analytics" subtitle="Live performance and pipeline telemetry." />
 
       {err && <p style={{ color: "#f66" }}>{err}</p>}
 
@@ -70,30 +73,18 @@ export default function AnalyticsPage() {
 
       {data && (
         <>
-          <section style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(160px, 1fr))", gap: "1rem", marginBottom: "2rem" }}>
-            <div style={{ background: "var(--bg-card)", padding: "1rem", borderRadius: "8px" }}>
-              <div style={{ fontSize: "0.85rem", color: "var(--text-muted)" }}>Inventory (available)</div>
-              <div style={{ fontSize: "1.5rem", fontWeight: 700, color: "var(--accent)" }}>{data.inventoryCount}</div>
-            </div>
-            <div style={{ background: "var(--bg-card)", padding: "1rem", borderRadius: "8px" }}>
-              <div style={{ fontSize: "0.85rem", color: "var(--text-muted)" }}>Leads (total)</div>
-              <div style={{ fontSize: "1.5rem", fontWeight: 700 }}>{data.leadsTotal}</div>
-            </div>
-            <div style={{ background: "var(--bg-card)", padding: "1rem", borderRadius: "8px" }}>
-              <div style={{ fontSize: "0.85rem", color: "var(--text-muted)" }}>Leads converted (qualified)</div>
-              <div style={{ fontSize: "1.5rem", fontWeight: 700 }}>{data.leadsConverted}</div>
-            </div>
-            <div style={{ background: "var(--bg-card)", padding: "1rem", borderRadius: "8px" }}>
-              <div style={{ fontSize: "0.85rem", color: "var(--text-muted)" }}>Revenue (all orders)</div>
-              <div style={{ fontSize: "1.5rem", fontWeight: 700 }}>
-                {new Intl.NumberFormat(undefined, { style: "currency", currency: "USD", maximumFractionDigits: 0 }).format(data.revenueTotal)}
-              </div>
-            </div>
+          <section style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(170px, 1fr))", gap: "1rem", marginBottom: "1.2rem" }}>
+            <VexMetricCard label="Inventory (available)" value={data.inventoryCount} />
+            <VexMetricCard label="Leads (total)" value={data.leadsTotal} />
+            <VexMetricCard label="Leads converted (qualified)" value={data.leadsConverted} />
+            <VexMetricCard
+              label="Revenue (all orders)"
+              value={new Intl.NumberFormat(undefined, { style: "currency", currency: "USD", maximumFractionDigits: 0 }).format(data.revenueTotal)}
+            />
           </section>
 
-          <div style={{ display: "grid", gridTemplateColumns: "1fr", gap: "2rem", marginBottom: "2rem" }}>
-            <div style={{ background: "var(--bg-card)", padding: "1rem", borderRadius: "8px", minHeight: 320 }}>
-              <h2 style={{ fontSize: "1rem", marginBottom: "0.75rem", color: "var(--text-primary)" }}>Leads by stage</h2>
+          <div style={{ display: "grid", gridTemplateColumns: "1fr", gap: "1rem", marginBottom: "1.4rem" }}>
+            <VexChartShell title="Leads by stage">
               <ResponsiveContainer width="100%" height={280}>
                 <BarChart data={leadChartData} margin={{ top: 8, right: 8, left: 0, bottom: 0 }}>
                   <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.08)" />
@@ -107,10 +98,9 @@ export default function AnalyticsPage() {
                   <Legend />
                 </BarChart>
               </ResponsiveContainer>
-            </div>
+            </VexChartShell>
 
-            <div style={{ background: "var(--bg-card)", padding: "1rem", borderRadius: "8px", minHeight: 320 }}>
-              <h2 style={{ fontSize: "1rem", marginBottom: "0.75rem", color: "var(--text-primary)" }}>Revenue by month</h2>
+            <VexChartShell title="Revenue by month">
               <ResponsiveContainer width="100%" height={280}>
                 <LineChart data={data.revenueByMonth} margin={{ top: 8, right: 8, left: 0, bottom: 0 }}>
                   <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.08)" />
@@ -126,7 +116,7 @@ export default function AnalyticsPage() {
                   <Legend />
                 </LineChart>
               </ResponsiveContainer>
-            </div>
+            </VexChartShell>
           </div>
         </>
       )}

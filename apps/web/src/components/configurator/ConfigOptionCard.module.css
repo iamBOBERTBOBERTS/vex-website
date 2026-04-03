@@ -1,0 +1,37 @@
+.card {
+  background: var(--bg-card);
+  border: 2px solid rgba(255, 255, 255, 0.08);
+  border-radius: 10px;
+  padding: 1rem;
+  text-align: left;
+  cursor: pointer;
+  transition: border-color 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
+}
+
+.card:hover {
+  border-color: var(--accent);
+}
+
+.card:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.selected {
+  border-color: var(--accent);
+  background: var(--accent-08);
+  box-shadow: 0 0 0 1px rgba(201, 169, 98, 0.2);
+}
+
+.name {
+  font-weight: 500;
+  color: var(--text-primary);
+  display: block;
+}
+
+.price {
+  font-size: 0.85rem;
+  color: var(--accent);
+  margin-top: 0.25rem;
+  display: block;
+}

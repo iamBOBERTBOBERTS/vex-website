@@ -76,10 +76,37 @@ function CameraRig({
     const [x, y, z] = table[preset];
     const pos = new THREE.Vector3(x, y, z);
 
-    camera.position.copy(pos);
-    controls.target.copy(target);
-    controls.update();
-    onPresetApplied();
+    let cancelled = false;
+    import("gsap")
+      .then(({ gsap }) => {
+        const from = camera.position.clone();
+        const to = pos.clone();
+        const targetFrom = controls.target.clone();
+        const targetTo = target.clone();
+        const state = { t: 0 };
+        gsap.to(state, {
+          t: 1,
+          duration: 0.85,
+          ease: "power3.out",
+          onUpdate: () => {
+            camera.position.lerpVectors(from, to, state.t);
+            controls.target.lerpVectors(targetFrom, targetTo, state.t);
+            controls.update();
+          },
+          onComplete: () => {
+            if (!cancelled) onPresetApplied();
+          },
+        });
+      })
+      .catch(() => {
+        camera.position.copy(pos);
+        controls.target.copy(target);
+        controls.update();
+        onPresetApplied();
+      });
+    return () => {
+      cancelled = true;
+    };
   }, [preset, camera, controlsRef, onPresetApplied, isCompact, orbitTarget]);
 
   return null;

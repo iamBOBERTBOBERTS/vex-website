@@ -2,8 +2,10 @@ import dynamic from "next/dynamic";
 
 const AppraisalsClient = dynamic(() => import("./AppraisalsClient").then((m) => m.AppraisalsClient), {
   loading: () => (
-    <main style={{ padding: "1.5rem", maxWidth: "1200px", margin: "0 auto" }}>
-      <p style={{ color: "var(--text-muted)" }}>Loading appraisals…</p>
+    <main className="crm-shell">
+      <div className="crm-panel" style={{ padding: "1rem" }}>
+        <p style={{ color: "var(--text-muted)" }}>Loading appraisals...</p>
+      </div>
     </main>
   ),
   ssr: false,

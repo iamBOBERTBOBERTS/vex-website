@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 import { authJwtSchema } from "@vex/shared";
 import { requireAuth } from "./auth.js";
-import { runWithTenant, basePrisma } from "../lib/tenant.js";
+import { runWithTenant, systemPrisma } from "../lib/tenant.js";
 
 declare global {
   namespace Express {
@@ -45,7 +45,7 @@ export async function tenantMiddleware(req: Request, res: Response, next: NextFu
         if (parsed.data.role === "GROUP_ADMIN" && !groupScopeAllowed) {
           return res.status(403).json({ code: "FORBIDDEN", message: "GROUP_ADMIN override requires x-group-scope=true" });
         }
-        const exists = await basePrisma.tenant.findUnique({ where: { id: override } });
+        const exists = await systemPrisma.tenant.findUnique({ where: { id: override } });
         if (!exists) return res.status(404).json({ code: "NOT_FOUND", message: "Tenant override not found" });
         if (parsed.data.role === "GROUP_ADMIN") {
           // GROUP_ADMIN may only override into their own tenant hierarchy.
@@ -53,7 +53,7 @@ export async function tenantMiddleware(req: Request, res: Response, next: NextFu
             let cursor: string | null = override;
             let allowed = false;
             for (let i = 0; i < 16 && cursor; i += 1) {
-              const t = await basePrisma.tenant.findFirst({
+              const t = await systemPrisma.tenant.findFirst({
                 where: { id: cursor },
                 select: { id: true, parentTenantId: true },
               });
@@ -73,7 +73,7 @@ export async function tenantMiddleware(req: Request, res: Response, next: NextFu
       }
     }
 
-    const tenant = await basePrisma.tenant.findFirst({
+    const tenant = await systemPrisma.tenant.findFirst({
       where: { id: tenantId },
       select: { id: true, region: true, dataResidency: true },
     });
@@ -86,7 +86,7 @@ export async function tenantMiddleware(req: Request, res: Response, next: NextFu
     const hasCrossRegionConsent = req.header("x-cross-region-consent") === "true";
 
     if (requestRegion && requestRegion !== dataResidency && !hasCrossRegionConsent) {
-      await basePrisma.auditLog.create({
+      await systemPrisma.auditLog.create({
         data: {
           tenantId,
           actorId: parsed.data.userId,
@@ -107,7 +107,7 @@ export async function tenantMiddleware(req: Request, res: Response, next: NextFu
       });
     }
     if (requestRegion && requestRegion !== dataResidency && hasCrossRegionConsent) {
-      await basePrisma.auditLog.create({
+      await systemPrisma.auditLog.create({
         data: {
           tenantId,
           actorId: parsed.data.userId,

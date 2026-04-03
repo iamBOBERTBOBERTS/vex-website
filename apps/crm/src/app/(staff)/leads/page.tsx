@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useAuth } from "@/contexts/AuthContext";
 import { createLead, getLeads } from "@/lib/api";
+import { PremiumMicroInteractionWrapper, VexDataTable, VexPageHeader, VexPanel, VexTrustBadge } from "@vex/ui";
 
 export default function LeadsPage() {
   const { token } = useAuth();
@@ -37,16 +38,17 @@ export default function LeadsPage() {
   };
 
   return (
-    <main style={{ padding: "1.5rem", maxWidth: "1000px", margin: "0 auto" }}>
-      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: "1rem", marginBottom: "1rem" }}>
-        <h1 style={{ margin: 0, color: "var(--text-primary)" }}>Leads</h1>
-        <Link href="/leads/new" style={{ padding: "0.5rem 1rem", background: "var(--accent)", color: "#0d0d0d", borderRadius: "6px", fontWeight: 600, fontSize: "0.9rem" }}>Add lead</Link>
-      </div>
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr auto", gap: "0.5rem", marginBottom: "1rem" }}>
+    <main className="crm-shell">
+      <VexPageHeader
+        title="Leads"
+        subtitle="Pipeline visibility with premium handoff context."
+        action={<Link href="/leads/new" className="crm-btn crm-btn-primary">Add lead</Link>}
+      />
+      <VexPanel style={{ display: "grid", gridTemplateColumns: "1fr 1fr auto", gap: "0.5rem", marginBottom: "1rem", padding: "0.8rem" }}>
         <input value={leadName} onChange={(e) => setLeadName(e.target.value)} placeholder="Lead name" />
         <input value={leadEmail} onChange={(e) => setLeadEmail(e.target.value)} placeholder="Lead email" />
-        <button type="button" onClick={onCreateLead}>Quick add</button>
-      </div>
+        <button type="button" onClick={onCreateLead} className="crm-btn crm-btn-primary">Quick add</button>
+      </VexPanel>
       <div style={{ marginBottom: "1rem" }}>
         <label style={{ marginRight: "0.5rem" }}>Status</label>
         <select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)}>
@@ -57,7 +59,7 @@ export default function LeadsPage() {
           <option value="LOST">Lost</option>
         </select>
       </div>
-      <table>
+      <VexDataTable>
         <thead>
           <tr>
             <th>Name / Email</th>
@@ -71,14 +73,14 @@ export default function LeadsPage() {
           {items.map((l) => (
             <tr key={l.id}>
               <td>{l.name || l.email || "—"}</td>
-              <td>{l.status}</td>
+              <td><VexTrustBadge>{l.status}</VexTrustBadge></td>
               <td>{l.vehicleInterest || "—"}</td>
-              <td>{l.assignedTo?.email ?? "—"}</td>
-              <td><Link href={`/leads/${l.id}`}>View</Link></td>
+              <td>{l.assignedTo?.email ?? "—"} <span style={{ color: "var(--text-muted)", fontSize: "0.8rem" }}>entered the universe moments ago</span></td>
+              <td><PremiumMicroInteractionWrapper><Link href={`/leads/${l.id}`}>View</Link></PremiumMicroInteractionWrapper></td>
             </tr>
           ))}
         </tbody>
-      </table>
+      </VexDataTable>
       {items.length === 0 && <p style={{ color: "var(--text-muted)", marginTop: "1rem" }}>No leads.</p>}
     </main>
   );

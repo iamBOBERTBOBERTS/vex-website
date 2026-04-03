@@ -1,14 +1,12 @@
 import { Router } from "express";
-import { PrismaClient } from "@prisma/client";
-
-const prisma = new PrismaClient();
+import { healthPrisma } from "../lib/healthPrisma.js";
 
 export const healthRouter: Router = Router();
 
 healthRouter.get("/", async (_req, res) => {
   let db: "ok" | "error" = "ok";
   try {
-    await prisma.$queryRaw`SELECT 1`;
+    await healthPrisma.$queryRaw`SELECT 1`;
   } catch {
     db = "error";
   }

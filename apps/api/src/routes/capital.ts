@@ -16,27 +16,28 @@ function monthlyAmountForTier(tier: string): number {
   return 49;
 }
 
-async function getRaisePackage() {
-  const [tenants, usageSum] = await Promise.all([
-    prisma.tenant.findMany({
-      select: { billingTier: true, stripeSubscriptionStatus: true },
+async function getRaisePackage(tenantId: string) {
+  const [tenantRow, usageSum] = await Promise.all([
+    prisma.tenant.findFirst({
+      where: { id: tenantId },
+      select: { billingTier: true, stripeSubscriptionStatus: true, name: true },
     }),
     prisma.usageLog.aggregate({
       _sum: { amountUsd: true },
     }),
   ]);
-  const active = tenants.filter((t) => t.stripeSubscriptionStatus && t.stripeSubscriptionStatus !== "CANCELED");
-  const mrr = active.reduce((sum, t) => sum + monthlyAmountForTier(t.billingTier), 0);
+  const active = Boolean(tenantRow?.stripeSubscriptionStatus && tenantRow.stripeSubscriptionStatus !== "CANCELED");
+  const mrr = tenantRow && active ? monthlyAmountForTier(tenantRow.billingTier) : 0;
   const pkg = {
     generatedAt: new Date().toISOString(),
-    tenantCount: tenants.length,
-    activeTenantCount: active.length,
+    tenantCount: 1,
+    activeTenantCount: active ? 1 : 0,
     mrr,
     usageRevenueUsd: Number(usageSum._sum.amountUsd ?? 0),
     highlights: [
-      "Pilot onboarding, usage telemetry, and retention loops active",
-      "Tenant-scoped architecture with auditability and billing hooks",
-      "Investor-ready KPI package generated from live data",
+      `Tenant-scoped raise metrics (${tenantRow?.name ?? tenantId})`,
+      "Usage telemetry and billing hooks are tenant-isolated",
+      "Investor links contain only this dealer's aggregates",
     ],
   };
   return RaisePackageSchema.parse(pkg);
@@ -59,13 +60,13 @@ function buildSeriesADataRoom(input: { mrr: number; usageRevenueUsd: number; act
   });
 }
 
-capitalRouter.get("/package", requireAuth, requireRole("ADMIN", "GROUP_ADMIN"), async (_req, res) => {
-  const pkg = await getRaisePackage();
+capitalRouter.get("/package", requireAuth, requireRole("ADMIN", "GROUP_ADMIN"), async (req, res) => {
+  const pkg = await getRaisePackage(req.tenantId!);
   return res.json({ data: pkg, error: null });
 });
 
 capitalRouter.post("/investor-link", requireAuth, requireRole("ADMIN", "GROUP_ADMIN"), async (req, res) => {
-  const pkg = await getRaisePackage();
+  const pkg = await getRaisePackage(req.tenantId!);
   const token = crypto.randomBytes(24).toString("hex");
   const ttlSeconds = 60 * 30;
   const expAt = Date.now() + ttlSeconds * 1000;
@@ -105,8 +106,8 @@ capitalRouter.get("/investor/:token", async (req, res) => {
   return res.json({ data: parsed.data, error: null });
 });
 
-capitalRouter.get("/series-a/data-room", requireAuth, requireRole("ADMIN", "GROUP_ADMIN"), async (_req, res) => {
-  const pkg = await getRaisePackage();
+capitalRouter.get("/series-a/data-room", requireAuth, requireRole("ADMIN", "GROUP_ADMIN"), async (req, res) => {
+  const pkg = await getRaisePackage(req.tenantId!);
   const room = buildSeriesADataRoom(pkg);
   return res.json({ data: room, error: null });
 });
@@ -128,8 +129,8 @@ capitalRouter.post("/series-a/term-sheet", requireAuth, requireRole("ADMIN", "GR
   return res.json({ data: result, error: null });
 });
 
-capitalRouter.get("/investor-v2/live", requireAuth, requireRole("ADMIN", "GROUP_ADMIN"), async (_req, res) => {
-  const pkg = await getRaisePackage();
+capitalRouter.get("/investor-v2/live", requireAuth, requireRole("ADMIN", "GROUP_ADMIN"), async (req, res) => {
+  const pkg = await getRaisePackage(req.tenantId!);
   const room = buildSeriesADataRoom(pkg);
   return res.json({
     data: {

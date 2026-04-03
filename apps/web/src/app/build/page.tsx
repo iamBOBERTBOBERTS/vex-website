@@ -1,6 +1,6 @@
 "use client";
 
-import { Suspense, useState, useEffect, useCallback } from "react";
+import { Suspense, useState, useEffect, useCallback, useMemo } from "react";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import dynamic from "next/dynamic";
@@ -15,6 +15,9 @@ import {
   type EditionId,
   type PowertrainId,
 } from "@/components/configurator/vehicleFinish";
+import type { CameraPreset } from "@/components/configurator/VehicleScene";
+import { ConfiguratorCommissionSheet } from "@/components/configurator/ConfiguratorCommissionSheet";
+import { ConfigOptionCard } from "@/components/configurator/ConfigOptionCard";
 import styles from "./build.module.css";
 
 const ConfiguratorVehicleCanvas = dynamic(
@@ -23,7 +26,8 @@ const ConfiguratorVehicleCanvas = dynamic(
   { ssr: false, loading: () => <div className={styles.previewLoader}>Preparing studio…</div> }
 );
 
-const STEPS = ["Car", "Paint", "Wheels", "Extras", "Review"];
+const STEPS = ["Car", "Paint", "Wheels", "Extras", "Review"] as const;
+const COMMISSION_STEPS = STEPS.map((label, index) => ({ label, index }));
 
 const EDITIONS: readonly EditionId[] = ["Launch", "Heritage", "Track"];
 const POWERTRAINS: readonly PowertrainId[] = ["V12", "Twin-turbo V8", "Hybrid"];
@@ -52,6 +56,8 @@ function BuildPageInner() {
   const [vehicles, setVehicles] = useState<Vehicle[]>([]);
   const [step, setStep] = useState(0);
   const [loading, setLoading] = useState(true);
+  const [cameraPreset, setCameraPreset] = useState<CameraPreset | null>(null);
+  const [autoRotate, setAutoRotate] = useState(false);
 
   const handlePaintSelect = useCallback(
     (o: ConfigOption) => {
@@ -121,6 +127,20 @@ function BuildPageInner() {
     return acc;
   }, {});
 
+  const selectedLines = useMemo(
+    () =>
+      options
+        .filter((o) => selectedOptions[o.category] === o.id)
+        .map((o) => ({ label: o.name, delta: o.priceDelta })),
+    [options, selectedOptions]
+  );
+
+  const finishLabel = FINISH_SWATCHES.find((f) => f.id === finishId)?.label ?? finishId;
+
+  const checkoutQuery = inventoryId
+    ? `inventoryId=${encodeURIComponent(inventoryId)}`
+    : "build=1";
+
   const handleSelectVehicle = (v: Vehicle) => {
     setVehicle(v);
     setInventoryId(null);
@@ -158,7 +178,7 @@ function BuildPageInner() {
 
         <h1 className={styles.title}>Build your ride</h1>
 
-        <div className={styles.layout}>
+        <div className={vehicle ? `${styles.layout} ${styles.layoutWithVehicle}` : styles.layout}>
           {vehicle && (
             <aside className={styles.preview} aria-label="Live 3D preview">
               <div className={styles.previewFrame}>
@@ -169,7 +189,32 @@ function BuildPageInner() {
                   compact={false}
                   embed
                   premium
+                  minimal
+                  cameraPresetOverride={cameraPreset}
+                  autoRotateOverride={autoRotate}
+                  onCameraPresetChange={setCameraPreset}
+                  onAutoRotateChange={setAutoRotate}
                 />
+              </div>
+              <div className={styles.cameraTour} role="group" aria-label="Studio camera chapters">
+                <span className={styles.cameraTourLabel}>Camera chapters</span>
+                <div className={styles.cameraTourRow}>
+                  <button type="button" className={styles.cameraTourBtn} onClick={() => setCameraPreset("threeQuarter")}>
+                    Hero
+                  </button>
+                  <button type="button" className={styles.cameraTourBtn} onClick={() => setCameraPreset("side")}>
+                    Profile
+                  </button>
+                  <button type="button" className={styles.cameraTourBtn} onClick={() => setCameraPreset("front")}>
+                    Front
+                  </button>
+                  <button type="button" className={styles.cameraTourBtn} onClick={() => setCameraPreset("top")}>
+                    Detail
+                  </button>
+                  <button type="button" className={styles.cameraTourBtn} onClick={() => setAutoRotate((v) => !v)}>
+                    {autoRotate ? "Stop orbit" : "Orbit"}
+                  </button>
+                </div>
               </div>
               <div className={styles.specChips}>
                 <div className={styles.specChip}>
@@ -182,9 +227,7 @@ function BuildPageInner() {
                 </div>
                 <div className={styles.specChip}>
                   <span className={styles.specChipLabel}>Finish</span>
-                  <span className={styles.specChipValue}>
-                    {FINISH_SWATCHES.find((f) => f.id === finishId)?.label ?? finishId}
-                  </span>
+                  <span className={styles.specChipValue}>{finishLabel}</span>
                 </div>
               </div>
               <fieldset className={styles.inlineFieldset}>
@@ -263,17 +306,13 @@ function BuildPageInner() {
                 </p>
                 <div className={styles.optionGrid}>
                   {(optionsByCategory.PAINT || []).map((o) => (
-                    <button
+                    <ConfigOptionCard
                       key={o.id}
-                      type="button"
-                      className={`${styles.optionCard} ${selectedOptions.PAINT === o.id ? styles.selected : ""}`}
-                      onClick={() => handlePaintSelect(o)}
-                    >
-                      <span className={styles.optionName}>{o.name}</span>
-                      <span className={styles.optionPrice}>
-                        {o.priceDelta > 0 ? `+${formatUsd(o.priceDelta)}` : "Included"}
-                      </span>
-                    </button>
+                      name={o.name}
+                      priceLabel={o.priceDelta > 0 ? `+${formatUsd(o.priceDelta)}` : "Included"}
+                      selected={selectedOptions.PAINT === o.id}
+                      onSelect={() => handlePaintSelect(o)}
+                    />
                   ))}
                 </div>
                 {(optionsByCategory.PAINT || []).length === 0 && (
@@ -298,17 +337,13 @@ function BuildPageInner() {
                 <p className={styles.subtitle}>Tires & wheels</p>
                 <div className={styles.optionGrid}>
                   {(optionsByCategory.TIRES || []).map((o) => (
-                    <button
+                    <ConfigOptionCard
                       key={o.id}
-                      type="button"
-                      className={`${styles.optionCard} ${selectedOptions.TIRES === o.id ? styles.selected : ""}`}
-                      onClick={() => setSelectedOption("TIRES", o.id)}
-                    >
-                      <span className={styles.optionName}>{o.name}</span>
-                      <span className={styles.optionPrice}>
-                        {o.priceDelta > 0 ? `+${formatUsd(o.priceDelta)}` : "Included"}
-                      </span>
-                    </button>
+                      name={o.name}
+                      priceLabel={o.priceDelta > 0 ? `+${formatUsd(o.priceDelta)}` : "Included"}
+                      selected={selectedOptions.TIRES === o.id}
+                      onSelect={() => setSelectedOption("TIRES", o.id)}
+                    />
                   ))}
                 </div>
                 {(optionsByCategory.TIRES || []).length === 0 && (
@@ -330,17 +365,13 @@ function BuildPageInner() {
                 <p className={styles.subtitle}>Accessories & styling</p>
                 <div className={styles.optionGrid}>
                   {[...(optionsByCategory.ACCESSORIES || []), ...(optionsByCategory.STYLING || [])].map((o) => (
-                    <button
+                    <ConfigOptionCard
                       key={o.id}
-                      type="button"
-                      className={`${styles.optionCard} ${selectedOptions[o.category] === o.id ? styles.selected : ""}`}
-                      onClick={() => setSelectedOption(o.category, o.id)}
-                    >
-                      <span className={styles.optionName}>{o.name}</span>
-                      <span className={styles.optionPrice}>
-                        {o.priceDelta > 0 ? `+${formatUsd(o.priceDelta)}` : "Included"}
-                      </span>
-                    </button>
+                      name={o.name}
+                      priceLabel={o.priceDelta > 0 ? `+${formatUsd(o.priceDelta)}` : "Included"}
+                      selected={selectedOptions[o.category] === o.id}
+                      onSelect={() => setSelectedOption(o.category, o.id)}
+                    />
                   ))}
                 </div>
                 {[...(optionsByCategory.ACCESSORIES || []), ...(optionsByCategory.STYLING || [])].length === 0 && (
@@ -368,7 +399,7 @@ function BuildPageInner() {
                     {vehicle.year} · {vehicle.trimLevel}
                   </p>
                   <p className={styles.summaryLine}>
-                    Spec: {edition} · {powertrain} · {FINISH_SWATCHES.find((f) => f.id === finishId)?.label}
+                    Spec: {edition} · {powertrain} · {finishLabel}
                   </p>
                   {options
                     .filter((o) => selectedOptions[o.category] === o.id)
@@ -383,13 +414,28 @@ function BuildPageInner() {
                   <button type="button" className={styles.ctaSecondary} onClick={() => setStep(3)}>
                     Back
                   </button>
-                  <Link href="/checkout?build=1" className={styles.cta}>
+                  <Link href={`/checkout?${checkoutQuery}`} className={styles.cta}>
                     Continue to checkout
                   </Link>
                 </div>
               </section>
             )}
           </div>
+
+          {vehicle && (
+            <ConfiguratorCommissionSheet
+              className={styles.commissionSheet}
+              vehicle={vehicle}
+              edition={edition}
+              powertrain={powertrain}
+              finishLabel={finishLabel}
+              totalPrice={totalPrice}
+              selectedLines={selectedLines}
+              stepIndex={step}
+              steps={COMMISSION_STEPS}
+              checkoutQuery={checkoutQuery}
+            />
+          )}
         </div>
       </main>
     </>

@@ -164,6 +164,15 @@ model CheckoutSession {
   @@map("checkout_sessions")
 }
 
+/// Marks Stripe webhook events fully applied so retries short-circuit without re-running side effects.
+model StripeWebhookEvent {
+  id         String   @id @map("stripe_event_id")
+  type       String
+  receivedAt DateTime @default(now()) @map("received_at")
+
+  @@map("stripe_webhook_events")
+}
+
 model User {
   id           String    @id @default(cuid())
   tenantId     String    @map("tenant_id")

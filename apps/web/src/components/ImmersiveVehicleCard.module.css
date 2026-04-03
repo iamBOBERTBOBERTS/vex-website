@@ -1,0 +1,148 @@
+.cardRoot {
+  position: relative;
+}
+
+.lotTag {
+  position: absolute;
+  top: 0.75rem;
+  left: 0.75rem;
+  z-index: 2;
+  font-family: var(--font-montserrat), sans-serif;
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  color: #0a0906;
+  background: linear-gradient(90deg, var(--accent), var(--highlight));
+  padding: 0.35rem 0.55rem;
+  border-radius: 2px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.35);
+}
+
+.placeholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-muted);
+  font-size: 0.9rem;
+  background: #050608;
+}
+
+.body {
+  padding: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.mainHeader {
+  min-height: 1.55rem;
+}
+
+.badgesRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+}
+
+.badge {
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--accent);
+  width: fit-content;
+  border: 1px solid var(--accent-30);
+  border-radius: 999px;
+  padding: 0.18rem 0.5rem;
+}
+
+.title {
+  font-family: var(--font-montserrat), sans-serif;
+  font-weight: 600;
+  font-size: 1.1rem;
+  color: var(--text-primary);
+  line-height: 1.3;
+}
+
+.mainLink {
+  color: inherit;
+  text-decoration: none;
+}
+
+.mainLink:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+  border-radius: 6px;
+}
+
+.meta {
+  font-size: 0.9rem;
+  color: var(--text-muted);
+}
+
+.price {
+  font-family: var(--font-montserrat), sans-serif;
+  font-weight: 700;
+  font-size: 1.15rem;
+  color: var(--accent-bright);
+  margin-top: 0.25rem;
+  letter-spacing: 0.02em;
+}
+
+.cta {
+  font-size: 0.9rem;
+  color: var(--accent);
+  margin-top: 0.5rem;
+  transition: opacity 0.2s ease;
+}
+
+.actionsRow {
+  display: flex;
+  gap: 0.45rem;
+  align-items: center;
+  flex-wrap: wrap;
+  margin-top: 0.5rem;
+}
+
+.actionPrimary,
+.actionSecondary,
+.actionGhost {
+  min-height: 34px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.35rem 0.65rem;
+  border-radius: 8px;
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  text-decoration: none;
+}
+
+.actionPrimary {
+  background: linear-gradient(130deg, var(--accent-bright), var(--accent));
+  color: #090805;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  font-weight: 700;
+}
+
+.actionSecondary {
+  color: var(--text-primary);
+  border: 1px solid var(--line-gold);
+  background: rgba(255, 255, 255, 0.03);
+  font-weight: 600;
+}
+
+.actionGhost {
+  color: var(--accent);
+  border: 1px solid transparent;
+  font-weight: 600;
+}
+
+.actionPrimary:focus-visible,
+.actionSecondary:focus-visible,
+.actionGhost:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
