@@ -12,6 +12,7 @@
 
 - **Middleware:** `requireAuth`, `requireRole(...)` (`middleware/auth.ts`, `middleware/requireRole.ts`).
 - **Dealer staff:** `isDealerStaffRole()` in `lib/dealerRole.ts` = `STAFF | ADMIN | GROUP_ADMIN` for CRM-style controllers (customers, leads, orders, inventory mutations, dashboard, appraisals).
+- **Deal desk / appraisal queue:** `isDealDeskAppraisalRole()` delegates to `isDealerStaffRole()`; `/appraisals/*` and `/dealer/appraisals/*` both use `requireRole("STAFF", "ADMIN", "GROUP_ADMIN")` so middleware and controller checks match.
 - **`GROUP_ADMIN`:** Included on **appraisals**, **analytics**, **AI insights** routes alongside STAFF/ADMIN so group operators are not locked out of dealer tooling.
 - **Orders:** Customers see **own** orders only; staff-like roles see all (see `ordersController`).
 
@@ -21,7 +22,7 @@
 pnpm --filter @vex/api run test:e2e
 ```
 
-Runs appraisal + inventory tenant isolation scripts. CI and `ship:gate` use the same command.
+Needs **`DATABASE_URL`** and a live Postgres. The suite starts with `scripts/e2e-trust-layer-prisma.ts` (ALS + unsafe-Prisma guards), then appraisal/inventory isolation and related scripts. CI and `ship:gate` use the same command.
 
 ## Remaining audit surface
 

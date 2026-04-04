@@ -47,7 +47,7 @@ export async function list(req: Request, res: Response) {
   const user = req.user;
   if (!user) return res.status(401).json({ code: "UNAUTHORIZED", message: "Login required" });
   if (!isDealDeskAppraisalRole(user.role)) {
-    return res.status(403).json({ code: "FORBIDDEN", message: "Deal desk requires staff or admin role." });
+    return res.status(403).json({ code: "FORBIDDEN", message: "Staff, admin, or group admin required." });
   }
 
   const limit = Math.min(Number(req.query.limit) || 50, 100);
@@ -147,7 +147,7 @@ export async function getById(req: Request, res: Response) {
   const user = req.user;
   if (!user) return res.status(401).json({ code: "UNAUTHORIZED", message: "Login required" });
   if (!isDealDeskAppraisalRole(user.role)) {
-    return res.status(403).json({ code: "FORBIDDEN", message: "Deal desk requires staff or admin role." });
+    return res.status(403).json({ code: "FORBIDDEN", message: "Staff, admin, or group admin required." });
   }
 
   const { id } = req.params;
@@ -354,7 +354,7 @@ export async function openDealDesk(req: Request, res: Response) {
   const user = req.user;
   if (!user) return res.status(401).json({ code: "UNAUTHORIZED", message: "Login required" });
   if (!isDealDeskAppraisalRole(user.role)) {
-    return res.status(403).json({ code: "FORBIDDEN", message: "Deal desk requires staff or admin role." });
+    return res.status(403).json({ code: "FORBIDDEN", message: "Staff, admin, or group admin required." });
   }
   if (!req.tenantId) {
     return res.status(401).json({ code: "UNAUTHORIZED", message: "Tenant context missing" });
@@ -399,7 +399,7 @@ export async function addToInventoryFromAppraisal(req: Request, res: Response) {
   const user = req.user;
   if (!user) return res.status(401).json({ code: "UNAUTHORIZED", message: "Login required" });
   if (!isDealDeskAppraisalRole(user.role)) {
-    return res.status(403).json({ code: "FORBIDDEN", message: "Deal desk requires staff or admin role." });
+    return res.status(403).json({ code: "FORBIDDEN", message: "Staff, admin, or group admin required." });
   }
   if (!req.tenantId) {
     return res.status(401).json({ code: "UNAUTHORIZED", message: "Tenant context missing" });

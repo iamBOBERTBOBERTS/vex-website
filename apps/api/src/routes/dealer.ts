@@ -53,24 +53,24 @@ const addToInventorySchema = z.object({
   location: z.string().max(200).optional(),
 });
 
-dealerRouter.get("/appraisals", requireAuth, requireRole("STAFF", "ADMIN"), appraisalsController.list);
+dealerRouter.get("/appraisals", requireAuth, requireRole("STAFF", "ADMIN", "GROUP_ADMIN"), appraisalsController.list);
 dealerRouter.get(
   "/appraisals/:id",
   requireAuth,
-  requireRole("STAFF", "ADMIN"),
+  requireRole("STAFF", "ADMIN", "GROUP_ADMIN"),
   appraisalsController.getById
 );
 dealerRouter.post(
   "/appraisals/:id/status",
   requireAuth,
-  requireRole("STAFF", "ADMIN"),
+  requireRole("STAFF", "ADMIN", "GROUP_ADMIN"),
   validateBody(dealDeskUpdateSchema),
   appraisalsController.openDealDesk
 );
 dealerRouter.post(
   "/appraisals/:id/add-to-inventory",
   requireAuth,
-  requireRole("STAFF", "ADMIN"),
+  requireRole("STAFF", "ADMIN", "GROUP_ADMIN"),
   validateBody(addToInventorySchema),
   appraisalsController.addToInventoryFromAppraisal
 );

@@ -1,6 +1,8 @@
 /**
  * Trust Layer (Days 1–3): proves tenant-scoped Prisma client behavior from lib/tenant.ts
  * — no ALS → throws; findUnique blocked; cross-tenant id in where still returns no rows under correct tenant ALS.
+ *
+ * Requires `DATABASE_URL` and a reachable Postgres (same as `pnpm --filter @vex/api run test:e2e`).
  */
 import { prisma, runWithTenant, systemPrisma } from "../src/lib/tenant.js";
 
@@ -56,6 +58,12 @@ async function main() {
 
 main()
   .catch((e) => {
+    const msg = e instanceof Error ? e.message : String(e);
+    if (/P1001|ECONNREFUSED|connect/i.test(msg)) {
+      console.error(
+        "e2e-trust-layer-prisma: cannot reach Postgres at DATABASE_URL — start local Postgres or point DATABASE_URL at a running instance."
+      );
+    }
     console.error(e);
     process.exit(1);
   })
