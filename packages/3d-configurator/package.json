@@ -1,0 +1,29 @@
+{
+  "name": "@vex/3d-configurator",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Shared 3D vehicle configurator primitives (R3F/drei) — scaffold; expand without breaking semver on public exports.",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.js"
+    }
+  },
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch"
+  },
+  "peerDependencies": {
+    "react": "^18.3.0",
+    "three": "^0.169.0"
+  },
+  "devDependencies": {
+    "@types/react": "^18.3.0",
+    "@types/three": "^0.169.0",
+    "typescript": "^5.6.0"
+  }
+}

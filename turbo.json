@@ -41,7 +41,8 @@
         "apps/**/postcss.config.*",
         "packages/**/tsconfig.json",
         "packages/shared/**",
-        "packages/ui/**"
+        "packages/ui/**",
+        "packages/3d-configurator/**"
       ],
       "env": [
         "NEXT_PUBLIC_API_URL",
