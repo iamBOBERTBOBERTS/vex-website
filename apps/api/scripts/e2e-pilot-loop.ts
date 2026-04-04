@@ -1,7 +1,10 @@
 /**
- * Minimal pilot loop: anonymous public appraisal → tenant list (same rows CRM polls every 15s via GET /dealer/appraisals)
- * → deal desk Close with note → single DB transaction: ERP Order + Invoice + Inventory + usage (erp_order_create)
- * + RevenueEvent + erp.invoice.issued + DEAL_DESK_UPDATE audit + in-app notification + no cross-tenant leakage.
+ * Minimal pilot loop (data plane, mirrors CRM + API contract):
+ * - Public intake: createPublicAppraisal → usage PUBLIC_APPRAISAL + RevenueEvent public_appraisal_submitted + audit PUBLIC_APPRAISAL_CREATED
+ * - Dealer list semantics: newest row first, JSON notes carry VIN / mileage / condition / customer notes / image URLs for CRM columns + detail
+ * - Dealer Close: POST /dealer/appraisals/:id/status equivalent → single DB transaction: ERP Order + Invoice + Inventory + erp_order_create usage
+ *   + RevenueEvent + erp.invoice.issued + DEAL_DESK_UPDATE audit + DEAL_DESK notification + no cross-tenant leakage
+ * (CRM UI: 15s poll, banner, skeletons — not driven by Playwright here.)
  */
 import { systemPrisma } from "../src/lib/tenant.js";
 import { createPublicQuickAppraisal } from "../src/lib/appraisalService.js";
@@ -26,16 +29,64 @@ async function main() {
     },
   });
 
+  const pilotVin = "JM1BK32F581235892";
+  const pilotNote = "Pilot list notes preview for CRM truncation/tooltip";
+  const pilotImage = "https://example.com/e2e-pilot-photo.jpg";
+
   const { appraisal } = await createPublicQuickAppraisal(tenantA.id, {
+    vin: pilotVin,
     mileage: 3200,
     condition: "good",
+    notes: pilotNote,
+    images: [pilotImage],
   });
   assert(appraisal.tenantId === tenantA.id, "E2E FAILED: public appraisal not tenant-scoped");
 
-  const notesPayload = JSON.parse(appraisal.notes ?? "{}") as { source?: string; mileage?: number; condition?: string };
+  const notesPayload = JSON.parse(appraisal.notes ?? "{}") as {
+    source?: string;
+    vin?: string;
+    mileage?: number;
+    condition?: string;
+    notes?: string;
+    images?: string[];
+  };
   assert(notesPayload.source === "public_quick_appraisal", "E2E FAILED: CRM label source must be public_quick_appraisal");
   assert(notesPayload.mileage === 3200, "E2E FAILED: public notes mileage mismatch for list/detail labels");
   assert(notesPayload.condition === "good", "E2E FAILED: public notes condition mismatch");
+  assert(notesPayload.vin === pilotVin, "E2E FAILED: VIN must round-trip in notes for deal desk VIN column");
+  assert(notesPayload.notes === pilotNote, "E2E FAILED: customer notes must round-trip for CRM notes column");
+  assert(Array.isArray(notesPayload.images) && notesPayload.images[0] === pilotImage, "E2E FAILED: image URLs must round-trip for CRM thumbnails");
+
+  const publicUsage = await systemPrisma.usageLog.findFirst({
+    where: {
+      tenantId: tenantA.id,
+      kind: "PUBLIC_APPRAISAL",
+      meta: { path: ["appraisalId"], equals: appraisal.id },
+    },
+    orderBy: { createdAt: "desc" },
+  });
+  assert(Boolean(publicUsage), "E2E FAILED: PUBLIC_APPRAISAL usage log missing after public submit");
+
+  const publicAudit = await systemPrisma.auditLog.findFirst({
+    where: {
+      tenantId: tenantA.id,
+      action: "PUBLIC_APPRAISAL_CREATED",
+      entityId: appraisal.id,
+    },
+    orderBy: { createdAt: "desc" },
+  });
+  assert(Boolean(publicAudit), "E2E FAILED: PUBLIC_APPRAISAL_CREATED audit missing after public submit");
+
+  const submitRevenue = await systemPrisma.eventLog.findFirst({
+    where: {
+      tenantId: tenantA.id,
+      type: "RevenueEvent",
+      payload: { path: ["appraisalId"], equals: appraisal.id },
+    },
+    orderBy: { createdAt: "asc" },
+  });
+  const subPayload = submitRevenue?.payload as { event?: string } | null;
+  assert(subPayload?.event === "public_appraisal_submitted", "E2E FAILED: public submit RevenueEvent missing or wrong shape");
 
   const listForTenant = await systemPrisma.appraisal.findMany({
     where: { tenantId: tenantA.id },
@@ -43,6 +94,7 @@ async function main() {
     take: 20,
   });
   assert(listForTenant.some((r) => r.id === appraisal.id), "E2E FAILED: CRM-style list must include public appraisal");
+  assert(listForTenant[0]?.id === appraisal.id, "E2E FAILED: newest appraisal must sort first like GET /dealer/appraisals for immediate queue visibility");
 
   const closeResult = await updateDealDeskStatus(systemPrisma, {
     tenantId: tenantA.id,
@@ -98,6 +150,12 @@ async function main() {
   assert(Boolean(dealDeskAudit), "E2E FAILED: DEAL_DESK_UPDATE audit log missing after close");
   const deskPayload = dealDeskAudit?.payload as { note?: string } | null;
   assert(deskPayload?.note === "Pilot loop close", "E2E FAILED: close note not persisted on DEAL_DESK_UPDATE audit");
+
+  const inAppNotify = await systemPrisma.notification.findFirst({
+    where: { tenantId: tenantA.id, userId: staffA.id, type: "DEAL_DESK" },
+    orderBy: { createdAt: "desc" },
+  });
+  assert(Boolean(inAppNotify), "E2E FAILED: DEAL_DESK in-app notification row missing after close");
 
   const invoices = await listErpInvoices(systemPrisma, tenantA.id);
   assert(invoices.some((inv) => inv.orderId === closeResult.orderId), "E2E FAILED: ERP invoice list missing closed order");

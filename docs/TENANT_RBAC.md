@@ -27,3 +27,4 @@ Runs appraisal + inventory tenant isolation scripts. CI and `ship:gate` use the 
 
 - Routes that only use `requireAuth` without `requireRole` rely on **controller** checks — prefer route-level `requireRole` for new code.
 - **Public** and **pilot** routers stay unauthenticated by design; review when exposing new paths.
+

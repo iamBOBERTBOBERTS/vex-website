@@ -49,11 +49,13 @@ That runs Prisma generate, full monorepo build, `migrate deploy`, and the apprai
 
 ## 6. Related commands
 
-| Command | Purpose |
-|--------|---------|
-| `pnpm run ship:gate` | Local mirror of CI ship bar (needs `DATABASE_URL`) |
-| `pnpm run pilot:verify` | **Deployed API** smoke: set `PILOT_VERIFY_API_URL` (and optional `PILOT_VERIFY_BRANDING_DOMAIN`) |
-| `pnpm run release:pilot-check` | Turbo build + tenant E2E (`test:e2e`, needs `DATABASE_URL`) |
-| `pnpm -w turbo run build` | Compile only — insufficient alone for pilot |
+
+| Command                        | Purpose                                                                                          |
+| ------------------------------ | ------------------------------------------------------------------------------------------------ |
+| `pnpm run ship:gate`           | Local mirror of CI ship bar (needs `DATABASE_URL`)                                               |
+| `pnpm run pilot:verify`        | **Deployed API** smoke: set `PILOT_VERIFY_API_URL` (and optional `PILOT_VERIFY_BRANDING_DOMAIN`) |
+| `pnpm run release:pilot-check` | Turbo build + tenant E2E (`test:e2e`, needs `DATABASE_URL`)                                      |
+| `pnpm -w turbo run build`      | Compile only — insufficient alone for pilot                                                      |
+
 
 Stale “no tenant / no Stripe” memos: see [ENGINEERING_REALITY.md](ENGINEERING_REALITY.md).

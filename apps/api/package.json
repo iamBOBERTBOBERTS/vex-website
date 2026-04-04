@@ -16,7 +16,7 @@
     "db:push": "prisma db push",
     "db:seed": "tsx prisma/seed.ts",
     "seed:demo": "tsx prisma/seed.ts",
-    "test:e2e": "pnpm run env:check -- --require DATABASE_URL --context test:e2e && tsx scripts/e2e-appraisal-isolation.ts && tsx scripts/e2e-inventory-isolation.ts && tsx scripts/e2e-rbac-guards.ts && tsx scripts/e2e-dealer-integration.ts && tsx scripts/e2e-pilot-loop.ts && tsx scripts/e2e-erp-integration.ts",
+    "test:e2e": "pnpm run env:check -- --require DATABASE_URL --context test:e2e && tsx scripts/e2e-trust-layer-prisma.ts && tsx scripts/e2e-appraisal-isolation.ts && tsx scripts/e2e-inventory-isolation.ts && tsx scripts/e2e-rbac-guards.ts && tsx scripts/e2e-dealer-integration.ts && tsx scripts/e2e-pilot-loop.ts && tsx scripts/e2e-erp-integration.ts",
     "test:e2e:appraisal": "tsx scripts/e2e-appraisal-isolation.ts",
     "test:e2e:inventory": "tsx scripts/e2e-inventory-isolation.ts",
     "test:e2e:rbac": "tsx scripts/e2e-rbac-guards.ts",

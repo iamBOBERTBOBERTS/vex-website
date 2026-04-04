@@ -1,7 +1,7 @@
 "use client";
 
 import type { CSSProperties } from "react";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
@@ -9,6 +9,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { updateAppraisalSchema } from "@vex/shared";
 import type { AppraisalOutput } from "@vex/shared";
 import { AppraisalPdfButton } from "@/components/AppraisalPdfButton";
+import { VexSkeletonBar, VexSkeletonPulse } from "@/components/VexSkeleton";
 import { useAuth } from "@/contexts/AuthContext";
 import {
   deleteAppraisalRecord,
@@ -64,9 +65,17 @@ export default function AppraisalDetailPage() {
   const [closeModalNote, setCloseModalNote] = useState("");
   const [closeNoteError, setCloseNoteError] = useState<string | null>(null);
   const [successToast, setSuccessToast] = useState<string | null>(null);
+  const [successOrderId, setSuccessOrderId] = useState<string | null>(null);
   const [errorToast, setErrorToast] = useState<string | null>(null);
   const [pageLoading, setPageLoading] = useState(true);
+  const [lightboxUrl, setLightboxUrl] = useState<string | null>(null);
   const retryDealDeskRef = useRef<(() => void) | null>(null);
+  const modalCloseBtnRef = useRef<HTMLButtonElement>(null);
+  const lightboxCloseRef = useRef<HTMLButtonElement>(null);
+  const preModalFocusRef = useRef<HTMLElement | null>(null);
+  const modalWasOpenRef = useRef(false);
+  const loadRetryRef = useRef<HTMLButtonElement>(null);
+  const [statusAnnouncement, setStatusAnnouncement] = useState("");
 
   const {
     register,
@@ -76,6 +85,19 @@ export default function AppraisalDetailPage() {
   } = useForm<FormValues>({
     resolver: zodResolver(updateAppraisalSchema),
   });
+
+  useEffect(() => {
+    if (!appraisal) return;
+    setStatusAnnouncement(
+      `Pipeline status ${pipelineLabel(appraisal.status)}. Last updated ${new Date(appraisal.updatedAt).toLocaleString()}.`
+    );
+  }, [appraisal]);
+
+  useEffect(() => {
+    if (!loadErr) return;
+    const t = window.setTimeout(() => loadRetryRef.current?.focus(), 0);
+    return () => window.clearTimeout(t);
+  }, [loadErr]);
 
   useEffect(() => {
     if (!token || !id) return;
@@ -122,6 +144,46 @@ export default function AppraisalDetailPage() {
       .catch(() => setLoadErr("We couldn’t load this appraisal. You may not have access, or the server is unavailable."))
       .finally(() => setPageLoading(false));
   }, [token, id, reset]);
+
+  useLayoutEffect(() => {
+    if (modalAction) {
+      if (!modalWasOpenRef.current) {
+        modalWasOpenRef.current = true;
+        preModalFocusRef.current = (typeof document !== "undefined" ? document.activeElement : null) as HTMLElement | null;
+      }
+      window.setTimeout(() => modalCloseBtnRef.current?.focus(), 0);
+    } else if (modalWasOpenRef.current) {
+      modalWasOpenRef.current = false;
+      try {
+        preModalFocusRef.current?.focus?.();
+      } catch {
+        /* ignore */
+      }
+      preModalFocusRef.current = null;
+    }
+  }, [modalAction]);
+
+  useEffect(() => {
+    if (!modalAction) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape" && !dealDeskLoading) setModalAction(null);
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [modalAction, dealDeskLoading]);
+
+  useLayoutEffect(() => {
+    if (lightboxUrl) window.setTimeout(() => lightboxCloseRef.current?.focus(), 0);
+  }, [lightboxUrl]);
+
+  useEffect(() => {
+    if (!lightboxUrl) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setLightboxUrl(null);
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [lightboxUrl]);
 
   const onSubmit = async (data: FormValues) => {
     if (!token || !id) return;
@@ -182,10 +244,11 @@ export default function AppraisalDetailPage() {
       if (nextStatus === "CLOSED" && hasCloseArtifacts) {
         const oid = dd?.orderId ?? "";
         const inv = dd?.invoiceNumber ? ` · Invoice ${dd.invoiceNumber}` : "";
+        setSuccessOrderId(oid);
         setSuccessToast(`Closed successfully. Order ${oid}${inv}. Billing, revenue, and audit records are stored.`);
         setModalAction(null);
         setCloseModalNote("");
-        window.setTimeout(() => router.push("/orders"), 1200);
+        window.setTimeout(() => router.push("/orders"), 2200);
         return;
       }
       setDealDeskFeedback(`Updated: ${nextStatus}.`);
@@ -202,46 +265,48 @@ export default function AppraisalDetailPage() {
 
   if (loadErr)
     return (
-      <main style={{ padding: "1.5rem", maxWidth: "560px", margin: "0 auto" }}>
+      <main style={{ padding: "1.5rem", maxWidth: "560px", margin: "0 auto" }} role="alert" aria-live="assertive">
         <p style={{ color: "#f66" }}>{loadErr}</p>
-        <button type="button" style={{ marginTop: "0.75rem", fontWeight: 600 }} onClick={() => window.location.reload()}>
+        <button
+          ref={loadRetryRef}
+          type="button"
+          aria-label="Reload page to retry loading appraisal"
+          style={{ marginTop: "0.75rem", fontWeight: 600 }}
+          onClick={() => window.location.reload()}
+        >
           Retry
         </button>
       </main>
     );
   if (pageLoading || !appraisal)
     return (
-      <main style={{ padding: "1.5rem", maxWidth: "560px", margin: "0 auto" }} aria-busy="true">
+      <main style={{ padding: "1.5rem", maxWidth: "560px", margin: "0 auto" }} aria-busy="true" aria-label="Loading appraisal detail">
         <p style={{ color: "var(--text-muted)", marginBottom: "1rem" }}>Loading appraisal…</p>
-        <div style={{ display: "flex", flexDirection: "column", gap: "0.65rem" }}>
-          {[1, 2, 3, 4, 5].map((k) => (
-            <div
-              key={k}
-              style={{
-                height: 18,
-                borderRadius: 6,
-                background: "linear-gradient(90deg, rgba(255,255,255,0.04) 0%, rgba(255,255,255,0.1) 50%, rgba(255,255,255,0.04) 100%)",
-                backgroundSize: "200% 100%",
-                animation: "vex-detail-shimmer 1.3s ease-in-out infinite",
-              }}
-            />
-          ))}
-        </div>
-        <style>{`
-          @keyframes vex-detail-shimmer {
-            0% { background-position: 200% 0; }
-            100% { background-position: -200% 0; }
-          }
-        `}</style>
+        <VexSkeletonPulse>
+          <div style={{ display: "flex", flexDirection: "column", gap: "0.65rem" }}>
+            {[1, 2, 3, 4, 5].map((k) => (
+              <VexSkeletonBar key={k} height={18} />
+            ))}
+          </div>
+        </VexSkeletonPulse>
       </main>
     );
 
   return (
     <main style={{ padding: "1.5rem", maxWidth: "560px", margin: "0 auto", position: "relative" }}>
       <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
+      <div
+        className="sr-only"
+        style={{ position: "absolute", width: 1, height: 1, overflow: "hidden", clip: "rect(0 0 0 0)" }}
+        aria-live="polite"
+        aria-atomic="true"
+      >
+        {statusAnnouncement}
+      </div>
       {successToast && (
         <div
           role="status"
+          aria-live="assertive"
           style={{
             position: "fixed",
             top: "1rem",
@@ -257,12 +322,22 @@ export default function AppraisalDetailPage() {
             boxShadow: "0 8px 24px rgba(0,0,0,0.35)",
           }}
         >
-          {successToast}
+          <p style={{ margin: "0 0 0.5rem" }}>{successToast}</p>
+          {successOrderId ? (
+            <Link
+              href="/orders"
+              style={{ color: "#7fffd4", fontWeight: 700, textDecoration: "underline" }}
+              aria-label={`View orders list; order ${successOrderId} was created`}
+            >
+              Open orders list
+            </Link>
+          ) : null}
         </div>
       )}
       {errorToast && (
         <div
           role="alert"
+          aria-live="assertive"
           style={{
             position: "fixed",
             top: successToast ? "5.5rem" : "1rem",
@@ -278,9 +353,11 @@ export default function AppraisalDetailPage() {
             boxShadow: "0 8px 24px rgba(0,0,0,0.35)",
           }}
         >
-          <p style={{ margin: 0 }}>{errorToast}</p>
+          <p style={{ margin: "0 0 0.35rem", fontWeight: 600 }}>Could not complete deal desk action</p>
+          <p style={{ margin: 0, fontSize: "0.85rem", opacity: 0.95 }}>{errorToast}</p>
           <button
             type="button"
+            aria-label="Retry deal desk action"
             style={{ marginTop: "0.5rem", fontWeight: 600, cursor: "pointer", color: "#fff" }}
             onClick={() => {
               setErrorToast(null);
@@ -289,6 +366,52 @@ export default function AppraisalDetailPage() {
           >
             Retry
           </button>
+        </div>
+      )}
+      {lightboxUrl && (
+        <div
+          role="dialog"
+          aria-modal="true"
+          aria-label="Enlarged vehicle image"
+          style={{
+            position: "fixed",
+            inset: 0,
+            zIndex: 55,
+            background: "rgba(0,0,0,0.88)",
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            justifyContent: "center",
+            padding: "1rem",
+          }}
+          onClick={() => setLightboxUrl(null)}
+        >
+          <button
+            ref={lightboxCloseRef}
+            type="button"
+            aria-label="Close image preview"
+            onClick={(e) => {
+              e.stopPropagation();
+              setLightboxUrl(null);
+            }}
+            style={{
+              marginBottom: "0.75rem",
+              padding: "0.4rem 0.9rem",
+              borderRadius: 6,
+              border: "1px solid rgba(255,255,255,0.3)",
+              background: "rgba(0,0,0,0.5)",
+              color: "#fff",
+              cursor: "pointer",
+            }}
+          >
+            Close
+          </button>
+          <img
+            src={lightboxUrl}
+            alt="Submitted vehicle"
+            style={{ maxWidth: "min(96vw, 900px)", maxHeight: "80vh", objectFit: "contain", borderRadius: 8 }}
+            onClick={(e) => e.stopPropagation()}
+          />
         </div>
       )}
       {modalAction && (
@@ -333,6 +456,7 @@ export default function AppraisalDetailPage() {
               <label style={{ display: "flex", flexDirection: "column", gap: "0.35rem", marginBottom: "1rem" }}>
                 <span style={{ fontSize: "0.85rem" }}>Internal note (required for audit)</span>
                 <textarea
+                  id="deal-desk-close-note"
                   rows={3}
                   value={closeModalNote}
                   onChange={(e) => {
@@ -340,6 +464,8 @@ export default function AppraisalDetailPage() {
                     setCloseNoteError(null);
                   }}
                   disabled={dealDeskLoading}
+                  aria-invalid={closeNoteError ? true : undefined}
+                  aria-describedby={closeNoteError ? "deal-desk-close-note-error" : undefined}
                   placeholder="e.g. Pilot close — customer ready to sign"
                   style={{
                     width: "100%",
@@ -349,16 +475,28 @@ export default function AppraisalDetailPage() {
                     border: "1px solid rgba(255,255,255,0.12)",
                   }}
                 />
-                {closeNoteError && <p style={{ color: "#f87171", fontSize: "0.82rem", margin: 0 }}>{closeNoteError}</p>}
+                {closeNoteError && (
+                  <p id="deal-desk-close-note-error" role="alert" style={{ color: "#f87171", fontSize: "0.82rem", margin: 0 }}>
+                    {closeNoteError}
+                  </p>
+                )}
               </label>
             )}
             <div style={{ display: "flex", gap: "0.5rem", justifyContent: "flex-end" }}>
-              <button type="button" disabled={dealDeskLoading} onClick={() => setModalAction(null)}>
+              <button
+                ref={modalCloseBtnRef}
+                id="deal-desk-modal-cancel"
+                type="button"
+                disabled={dealDeskLoading}
+                aria-label="Cancel deal desk confirmation"
+                onClick={() => setModalAction(null)}
+              >
                 Cancel
               </button>
               <button
                 type="button"
                 disabled={dealDeskLoading}
+                aria-label={dealDeskLoading ? "Processing" : "Confirm deal desk action"}
                 style={{
                   padding: "0.5rem 1rem",
                   background: modalAction === "REJECT" ? "transparent" : "var(--accent)",
@@ -443,14 +581,26 @@ export default function AppraisalDetailPage() {
                 <div style={{ marginTop: "0.75rem" }}>
                   <p style={{ fontSize: "0.82rem", color: "var(--text-muted)", marginBottom: "0.35rem" }}>Images</p>
                   <div style={{ display: "flex", flexWrap: "wrap", gap: "0.5rem" }}>
-                    {imgs.map((url) => (
-                      <a key={url} href={url} target="_blank" rel="noopener noreferrer">
+                    {imgs.map((url, idx) => (
+                      <button
+                        key={url}
+                        type="button"
+                        onClick={() => setLightboxUrl(url)}
+                        aria-label={`Open submitted image ${idx + 1} in full screen`}
+                        style={{
+                          padding: 0,
+                          border: "1px solid rgba(255,255,255,0.12)",
+                          borderRadius: 6,
+                          cursor: "pointer",
+                          background: "transparent",
+                        }}
+                      >
                         <img
                           src={url}
                           alt=""
-                          style={{ width: 96, height: 72, objectFit: "cover", borderRadius: 6, border: "1px solid rgba(255,255,255,0.12)" }}
+                          style={{ width: 96, height: 72, objectFit: "cover", display: "block", borderRadius: 5 }}
                         />
-                      </a>
+                      </button>
                     ))}
                   </div>
                 </div>
@@ -494,21 +644,38 @@ export default function AppraisalDetailPage() {
         <h2 style={{ fontSize: "0.95rem", marginBottom: "0.35rem" }}>Deal desk</h2>
         <p style={{ fontSize: "0.85rem", color: "var(--text-muted)", marginBottom: "0.5rem", display: "flex", flexWrap: "wrap", alignItems: "center", gap: "0.5rem" }}>
           <span>Status:</span>
-          <span style={pipelineBadgeStyle(pipelineLabel(appraisal.status))}>{pipelineLabel(appraisal.status)}</span>
+          <span
+            style={pipelineBadgeStyle(pipelineLabel(appraisal.status))}
+            role="status"
+            aria-label={`Current pipeline status: ${pipelineLabel(appraisal.status)}`}
+          >
+            {pipelineLabel(appraisal.status)}
+          </span>
           <span style={{ opacity: 0.85 }}>
             Close runs one database transaction: ERP order + invoice + inventory + usage + revenue + audit + notification.
           </span>
         </p>
         <div style={{ display: "flex", flexWrap: "wrap", gap: "0.5rem", marginTop: "0.5rem" }}>
-          <button type="button" disabled={dealDeskLoading} onClick={() => setModalAction("ACCEPT")}>
+          <button
+            type="button"
+            disabled={dealDeskLoading}
+            aria-label="Accept appraisal on deal desk"
+            onClick={() => setModalAction("ACCEPT")}
+          >
             Accept
           </button>
-          <button type="button" disabled={dealDeskLoading} onClick={() => setModalAction("REJECT")}>
+          <button
+            type="button"
+            disabled={dealDeskLoading}
+            aria-label="Reject appraisal on deal desk"
+            onClick={() => setModalAction("REJECT")}
+          >
             Reject
           </button>
           <button
             type="button"
             disabled={dealDeskLoading}
+            aria-label="Close appraisal and create ERP order"
             onClick={() => {
               setCloseNoteError(null);
               setModalAction("CLOSED");
@@ -517,7 +684,9 @@ export default function AppraisalDetailPage() {
             Close
           </button>
         </div>
-        {dealDeskFeedback && <p style={{ color: "#7fffd4", marginTop: "0.5rem" }}>{dealDeskFeedback}</p>}
+        <div aria-live="polite" aria-atomic="true" style={{ marginTop: "0.5rem" }}>
+          {dealDeskFeedback ? <p style={{ color: "#7fffd4", margin: 0 }}>{dealDeskFeedback}</p> : null}
+        </div>
       </section>
 
       <form onSubmit={handleSubmit(onSubmit)} style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>

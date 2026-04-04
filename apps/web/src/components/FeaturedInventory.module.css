@@ -19,7 +19,8 @@
 
 .subtitle {
   font-family: var(--font-poppins), system-ui, sans-serif;
-  color: var(--text-muted);
+  /* WCAG 2 AA body text on #030304 (axe ship-gate); global --text-muted is too dim here */
+  color: #c4c2bc;
   text-align: center;
   margin-bottom: 3rem;
   text-transform: none;
