@@ -20,3 +20,4 @@ apps/web/test-results/
 apps/web/playwright-report/
 playwright-report/
 test-results/
+.vercel

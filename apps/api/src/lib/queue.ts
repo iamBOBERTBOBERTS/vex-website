@@ -2,6 +2,7 @@ import { Redis } from "ioredis";
 import { Queue, Worker, type Job } from "bullmq";
 import { runWithTenant } from "./tenant.js";
 import { prisma } from "./tenant.js";
+import { DMSService } from "./dms.js";
 import { provisionTenantDemo } from "./provision.js";
 import { sendLifecycleNotification } from "./notify.js";
 import { PilotAnalyticsService } from "./iteration.js";
@@ -420,11 +421,21 @@ async function processJob(job: Job): Promise<void> {
       return;
     }
     if (name === "dms-sync") {
+      const vendor = String(data.vendor ?? "");
+      const mode = data.mode === "full" ? "full" : "delta";
+      const dms = new DMSService();
+      const out = await dms.sync({ tenantId, vendor, mode });
       await prisma.eventLog.create({
         data: {
           tenantId,
           type: "job.dms_sync",
-          payload: { vendor: String(data.vendor ?? ""), mode: String(data.mode ?? "delta") },
+          payload: {
+            vendor,
+            mode,
+            imported: out.imported,
+            skipped: out.skipped,
+            lastSyncAt: out.lastSyncAt.toISOString(),
+          },
         },
       });
       return;
