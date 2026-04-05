@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { GlassKPI, LiquidMetalCTA, MagneticButton } from "@vex/ui";
 import { VortexHeroScene as VortexHeroWebGL, type VortexHeroBrand } from "@vex/ui/3d";
@@ -48,6 +48,8 @@ export default function VortexHeroScene() {
     triggerBurstFlash,
   } = useApexHeroOrchestration({ apexMode, heroId: "universe" });
   const [brand, setBrand] = useState<VortexHeroBrand | undefined>(undefined);
+  const [ctaHover, setCtaHover] = useState(false);
+  const ctaPulseRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   useEffect(() => {
     const root = document.documentElement;
@@ -64,6 +66,25 @@ export default function VortexHeroScene() {
     });
   }, []);
 
+  useEffect(() => {
+    if (!apexMode || !ctaHover) {
+      if (ctaPulseRef.current) {
+        clearInterval(ctaPulseRef.current);
+        ctaPulseRef.current = null;
+      }
+      return;
+    }
+    ctaPulseRef.current = setInterval(() => {
+      triggerBurstFlash();
+    }, 1350);
+    return () => {
+      if (ctaPulseRef.current) {
+        clearInterval(ctaPulseRef.current);
+        ctaPulseRef.current = null;
+      }
+    };
+  }, [apexMode, ctaHover, triggerBurstFlash]);
+
   const show3d = webgl === true && !reduced;
 
   return (
@@ -72,6 +93,7 @@ export default function VortexHeroScene() {
       id="universe"
       aria-labelledby="dealer-hero-heading"
       data-apex-hero={apexMode ? "on" : "off"}
+      data-cinematic-glsl={paintMode === "cinematicLuxury" ? "on" : "off"}
     >
       {show3d ? (
         <div className={styles.canvasWrap}>
@@ -106,11 +128,17 @@ export default function VortexHeroScene() {
             PBR showroom lighting, luxury motion, and tenant-scoped CRM — built for conversions, not templates.
           </p>
           <div className={styles.ctas}>
-            <LiquidMetalCTA strength={0.42} onLiquidFlash={apexMode ? triggerBurstFlash : undefined}>
-              <Link href="/build" className={styles.ctaPrimary}>
-                Configure your Vortex
-              </Link>
-            </LiquidMetalCTA>
+            <div
+              onPointerEnter={() => setCtaHover(true)}
+              onPointerLeave={() => setCtaHover(false)}
+              style={{ display: "inline-flex" }}
+            >
+              <LiquidMetalCTA strength={0.42} onLiquidFlash={apexMode ? triggerBurstFlash : undefined}>
+                <Link href="/build" className={styles.ctaPrimary}>
+                  Configure your Vortex
+                </Link>
+              </LiquidMetalCTA>
+            </div>
             <MagneticButton strength={0.35}>
               <Link href="/contact?intent=dealer" className={styles.ctaSecondary}>
                 Join as dealer
@@ -121,8 +149,8 @@ export default function VortexHeroScene() {
         <div className={styles.cockpit}>
           <p className={styles.cockpitTitle}>Live signals</p>
           <p className={styles.cockpitSubtitle}>Glass KPIs — same token system as CRM dashboards.</p>
-          <GlassKPI label="Configurator sessions" value="↑ 3× target" hint="Engagement vs baseline" accent="gold" />
-          <GlassKPI label="Time on site" value="40%+" hint="Hero + 3D depth" accent="emerald" />
+          <GlassKPI label="Configurator depth" value="↑ 5.5× target" hint="GLSL sliders + exploded raycast" accent="gold" />
+          <GlassKPI label="Hero dwell (v4.2)" value="+75% goal" hint="LUT + flake + Apex scroll" accent="emerald" />
         </div>
       </div>
       <HeroScrollHint />

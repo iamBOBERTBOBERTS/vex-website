@@ -97,3 +97,64 @@ pnpm -w turbo run build
 pnpm --filter @vex/web run quality:web
 pnpm dev:glsl-apex   # max cinematic: shaders + mode + apex
 ```
+
+---
+
+## Next phase: Full GLSL Apex integration & engagement electrification (v4.2)
+
+**Status:** Full advanced suite **live** in `@vex/cinematic` + hero + `/configure`: analytic thin-film **plus** 1D spectral **LUT** (`uIridescenceLUT` / `createIridescenceLUTTexture`), mouse + time, flake/clear/chrome layers; **ApexHeroScene** is the dynamic-import entry; **CTA** pulse interval syncs burst particles on hover (Apex); **exploded** configure path uses **pointer raycast** emissive highlight (`ExplodedRaycastHighlight`).
+
+### GLSL chunks activated (body paint)
+
+| Chunk | Uniforms / assets |
+|-------|-------------------|
+| Thin-film + LUT fallback | `uIridescenceLUTBlend`, `sampler2D uIridescenceLUT` (256×1 DataTexture), `uIridescenceStrength`, `uIridescenceAngle`, `uMouseInfluence` |
+| Procedural flake sparkle | `uFlakeDensity`, 3D fbm + glint, time scroll |
+| Anisotropic chrome (wheels) | `uAnisotropicChrome`, `uAnisotropyStrength` |
+| Multi-layer clear-coat | `uClearCoatIntensity`, `uClearCoatRefraction` (dual-lobe + analytic warm/cool) |
+
+### Engagement electrification primitives (wired)
+
+- **Cursor-reactive speed streaks** — `apexScrollVelocity` → `SpeedStreaks` (Apex).
+- **Scroll-orchestrated god-ray / bloom** — `apexScrollBoost` → `VortexPostFXStack`.
+- **Particle vortex logo formation** — `formationProgress` when `NEXT_PUBLIC_CINEMATIC_APEX=true` (use `dev:glsl-apex` for full stack).
+- **Magnetic liquid-metal CTA** — hover burst + **periodic** `triggerBurstFlash` while primary CTA hovered (Apex).
+- **Lenis** — global smooth scroll in `CinematicMotionProvider` (scroll refs still drive Apex math).
+
+### White-label theming hooks
+
+- `@vex/shared` `TenantCinematic3dSchema`: includes `iridescenceLUTBlend` and all v4.1 uniforms.
+- Runtime: same `CinematicPaintUniforms` merged in `HeroGltfCar` / `VortexCarMaterialGLSL`.
+
+### KPI dashboard (v4.2 hypothesis)
+
+| Metric | Target | Lever |
+|--------|--------|--------|
+| Hero dwell | +75% | LUT + mouse + flake + scroll god-rays |
+| Configurator depth | 5.5× | All uniforms + exploded raycast + glass UI |
+| Magnetic CTA → Stripe intent | 3.2× | CTA burst pulse + paint sync |
+| White-label velocity | 8× | Tenant JSON + presets |
+| Revenue | **Cinematic Apex GLSL Ultra** | Custom LUT / HDRI tier (roadmap) |
+
+### Acceptance (v4.2)
+
+- 60 fps target mid-range (manual); CI: `quality:web` smoke.
+- Lighthouse 98+ (existing LHCI).
+- Zero **new** console errors in happy path (shader compile); dynamic imports for 3D routes.
+- Playwright: `tests/cinematic-v42.spec.ts` — hero scroll + `data-cinematic-glsl` / canvas.
+
+### Verification
+
+```bash
+pnpm install --frozen-lockfile
+pnpm --filter @vex/cinematic build
+pnpm --filter @vex/shared build
+pnpm -w turbo run build
+pnpm --filter @vex/web run quality:web
+pnpm dev:apex-v42    # shaders on (see .env); combine with CINEMATIC_APEX in dev:glsl-apex for full Apex
+pnpm glsl:apex-v42   # turbo pipeline
+```
+
+### Investor narrative (v4.2)
+
+See [docs/internal/vex-cinematic-investor-narrative-v4.2.md](../internal/vex-cinematic-investor-narrative-v4.2.md).

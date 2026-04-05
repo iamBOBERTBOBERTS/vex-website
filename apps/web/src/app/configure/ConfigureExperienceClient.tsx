@@ -50,6 +50,7 @@ export function ConfigureExperienceClient({ tenantSlug }: { tenantSlug?: string 
   const [angle, setAngle] = useState(DEFAULT_CINEMATIC_UNIFORMS.iridescenceAngle);
   const [refraction, setRefraction] = useState(DEFAULT_CINEMATIC_UNIFORMS.clearCoatRefraction);
   const [anisoStr, setAnisoStr] = useState(DEFAULT_CINEMATIC_UNIFORMS.anisotropyStrength);
+  const [lutBlend, setLutBlend] = useState(DEFAULT_CINEMATIC_UNIFORMS.iridescenceLUTBlend);
   const [exploded, setExploded] = useState(false);
   const priceRef = useRef<HTMLSpanElement>(null);
 
@@ -62,8 +63,9 @@ export function ConfigureExperienceClient({ tenantSlug }: { tenantSlug?: string 
       iridescenceAngle: angle,
       clearCoatRefraction: refraction,
       anisotropyStrength: anisoStr,
+      iridescenceLUTBlend: lutBlend,
     }),
-    [flake, irid, clear, chrome, angle, refraction, anisoStr],
+    [flake, irid, clear, chrome, angle, refraction, anisoStr, lutBlend],
   );
 
   const displayPrice = useMemo(() => {
@@ -74,9 +76,10 @@ export function ConfigureExperienceClient({ tenantSlug }: { tenantSlug?: string 
       chrome * 2600 +
       angle * 800 +
       refraction * 1800 +
-      anisoStr * 900;
+      anisoStr * 900 +
+      lutBlend * 1200;
     return Math.round(BASE_PRICE + bump);
-  }, [flake, irid, clear, chrome, angle, refraction, anisoStr]);
+  }, [flake, irid, clear, chrome, angle, refraction, anisoStr, lutBlend]);
 
   const estPayment = useMemo(() => Math.round(displayPrice / 72), [displayPrice]);
 
@@ -107,7 +110,7 @@ export function ConfigureExperienceClient({ tenantSlug }: { tenantSlug?: string 
           Exploded view
         </button>
         <span style={{ fontSize: "0.72rem", color: "var(--text-muted)" }}>
-          Hotspots highlight finish zones (preview — raycast wiring in CRM slice).
+          Exploded: pointer raycast + emissive pulse on mesh under cursor; decorative hotspots when on.
         </span>
       </div>
       <div className={styles.glassSliders}>
@@ -118,9 +121,15 @@ export function ConfigureExperienceClient({ tenantSlug }: { tenantSlug?: string 
         <Slider label="Iridescence angle" value={angle} min={0} max={2.5} step={0.02} onChange={setAngle} />
         <Slider label="Clear-coat refraction" value={refraction} min={0} max={1.2} step={0.02} onChange={setRefraction} />
         <Slider label="Anisotropy strength" value={anisoStr} min={0} max={1.5} step={0.02} onChange={setAnisoStr} />
+        <Slider label="Thin-film LUT blend" value={lutBlend} min={0} max={1} step={0.02} onChange={setLutBlend} />
       </div>
       <div className={styles.viewerWrap}>
-        <CinematicCarViewer glbUrl={glbUrl} paintMode="cinematicLuxury" cinematicUniforms={cinematicUniforms} />
+        <CinematicCarViewer
+          glbUrl={glbUrl}
+          paintMode="cinematicLuxury"
+          cinematicUniforms={cinematicUniforms}
+          explodedInteractive={exploded}
+        />
         {exploded ? (
           <div className={styles.hotspots} aria-hidden>
             <span className={styles.hotspot} title="Body finish" />

@@ -196,6 +196,15 @@
       ],
       "cache": true
     },
+    "glsl:apex-v42": {
+      "dependsOn": [
+        "^build"
+      ],
+      "outputs": [
+        ".next/**"
+      ],
+      "cache": true
+    },
     "quality:3d": {
       "dependsOn": [
         "build"

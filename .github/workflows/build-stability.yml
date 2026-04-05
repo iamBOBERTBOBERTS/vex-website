@@ -57,7 +57,7 @@ jobs:
       - name: Turbo build (all packages)
         run: pnpm -w turbo run build
 
-      - name: Web visual smoke (Playwright a11y + hero canvas + Apex hooks)
+      - name: Web visual smoke (Playwright a11y + hero canvas + Apex + v4.2 GLSL hooks)
         run: |
           pnpm --filter @vex/web exec playwright install --with-deps chromium
           pnpm --filter @vex/web run test:smoke

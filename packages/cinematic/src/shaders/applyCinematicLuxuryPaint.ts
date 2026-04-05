@@ -1,4 +1,5 @@
 import * as THREE from "three";
+import { createIridescenceLUTTexture } from "./iridescenceLUT.js";
 import { DEFAULT_CINEMATIC_UNIFORMS, type CinematicPaintUniforms } from "./types.js";
 import type { CinematicLuxuryPaintOptions } from "./iridescentCarPaint.js";
 import { patchBodyPhysicalMaterial, patchChromePhysicalMaterial } from "./iridescentCarPaint.js";
@@ -18,6 +19,12 @@ export function applyCinematicLuxuryPaint(root: THREE.Object3D, opts?: Cinematic
   if (!sharedMouse) {
     sharedMouse = { value: new THREE.Vector2(0.5, 0.5) };
     root.userData.__cinematicMouse = sharedMouse;
+  }
+
+  let lut = root.userData.__cinematicIridescenceLUT as THREE.DataTexture | undefined;
+  if (!lut) {
+    lut = createIridescenceLUTTexture();
+    root.userData.__cinematicIridescenceLUT = lut;
   }
 
   const u: CinematicPaintUniforms = {
@@ -78,7 +85,7 @@ export function applyCinematicLuxuryPaint(root: THREE.Object3D, opts?: Cinematic
       if (isChrome) {
         patchChromePhysicalMaterial(phys, sharedTime, sharedMouse, u);
       } else {
-        patchBodyPhysicalMaterial(phys, sharedTime, sharedMouse, u);
+        patchBodyPhysicalMaterial(phys, sharedTime, sharedMouse, lut, u);
       }
     }
   });

@@ -3,7 +3,7 @@
 import dynamic from "next/dynamic";
 
 const VortexHeroScene = dynamic(
-  () => import("./VortexHeroScene"),
+  () => import("./ApexHeroScene"),
   {
     ssr: false,
     loading: () => (

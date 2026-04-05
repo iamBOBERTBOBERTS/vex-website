@@ -17,3 +17,4 @@ export { IRIDESCENT_PAINT_LAYER } from "./shaders/IridescentPaintGLSL.js";
 export { METALLIC_FLAKE_LAYER, METALLIC_FLAKE_NOISE_HELPERS } from "./shaders/MetallicFlakeLayer.js";
 export { MULTI_LAYER_CLEAR_COAT } from "./shaders/MultiLayerClearCoat.js";
 export { ANISOTROPIC_CHROME_LAYER } from "./shaders/AnisotropicChromeGLSL.js";
+export { createIridescenceLUTTexture } from "./shaders/iridescenceLUT.js";

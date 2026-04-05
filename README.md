@@ -23,6 +23,15 @@ cd ~/Documents/vex-website   # or: cd /path/to/your/vex-website
 - **Shader moat (GLSL + WebGPU roadmap):** [docs/plans/2026-04-05-vex-shader-moat-expansion.md](docs/plans/2026-04-05-vex-shader-moat-expansion.md)
 - **Site generation v3 (WebGPU strategy):** [docs/plans/2026-04-05-vex-website-generation-v3.md](docs/plans/2026-04-05-vex-website-generation-v3.md)
 
+### v4.2 — Full advanced GLSL Apex integration
+
+- **Live stack:** Thin-film analytic + **256×1 spectral LUT** (`uIridescenceLUT` / `iridescenceLUTBlend`), 3D flake fbm, clear-coat dual lobe + refraction term, anisotropic chrome; **mouse** uniform on hero + configurator; **Apex** scroll/god-rays/particles unchanged; **primary CTA** optional burst pulse while hovered (Apex).
+- **Configure:** All uniforms on glass sliders; **exploded** mode enables **pointer raycast** mesh highlight (`ExplodedRaycastHighlight` in `@vex/ui/3d`).
+- **Hero entry:** dynamic import via `ApexHeroScene.tsx` (re-export of `VortexHeroScene`).
+- **Dev:** `pnpm dev:apex-v42` — `NEXT_PUBLIC_CINEMATIC_SHADERS_V3=true` (full shader path). For **Apex + Mode + particles**, use `pnpm dev:glsl-apex`.
+- **Build:** `pnpm glsl:apex-v42` (Turbo task).
+- **Docs:** [docs/plans/2026-04-05-vex-cinematic-apex-v4.md](docs/plans/2026-04-05-vex-cinematic-apex-v4.md) (v4.2 section) · [internal v4.2 narrative](docs/internal/vex-cinematic-investor-narrative-v4.2.md).
+
 ### Advanced GLSL shader exploration — the visual moat
 
 - **`@vex/cinematic`** — Modular GLSL: thin-film iridescence (RGB optical-path phases), **3D fbm** metallic flake + high-exponent glints, **anisotropic chrome** (tangent-frame stretch × `anisotropyStrength`), **multi-layer clear-coat** (dual Fresnel + analytic warm/cool env blend × `clearCoatRefraction`). Injected via `onBeforeCompile` on `MeshPhysicalMaterial`; PBR base preserved.

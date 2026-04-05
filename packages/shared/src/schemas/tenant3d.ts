@@ -23,6 +23,7 @@ export const TenantCinematic3dSchema = z.object({
   iridescenceAngle: z.number().min(0).max(3).optional(),
   clearCoatRefraction: z.number().min(0).max(2).optional(),
   anisotropyStrength: z.number().min(0).max(2).optional(),
+  iridescenceLUTBlend: z.number().min(0).max(1).optional(),
 });
 
 export type TenantCinematic3d = z.infer<typeof TenantCinematic3dSchema>;
