@@ -71,7 +71,8 @@ export default function PricingPage() {
             <strong>Quantum</strong> is multi-rooftop enterprise (AI/autonomous hooks, DMS priority, SLA).
           </p>
           <p className={styles.subhead} style={{ marginTop: "0.65rem", maxWidth: "40rem", opacity: 0.88 }}>
-            Blueprint: <code>docs/plans/2026-04-05-vex-ELITE-DIGITAL-PRESENCE-v2.0.md</code>.{" "}
+            Blueprints: <code>docs/plans/2026-04-05-vex-ELITE-DIGITAL-PRESENCE-v2.0.md</code> ·{" "}
+            <code>docs/plans/2026-04-05-vex-apex-studio-configurator-v1.0.md</code> (Apex Studio).{" "}
             <Link href="/contact?intent=apex-tier">Apex quote →</Link>
             {" · "}
             <Link href="/contact?intent=quantum-tier">Quantum enterprise →</Link>

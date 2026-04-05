@@ -32,6 +32,7 @@ export * from "./schemas/autonomous.js";
 export * from "./schemas/flags.js";
 export * from "./schemas/deals.js";
 export * from "./schemas/tenant3d.js";
+export * from "./schemas/apexStudio.js";
 export * from "./tenant/tenantCinematicUniforms.js";
 export * from "./schemas/forecasting.js";
 export * from "./schemas/governance.js";

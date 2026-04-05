@@ -7,6 +7,8 @@ export const jobNameSchema = z.enum([
   "stripe-sync",
   "analytics-rollup",
   "provision-tenant",
+  /** Apex Studio — 360 / video spin export (worker stub → real renderer). */
+  "apex-studio-360-export",
 ]);
 
 export type JobName = z.infer<typeof jobNameSchema>;
@@ -65,6 +67,12 @@ export const jobPayloadSchema = z.discriminatedUnion("name", [
     tenantId: z.string(),
     tier: z.string(),
     email: z.string().email(),
+  }),
+  z.object({
+    name: z.literal("apex-studio-360-export"),
+    tenantId: z.string(),
+    buildSnapshotId: z.string(),
+    format: z.enum(["gif", "mp4"]).optional(),
   }),
 ]);
 

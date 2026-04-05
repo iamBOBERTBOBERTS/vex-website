@@ -1,6 +1,7 @@
 "use client";
 
 import React, { createContext, useContext, useState, useCallback } from "react";
+import { apexStudioBuildSnapshotSchema, type ApexStudioBuildSnapshot } from "@vex/shared";
 import type { Vehicle } from "@/lib/api";
 import type { ConfigOption } from "@/lib/api";
 import type { EditionId, FinishId, PowertrainId } from "@/components/configurator/vehicleFinish";
@@ -35,6 +36,8 @@ type BuildContextValue = BuildState & {
   setEdition: (e: EditionId) => void;
   setPowertrain: (p: PowertrainId) => void;
   totalPrice: number;
+  /** Serializable snapshot for CRM handoff, share URLs, and Apex Studio export jobs. */
+  getApexStudioSnapshot: () => ApexStudioBuildSnapshot;
   reset: () => void;
 };
 
@@ -88,6 +91,27 @@ export function BuildProvider({ children }: { children: React.ReactNode }) {
     .reduce((sum, o) => sum + o.priceDelta, 0);
   const totalPrice = basePrice + optionsTotal;
 
+  const getApexStudioSnapshot = useCallback((): ApexStudioBuildSnapshot => {
+    return apexStudioBuildSnapshotSchema.parse({
+      schemaVersion: 1,
+      vehicleId: state.vehicle?.id ?? null,
+      inventoryId: state.inventoryId,
+      finishId: state.finishId,
+      edition: state.edition,
+      powertrain: state.powertrain,
+      selectedOptions: { ...state.selectedOptions },
+      totalPriceUsd: totalPrice,
+    });
+  }, [
+    state.vehicle?.id,
+    state.inventoryId,
+    state.finishId,
+    state.edition,
+    state.powertrain,
+    state.selectedOptions,
+    totalPrice,
+  ]);
+
   const reset = useCallback(() => {
     setState(defaultState);
   }, []);
@@ -102,6 +126,7 @@ export function BuildProvider({ children }: { children: React.ReactNode }) {
     setEdition,
     setPowertrain,
     totalPrice,
+    getApexStudioSnapshot,
     reset,
   };
 

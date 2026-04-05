@@ -7,6 +7,8 @@
 
 **Branch target:** `elite-digital-presence-v1` → `main` per [PILOT_SHIP.md](../PILOT_SHIP.md).
 
+**Configurator expansion (v2.1):** [Apex Studio v1.0 plan](2026-04-05-vex-apex-studio-configurator-v1.0.md) — `/build` digital twin factory, schemas, queue stubs, Gantt.
+
 ---
 
 ## Vision — VEX aesthetic

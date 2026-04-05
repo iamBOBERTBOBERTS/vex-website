@@ -18,6 +18,7 @@ import {
 import type { CameraPreset } from "@/components/configurator/VehicleScene";
 import { ConfiguratorCommissionSheet } from "@/components/configurator/ConfiguratorCommissionSheet";
 import { ConfigOptionCard } from "@/components/configurator/ConfigOptionCard";
+import { ApexStudioEngine } from "@/components/configurator/studio";
 import styles from "./build.module.css";
 
 const ConfiguratorVehicleCanvas = dynamic(
@@ -151,7 +152,7 @@ function BuildPageInner() {
     return (
       <>
         <Header />
-        <main id="main-content" className={styles.main}>
+        <main id="main-content" className={styles.main} data-apex-studio-page="1">
           <p className={styles.loading}>Loading…</p>
         </main>
       </>
@@ -161,7 +162,7 @@ function BuildPageInner() {
   return (
     <>
       <Header />
-      <main id="main-content" className={styles.main}>
+      <main id="main-content" className={styles.main} data-apex-studio-page="1">
         <div className={styles.progress}>
           {STEPS.map((label, i) => (
             <button
@@ -176,27 +177,30 @@ function BuildPageInner() {
           ))}
         </div>
 
-        <h1 className={styles.title}>Build your ride</h1>
+        <h1 className={styles.title}>
+          Apex Studio <span className={styles.titleAccent}>— build your ride</span>
+        </h1>
 
         <div className={vehicle ? `${styles.layout} ${styles.layoutWithVehicle}` : styles.layout}>
           {vehicle && (
             <aside className={styles.preview} aria-label="Live 3D preview">
-              <div className={styles.previewFrame}>
-                <ConfiguratorVehicleCanvas
-                  finishId={finishId}
-                  edition={edition}
-                  powertrain={powertrain}
-                  compact={false}
-                  embed
-                  premium
-                  minimal
-                  cameraPresetOverride={cameraPreset}
-                  autoRotateOverride={autoRotate}
-                  onCameraPresetChange={setCameraPreset}
-                  onAutoRotateChange={setAutoRotate}
-                />
-              </div>
-              <div className={styles.cameraTour} role="group" aria-label="Studio camera chapters">
+              <ApexStudioEngine showBranding={false}>
+                <div className={styles.previewFrame}>
+                  <ConfiguratorVehicleCanvas
+                    finishId={finishId}
+                    edition={edition}
+                    powertrain={powertrain}
+                    compact={false}
+                    embed
+                    premium
+                    minimal
+                    cameraPresetOverride={cameraPreset}
+                    autoRotateOverride={autoRotate}
+                    onCameraPresetChange={setCameraPreset}
+                    onAutoRotateChange={setAutoRotate}
+                  />
+                </div>
+                <div className={styles.cameraTour} role="group" aria-label="Studio camera chapters">
                 <span className={styles.cameraTourLabel}>Camera chapters</span>
                 <div className={styles.cameraTourRow}>
                   <button type="button" className={styles.cameraTourBtn} onClick={() => setCameraPreset("threeQuarter")}>
@@ -263,6 +267,7 @@ function BuildPageInner() {
                   </div>
                 </div>
               </fieldset>
+              </ApexStudioEngine>
             </aside>
           )}
 
@@ -446,7 +451,7 @@ export default function BuildPage() {
   return (
     <Suspense
       fallback={
-        <main id="main-content" className={styles.main}>
+        <main id="main-content" className={styles.main} data-apex-studio-page="1">
           <p className={styles.loading}>Loading…</p>
         </main>
       }

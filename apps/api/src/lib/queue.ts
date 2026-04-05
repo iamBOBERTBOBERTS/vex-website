@@ -323,6 +323,25 @@ export async function enqueueDealOrchestration(data: {
   return correlationId;
 }
 
+/** Apex Studio — queue 360° spin export (stub worker logs until render pipeline ships). */
+export async function enqueueApexStudio360Export(data: {
+  tenantId: string;
+  buildSnapshotId: string;
+  format?: "gif" | "mp4";
+}): Promise<void> {
+  const q = getQueue();
+  if (!q) return;
+  await q.add(
+    "apex-studio-360-export",
+    {
+      tenantId: data.tenantId,
+      buildSnapshotId: data.buildSnapshotId,
+      format: data.format ?? "mp4",
+    },
+    { jobId: `apex360:${data.tenantId}:${data.buildSnapshotId}` }
+  );
+}
+
 let workerInstance: Worker | null = null;
 
 async function processJob(job: Job): Promise<void> {
@@ -972,6 +991,20 @@ async function processJob(job: Job): Promise<void> {
             appraisalId,
             correlationId,
             note: "Stripe Checkout session creation integrates with billing routes",
+          },
+        },
+      });
+      return;
+    }
+    if (name === "apex-studio-360-export") {
+      await prisma.eventLog.create({
+        data: {
+          tenantId,
+          type: "job.apex_studio_360_export",
+          payload: {
+            buildSnapshotId: String(data.buildSnapshotId ?? ""),
+            format: String(data.format ?? "mp4"),
+            note: "Stub — wire headless Three/ffmpeg exporter; idempotent job id per snapshot",
           },
         },
       });

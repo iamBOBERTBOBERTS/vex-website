@@ -22,7 +22,7 @@
     "start": "next start -p 3000",
     "lint": "tsc --noEmit",
     "quality:web": "pnpm run lint && pnpm run test:smoke",
-    "test:smoke": "playwright test tests/a11y.spec.ts tests/cinematic-moat.spec.ts tests/cinematic-apex.spec.ts tests/cinematic-v42.spec.ts",
+    "test:smoke": "playwright test tests/a11y.spec.ts tests/cinematic-moat.spec.ts tests/cinematic-apex.spec.ts tests/cinematic-v42.spec.ts tests/apex-studio-build.spec.ts",
     "quality:3d": "pnpm run lint",
     "test:e2e": "playwright test",
     "test:a11y": "playwright test tests/a11y.spec.ts",

@@ -203,6 +203,29 @@
   line-height: 1.2;
 }
 
+.titleAccent {
+  display: block;
+  font-size: 0.92rem;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: rgba(200, 182, 255, 0.78);
+  margin-top: 0.35rem;
+}
+
+@media (min-width: 640px) {
+  .titleAccent {
+    display: inline;
+    font-size: inherit;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    text-transform: none;
+    color: rgba(255, 255, 255, 0.55);
+    margin-top: 0;
+    margin-left: 0.35rem;
+  }
+}
+
 .subtitle {
   font-family: var(--font-poppins), sans-serif;
   color: var(--text-secondary);
