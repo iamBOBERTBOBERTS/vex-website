@@ -20,8 +20,8 @@ const VortexHeroScene = dynamic(
 
 /**
  * SSR-safe: resolves WebGL eligibility + `NEXT_PUBLIC_ENABLE_HERO_WEBGL`.
- * **vortex** → `ApexHeroScene` (R3F car, ≤512 particle budget in `@vex/ui`, bloom/god-rays).
- * **legacy** → `DealerProgramHero` (CSS vault sheen + optional video + neon sheen).
+ * **vortex** → `ApexHeroScene` / `VortexHeroScene` — GLB from `resolveHeroVehicleGlbUrl()` (`NEXT_PUBLIC_HERO_VEHICLE_GLB` or Khronos default); ≤512 particles + post stack in `@vex/ui`.
+ * **legacy** → `DealerProgramHero` (CSS vault sheen + optional **`HeroCinematicLayer`** video only — no R3F there).
  */
 export function DynamicHeroShell() {
   const mode = useHeroWebglDisplayMode();
