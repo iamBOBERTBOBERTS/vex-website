@@ -19,4 +19,4 @@ External “gap analyses” often assume **greenfield**. This repo already conta
 
 **What is still true:** no substitute for **paying pilots**, **end-to-end dealer workflows**, **CI green on `main`**, and **`pnpm run pilot:verify`** against a live API. Use `docs/PILOT_SHIP.md` for the ordered bar, not slide-deck assertions alone.
 
-**WebGL / cinematic marketing bar (separate from API pilot gate):** `docs/plans/2026-04-04-vex-ELITE-DIGITAL-PRESENCE-v1.md` §21+ (perf), §26–§27 (revenue / investor), **§28** (Cox matrix + **§28.3** automation backlog), **§29** (local IDE **autonomy** — background agent / zero recurring prompts), **§30** (production firepower / CI); do not confuse with tenant/RBAC correctness above.
+**WebGL / cinematic marketing bar (separate from API pilot gate):** `docs/plans/2026-04-04-vex-ELITE-DIGITAL-PRESENCE-v1.md` §21+ (perf), §26–§27 (revenue / investor), **§28** (Cox matrix + **§28.3** automation backlog), **§29** (local IDE **autonomy**), **§30** (**Resource Arsenal** + Turbo remote cache + WebGL profilers + `packages/3d-configurator/assets/`); do not confuse with tenant/RBAC correctness above.
