@@ -1,8 +1,12 @@
 /**
  * VEX Digital Presence v2 — luxury surface tokens (maps to CSS vars on web/CRM).
- * Use for glass, neon bloom accents, and volumetric shadow hints — not raw Tailwind grays.
+ * Canonical “crown jewel” palette: obsidian + violet–gold neon (see elite v2 plan doc).
  */
 export const vexLuxuryTokens = {
+  /** Master directive base */
+  obsidianVault: "#0A0A0A",
+  electricViolet: "#A020F0",
+  metallicGoldFoil: "#FFD700",
   voidBlack: "#050508",
   voidElevated: "#0b0d12",
   liquidMetal: "linear-gradient(135deg, rgba(212,184,106,0.95) 0%, rgba(180,190,210,0.55) 42%, rgba(201,169,98,0.88) 100%)",

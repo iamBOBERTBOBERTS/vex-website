@@ -293,6 +293,9 @@ importers:
 
   packages/ui:
     dependencies:
+      '@vex/3d-configurator':
+        specifier: workspace:*
+        version: link:../3d-configurator
       '@vex/cinematic':
         specifier: workspace:*
         version: link:../cinematic

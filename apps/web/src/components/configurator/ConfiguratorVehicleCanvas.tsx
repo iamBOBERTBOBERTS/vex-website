@@ -1,6 +1,7 @@
 "use client";
 
-import { Suspense, useCallback, useId, useState } from "react";
+import { Suspense, useCallback, useEffect, useId, useState } from "react";
+import { probeWebGPU } from "@vex/3d-configurator";
 import { Canvas } from "@react-three/fiber";
 import { Html, useProgress } from "@react-three/drei";
 import { VehicleScene, getCanvasCamera, type CameraPreset } from "./VehicleScene";
@@ -73,7 +74,18 @@ export function ConfiguratorVehicleCanvas({
   const [autoRotate, setAutoRotate] = useState(false);
   const hintId = useId();
   const webglEligible = useWebglEligible();
+  const [webgpuCapable, setWebgpuCapable] = useState<boolean | null>(null);
   const { maxDpr } = useAdaptiveEffects();
+
+  useEffect(() => {
+    let cancelled = false;
+    void probeWebGPU().then((ok) => {
+      if (!cancelled) setWebgpuCapable(ok);
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
   const cam = getCanvasCamera(compact);
   const controlledPreset = cameraPresetOverride !== undefined;
   const controlledRotate = autoRotateOverride !== undefined;
@@ -99,6 +111,7 @@ export function ConfiguratorVehicleCanvas({
       role="region"
       aria-label="3D vehicle preview"
       aria-describedby={hintId}
+      data-vex-webgpu={webgpuCapable === null ? undefined : webgpuCapable ? "1" : "0"}
     >
       {!minimal && (
         <div className={styles.toolbar}>

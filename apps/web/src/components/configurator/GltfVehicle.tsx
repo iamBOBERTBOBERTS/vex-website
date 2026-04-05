@@ -3,6 +3,7 @@
 import { useMemo } from "react";
 import * as THREE from "three";
 import { Bounds, useGLTF } from "@react-three/drei";
+import { useThree } from "@react-three/fiber";
 import type { EditionId, FinishId, PowertrainId } from "./vehicleFinish";
 import { FINISH_PHYSICAL } from "./vehicleFinish";
 
@@ -97,6 +98,37 @@ function normalizeShowroomScaleAndCenter(root: THREE.Object3D): void {
   root.position.sub(center);
 }
 
+function enhanceLoadedMaps(root: THREE.Object3D, maxAnisotropy: number): void {
+  const cap = Math.min(8, Math.max(1, maxAnisotropy));
+  const bump = (tex: THREE.Texture | null | undefined) => {
+    if (!tex || !tex.isTexture) return;
+    tex.generateMipmaps = true;
+    tex.minFilter = THREE.LinearMipmapLinearFilter;
+    tex.magFilter = THREE.LinearFilter;
+    tex.anisotropy = cap;
+    tex.needsUpdate = true;
+  };
+  root.traverse((obj) => {
+    const mesh = obj as THREE.Mesh;
+    if (!mesh.isMesh) return;
+    const mats = Array.isArray(mesh.material) ? mesh.material : [mesh.material];
+    for (const raw of mats) {
+      if (!raw) continue;
+      if (raw instanceof THREE.MeshStandardMaterial || raw instanceof THREE.MeshPhysicalMaterial) {
+        bump(raw.map);
+        bump(raw.normalMap);
+        bump(raw.roughnessMap);
+        bump(raw.metalnessMap);
+        bump(raw.aoMap);
+        bump(raw.emissiveMap);
+        if (raw instanceof THREE.MeshPhysicalMaterial) {
+          bump(raw.clearcoatNormalMap);
+        }
+      }
+    }
+  });
+}
+
 function enhanceMaterials(root: THREE.Object3D): void {
   root.traverse((obj) => {
     const mesh = obj as THREE.Mesh;
@@ -126,6 +158,8 @@ function enhanceMaterials(root: THREE.Object3D): void {
  */
 export function GltfVehicle({ url, finishId, edition, powertrain }: GltfVehicleProps) {
   const { scene } = useGLTF(url);
+  const { gl } = useThree();
+  const maxAniso = useMemo(() => gl.capabilities.getMaxAnisotropy(), [gl]);
 
   const cloned = useMemo(() => {
     const root = scene.clone(true);
@@ -139,8 +173,9 @@ export function GltfVehicle({ url, finishId, edition, powertrain }: GltfVehicleP
     });
     enhanceMaterials(root);
     applyFinishToBody(root, finishId, edition, powertrain);
+    enhanceLoadedMaps(root, maxAniso);
     return root;
-  }, [scene, url, finishId, edition, powertrain]);
+  }, [scene, url, finishId, edition, powertrain, maxAniso]);
 
   return (
     <Bounds fit clip observe margin={1.06}>

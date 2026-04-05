@@ -18,3 +18,5 @@ External “gap analyses” often assume **greenfield**. This repo already conta
 **Health checks vs tenant middleware:** `GET /health` is anonymous and runs **outside** `runWithTenant`. The app-wide `basePrisma` client uses `$use` middleware that calls `requireTenantOrThrow()` for almost all operations, so **`basePrisma.$queryRaw` in `/health` would fail** without tenant context. The intended pattern is a **small dedicated `PrismaClient`** with **no** tenant middleware — `apps/api/src/lib/healthPrisma.ts` — used only by `routes/health.ts`. Same goal as before: load balancers get a reliable DB ping without JWT or tenant headers.
 
 **What is still true:** no substitute for **paying pilots**, **end-to-end dealer workflows**, **CI green on `main`**, and **`pnpm run pilot:verify`** against a live API. Use `docs/PILOT_SHIP.md` for the ordered bar, not slide-deck assertions alone.
+
+**WebGL / cinematic marketing bar (separate from API pilot gate):** `docs/plans/2026-04-04-vex-ELITE-DIGITAL-PRESENCE-v1.md` §21–§27 — perf budgets, LOD, and investor narrative; do not confuse with tenant/RBAC correctness above.

@@ -16,7 +16,8 @@ cd ~/Documents/vex-website   # or: cd /path/to/your/vex-website
 
 ## Docs
 
-- **Elite digital presence + WebGL performance / 2026 luxury UX (single source of truth, §21+):** [docs/plans/2026-04-04-vex-ELITE-DIGITAL-PRESENCE-v1.md](docs/plans/2026-04-04-vex-ELITE-DIGITAL-PRESENCE-v1.md)
+- **Elite digital presence v2.0 (master directive — phases, Gantt, budgets):** [docs/plans/2026-04-05-vex-ELITE-DIGITAL-PRESENCE-v2.md](docs/plans/2026-04-05-vex-ELITE-DIGITAL-PRESENCE-v2.md)
+- **Elite digital presence v1 + WebGL gate / §21+ (operational detail):** [docs/plans/2026-04-04-vex-ELITE-DIGITAL-PRESENCE-v1.md](docs/plans/2026-04-04-vex-ELITE-DIGITAL-PRESENCE-v1.md)
 - **Design:** [docs/plans/2025-03-15-vex-luxury-marketplace-design.md](docs/plans/2025-03-15-vex-luxury-marketplace-design.md)
 - **Implementation plan:** [docs/plans/2025-03-15-vex-luxury-marketplace-implementation.md](docs/plans/2025-03-15-vex-luxury-marketplace-implementation.md) (includes **Digital Presence v2 — Cinematic Layer**)
 - **Digital presence v2 (elite framework):** [docs/plans/2026-04-05-vex-DIGITAL-PRESENCE-v2-ELITE.md](docs/plans/2026-04-05-vex-DIGITAL-PRESENCE-v2-ELITE.md)
@@ -78,6 +79,7 @@ cd ~/Documents/vex-website   # or: cd /path/to/your/vex-website
 
 ### Investor + cinematic surfaces
 
+- **Cinematic hero → conversion (hypothesis, measure before claiming):** Qualified traffic exposed to **vortex** hero (`DynamicHeroShell` → `ApexHeroScene`) + 3D configurator path is modeled for **15–40%** uplift vs flat baseline — instrument funnels first; see [elite v2 plan](docs/plans/2026-04-05-vex-ELITE-DIGITAL-PRESENCE-v2.md#monetization-tiers-illustrative--product--gtm).
 - **Primary investor preview:** the **cinematic homepage** at `/` — full-viewport `VortexHeroScene` (`@vex/ui/3d`) + liquid-metal CTAs + tenant-tinted particles/iridescent paint; best “live product” demo for decks and pilots (run `pnpm dev:web`, `pnpm dev:web:cinematic`, or `pnpm --filter @vex/web run dev:moat` from repo root).
 - **Investor (lightweight):** [apps/web/src/app/investor/page.tsx](apps/web/src/app/investor/page.tsx) → `/investor` when deployed.
 - **Investor deck:** `/investor-deck`.

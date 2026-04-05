@@ -63,6 +63,11 @@ export default function PricingPage() {
           <p className={styles.eyebrow}>Dealer SaaS</p>
           <h1 className={styles.title}>Pricing that scales with your lot</h1>
           <p className={styles.subhead}>Start in minutes. Upgrade anytime. Your brand stays front-and-center.</p>
+          <p className={styles.subhead} style={{ marginTop: "0.75rem", maxWidth: "40rem", opacity: 0.92 }}>
+            <strong>Apex / cinematic tier:</strong> white-label 3D hero + configurator embeds tie to MRR — contact us for a quote.
+            Execution blueprint: <code>docs/plans/2026-04-05-vex-ELITE-DIGITAL-PRESENCE-v2.md</code> in the repo.{" "}
+            <Link href="/contact?intent=apex-tier">Request Apex pricing →</Link>
+          </p>
         </div>
 
         <div className={styles.toggleRow} aria-label="Billing interval">

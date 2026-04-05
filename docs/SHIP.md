@@ -3,7 +3,8 @@
 **Ordered runbook:** [PILOT_SHIP.md](PILOT_SHIP.md) — execute those steps in sequence.  
 **Dealer-ready line (API live):** `PILOT_VERIFY_API_URL=… pnpm run pilot:verify`.
 
-This page is a short overview; **PILOT_SHIP.md** is the canonical checklist (including GitHub branch protection for `ci / build-and-api-e2e`).
+This page is a short overview; **PILOT_SHIP.md** is the canonical checklist (including GitHub branch protection for `ci / build-and-api-e2e`).  
+**Marketing WebGL + luxury UX budgets (non-blocking for pilot gate):** `docs/plans/2026-04-04-vex-ELITE-DIGITAL-PRESENCE-v1.md` §21+.
 
 This is the minimum **operational** bar between “code exists” and “we can put a dealer on it.” Engineering ships **process + proof**; GTM ships **dealers**.
 

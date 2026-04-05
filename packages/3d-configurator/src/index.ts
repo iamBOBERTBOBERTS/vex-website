@@ -15,6 +15,38 @@ export const VEX_WEBGL_PERF = {
   preferWebGL2: true,
 } as const;
 
+/**
+ * Instancing / batching targets (hero fleet, inventory mini-previews) — enforce in Chrome Performance.
+ * Single-mesh GLB + `THREE.InstancedMesh` for repeated bodies; particles = one `THREE.Points` + drawRange LOD.
+ */
+export const VEX_INSTANCING_SPEC = {
+  /** Max instanced exotic bodies visible at full detail before LOD swap. */
+  heroFleetInstancesFull: 4,
+  /** Grid preview: prefer one shared geometry + instanced transforms. */
+  inventoryPreviewMaxDrawn: 12,
+} as const;
+
+/** Particle counts per context; all values ≤ `VEX_WEBGL_PERF.targetMaxParticlePoints`. */
+export const VEX_PARTICLE_LOD_BUDGETS = {
+  backgroundOrHidden: 128,
+  narrowMobile: 256,
+  tablet: 320,
+  desktop: 512,
+} as const;
+
+/** Runtime particle budget for `ParticleVortex` (tab visibility + viewport width). SSR: full cap. */
+export function resolveParticlePointBudget(): number {
+  const cap = VEX_WEBGL_PERF.targetMaxParticlePoints;
+  if (typeof window === "undefined") return cap;
+  if (typeof document !== "undefined" && document.hidden) {
+    return Math.min(VEX_PARTICLE_LOD_BUDGETS.backgroundOrHidden, cap);
+  }
+  const w = window.innerWidth;
+  if (w < 480) return Math.min(VEX_PARTICLE_LOD_BUDGETS.narrowMobile, cap);
+  if (w < 1024) return Math.min(VEX_PARTICLE_LOD_BUDGETS.tablet, cap);
+  return Math.min(VEX_PARTICLE_LOD_BUDGETS.desktop, cap);
+}
+
 /** Sync probe: WebGL2 or WebGL1 context creation (client only). */
 export function shouldUseWebGL(): boolean {
   if (typeof window === "undefined") return true;

@@ -2,7 +2,7 @@
 
 **Date:** 2026-04-04 (updated live snapshot)  
 **Branch:** `elite-digital-presence-v1` (from `cursor/pilot-appraisal-loop` @ `1e84177`)  
-**Status:** Active blueprint + **live partial implementation** (see §0). Phased work continues; this file is the **single stakeholder source of truth** — other repo markdown should **link here** rather than duplicate full specs.
+**Status:** Active blueprint + **live partial implementation** (see §0). **Master phased roadmap:** [2026-04-05-vex-ELITE-DIGITAL-PRESENCE-v2.md](2026-04-05-vex-ELITE-DIGITAL-PRESENCE-v2.md). This file remains the **WebGL gate + perf budget** detail; v2 carries Gantt + tier narrative.
 
 **Reality check:** The items below describe the **target experience** plus **what is already shipped**. Shipping requires multiple sprints: 3D performance budgets, asset pipelines, a11y fallbacks, and load testing. Each phase must pass `pnpm -w turbo run build` and scoped quality gates.
 
@@ -260,10 +260,12 @@ The first viewport should read as an **obsidian vault**: soft **violet–gold** 
 |--------|--------|--------|
 | Frame budget | **60 fps** on mid-range laptop + flagship mobile | Chrome Performance panel; throttle particles under load |
 | Draw calls | **&lt;100 / frame** after batching | Instancing for fleets/particles; merge static meshes; avoid per-frame material churn |
-| Particles | **≤512 points** default hero vortex (tunable); LOD when off-screen | Throttle `useFrame` work; Apex formation already eased |
-| Textures | **Mipmaps on**; atlases for trim sheets | Worker/async decode for glTF (roadmap: `THREE.LoadingManager` + `KTX2Loader` where applicable) |
-| Post-processing | **Efficient stack** — bloom + vignette + DOF via `@react-three/postprocessing`; **no** full deferred rewrite until profiling proves need | `VortexPostFXStack` scales with `apexScrollBoost` |
-| WebGPU | **Progressive enhancement** — `probeWebGPU()` in `@vex/3d-configurator`; **WebGL2 remains canonical** until TSL parity path ships | Feature-detect only; do not branch user-visible contracts |
+| Particles | **≤512** cap; **LOD via `drawRange`** | Live: `resolveParticlePointBudget()` in `@vex/3d-configurator` → **128** hidden tab, **256** &lt;480px, **320** &lt;1024px, **512** desktop — `ParticleVortex` updates only active vertices |
+| Instancing | **`VEX_INSTANCING_SPEC`** | `heroFleetInstancesFull: 4`, `inventoryPreviewMaxDrawn: 12` — one `Points` + instanced bodies beats N full scenes |
+| Textures | **Mipmaps + anisotropy** on loaded maps | Live: `GltfVehicle` `enhanceLoadedMaps` (mipmap min filter, aniso ≤8); atlases for trim sheets remain roadmap |
+| Post-processing | **Forward + EffectComposer** (not full deferred) | Showroom: bloom + **subtle chroma** + vignette; Apex: `VortexPostFXStack` (bloom, DOF, god-rays, chroma, grain). **Deferred** only if profiling mandates |
+| WebGPU | **Progressive enhancement** | `probeWebGPU()`; **WebGL2 canonical**; configurator exposes `data-vex-webgpu` for analytics when WebGL path is on |
+| Model IO | **Main-thread glTF today** | Roadmap: `KTX2Loader` + optional **worker** decode / `MeshoptDecoder`; keep **Suspense** + `preloadVehicleGltf` for perceived speed |
 
 **Feature flags:** `NEXT_PUBLIC_ENABLE_HERO_WEBGL` — when `0` / `false`, `useWebglEligible` forces **static** previews (configurator + inventory 3D off). Documented in `apps/web/.env.local.example`.
 
@@ -273,9 +275,9 @@ The first viewport should read as an **obsidian vault**: soft **violet–gold** 
 |------|-----|
 | `legacy` | **`DealerProgramHero`** — CSS vault sheen, optional **`HeroCinematicLayer`** video, **`VaultNeonCursorSheen`** (violet radial follow-cursor, **off** under `prefers-reduced-motion`), existing **`HeroParticleField`** |
 | `pending` | Full-viewport `#0a0a0a` placeholder until client measures WebGL |
-| `vortex` | **`ApexHeroScene`** → `@vex/ui/3d` **`VortexHeroScene`** — GLTF digital twin, **`ParticleVortex`** (≤**180** points today; **≤512** budget in `VEX_WEBGL_PERF` for fleet/hero iterations), **`VortexPostFXStack`** bloom/god-rays, **`useApexHeroOrchestration`** scroll velocity |
+| `vortex` | **`ApexHeroScene`** → `@vex/ui/3d` **`VortexHeroScene`** — GLTF digital twin, **`ParticleVortex`** (**512** points, scroll + pointer-reactive; cap = `VEX_WEBGL_PERF.targetMaxParticlePoints`), **`VortexPostFXStack`** bloom/god-rays, **`useApexHeroOrchestration`** scroll velocity |
 
-**Lighthouse CI:** `apps/web/lighthouserc.json` asserts performance ≥0.8, a11y ≥0.9 (URLs `/`, `/inventory`, `/build`). **100/100** is a **stretch goal** on production hardware + tuned assets — raise assertions only after baselines are green in CI.
+**Lighthouse CI:** `apps/web/lighthouserc.json` asserts performance ≥0.8, a11y ≥0.9 (URLs `/`, `/inventory`, `/build`). **100/100** is **not** guaranteed with a WebGL hero (main-thread + GPU cost); treat **0.9+ perf + 0.9+ a11y** as the realistic CI bar until static/LQIP variants are A/B tuned — then revisit thresholds.
 
 ---
 
@@ -288,6 +290,9 @@ The first viewport should read as an **obsidian vault**: soft **violet–gold** 
 | **Expressive yet accessible** | `prefers-reduced-motion` gates video (`HeroCinematicLayer`), WebGL (`shouldUseWebGL`), hero shimmer; **WCAG** via Lighthouse a11y gate |
 | **Glanceable / safe UI** | Large tap targets on configurator toolbar; CRM glass **metric** patterns (`@vex/ui` enterprise widgets) |
 | **AI-first / multimodal** | Phased: AI co-pilot strings in configurator copy; voice — product backlog (no blocking ship) |
+| **Quiet luxury / anti-template** | Obsidian base + restrained violet–gold; no stock “dealer carousel” trope on `/` |
+| **Performance as craft** | Particle LOD + drawRange, `maxDpr` cap, static fallback parity — “expensive” = **smooth**, not busy |
+| **Trust + motion safety** | `prefers-reduced-motion`, `shouldUseWebGL()`, legal/footer clarity on investor routes |
 
 ---
 
@@ -303,6 +308,7 @@ apps/web
 │   └── (CINEMATIC_HERO_V2 off) DealerProgramHero only
 ├── ConfiguratorPreview / ConfiguratorVehicleCanvas → VehicleScene
 │     └── useWebglEligible (+ NEXT_PUBLIC_ENABLE_HERO_WEBGL) → Canvas | StaticVehicleFallback
+│     └── `data-vex-webgpu` on wrapper after `probeWebGPU()` (analytics / future material path)
 └── InventoryVehicleViewer (same gating)
 
 apps/crm
@@ -327,7 +333,8 @@ apps/crm
 
 ## 25. Documentation corpus — cross-links (policy)
 
-- **Entry points** carrying a one-line pointer to this file: `PROJECT_SPACE.md`, `AGENTS.md`, `README.md` (Docs section), and §14 of this document.
+- **Entry points** (one line each, no full paste of §21–§27): `PROJECT_SPACE.md`, `AGENTS.md`, `README.md`, `docs/SHIP.md`, `docs/ENGINEERING_REALITY.md`, plus master phased roadmap [2026-04-05-vex-ELITE-DIGITAL-PRESENCE-v2.md](2026-04-05-vex-ELITE-DIGITAL-PRESENCE-v2.md).
+- **Integration / vendor playbooks** (`docs/*PLAYBOOK*.md`, `docs/leads-webhooks.md`, etc.): add the same single-line pointer **only when** the doc touches marketing surfaces, web perf, or pilot demo narrative — avoid boilerplate on pure API memos.
 - **Do not** duplicate §21–§25 into playbooks; **link** here for WebGL + luxury UX supremacy specs.
 
 ---
@@ -336,10 +343,10 @@ apps/crm
 
 | Pillar | Tie to performance |
 |--------|---------------------|
-| **Conversion** | Hypothesis: **60 fps** **digital-twin hero** (`vortex` mode) + configurator ↑ scroll depth, CTA intent, and `/build` sessions vs **legacy** CSS vault baseline — instrument PostHog/GA4 (no hard % until A/B). |
-| **Provisioning** | **BullMQ** `tenant-3d-demo-seed` (§16): on tenant create, enqueue once — copy demo glTF URLs to tenant storage or reference CDN; seed demo `Inventory` rows; `AuditLog` `TENANT_3D_DEMO_SEEDED`; retry + DLQ on failure. |
-| **Apex tier (~$499/mo illustrative)** | White-label **3D portal** + **iframe/signed embed**, **AR-ready** configurator export (roadmap), **branded CRM** glass cockpit, **custom domain** + SSL, valuation quota bump vs Pro. |
-| **Pilot** | **90 s** self-serve (§18): Stripe → tenant → email → **`DynamicHeroShell`** vault first paint + optional **AI personalization** teaser copy on `/portal` (roadmap). |
+| **Conversion** | **60 fps target** for **digital-twin** hero (`vortex`) + configurator (`dpr` cap, particle LOD, texture mips) → hypothesis: ↑ scroll depth, CTA intent, `/build` depth vs **legacy** vault — instrument PostHog/GA4 (**no** hard % until A/B). |
+| **Provisioning** | **BullMQ** `tenant-3d-demo-seed` (§16): idempotent job seeds **branded 3D** demo assets + demo inventory; **phygital** handoff = live GLB + static fallback for email/social. |
+| **Apex tier (~$499/mo illustrative)** | White-label **3D portals**, **AR-ready** embed path (export roadmap), **bespoke CRM** cockpit (glass + metric orbs), **custom domains** + SSL, valuation quota vs Pro. |
+| **Pilot** | **90 s** playbook (§18): Stripe → tenant → **private vault** first paint (`legacy` or `vortex` per flags) + CRM login; **AI personalization** teaser on `/portal` (roadmap) stays **consent + tenant-scoped**. |
 
 ---
 

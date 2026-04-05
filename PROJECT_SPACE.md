@@ -33,7 +33,8 @@ Use this file as the primary command center for execution.
 - Reality check memo: `docs/ENGINEERING_REALITY.md`
 - Competitive execution system: `docs/VEX_COMPETITIVE_EXECUTION_PLAN_2026-04-02.md`
 - **Digital presence v2 (elite luxury framework):** `docs/plans/2026-04-05-vex-DIGITAL-PRESENCE-v2-ELITE.md`
-- **Elite digital presence v1 (WebGL perf + 2026 luxury UX — §21+):** `docs/plans/2026-04-04-vex-ELITE-DIGITAL-PRESENCE-v1.md`
+- **Elite digital presence v2.0 (master directive + Gantt):** `docs/plans/2026-04-05-vex-ELITE-DIGITAL-PRESENCE-v2.md`
+- **Elite digital presence v1 (WebGL gate + §21+):** `docs/plans/2026-04-04-vex-ELITE-DIGITAL-PRESENCE-v1.md`
 
 ## Standard Commands
 
