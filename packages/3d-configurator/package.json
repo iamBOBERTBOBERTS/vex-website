@@ -15,7 +15,8 @@
   },
   "scripts": {
     "build": "tsc",
-    "dev": "tsc --watch"
+    "dev": "tsc --watch",
+    "lint": "tsc --noEmit"
   },
   "peerDependencies": {
     "react": "^18.3.0",

@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "next dev -p 3002",
     "build": "rm -rf .next && next build",
+    "lint": "tsc --noEmit",
     "start": "next start -p 3002",
     "test:mobile": "tsx scripts/test-mobile.ts",
     "test:enterprise": "tsx scripts/test-enterprise.ts",

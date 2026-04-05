@@ -27,6 +27,7 @@
     "build:api": "pnpm --filter @vex/api build",
     "build:web": "pnpm --filter @vex/web build",
     "build:crm": "pnpm --filter @vex/crm build",
+    "lint": "turbo run lint",
     "quality:web": "pnpm --filter @vex/web run test:e2e && pnpm --filter @vex/web run test:smoke && pnpm --filter @vex/web run test:lighthouse",
     "cinematic:build": "turbo run cinematic:build",
     "cinematic:hero": "turbo run cinematic:hero",

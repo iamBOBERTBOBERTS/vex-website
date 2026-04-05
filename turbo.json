@@ -5,6 +5,7 @@
     "pnpm-workspace.yaml",
     "package.json",
     ".editorconfig",
+    ".nvmrc",
     ".github/workflows/**"
   ],
   "globalEnv": [
@@ -137,9 +138,14 @@
       "persistent": true
     },
     "lint": {
+      "dependsOn": [
+        "^build"
+      ],
+      "cache": true,
       "outputs": [],
       "inputs": [
-        "**/*.{ts,tsx,js,jsx}"
+        "**/*.{ts,tsx,js,jsx}",
+        "**/tsconfig.json"
       ]
     },
     "quality:web": {

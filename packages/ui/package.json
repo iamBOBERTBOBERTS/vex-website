@@ -19,7 +19,8 @@
   },
   "scripts": {
     "build": "tsc",
-    "dev": "tsc --watch"
+    "dev": "tsc --watch",
+    "lint": "tsc --noEmit"
   },
   "dependencies": {
     "@vex/3d-configurator": "workspace:*",
