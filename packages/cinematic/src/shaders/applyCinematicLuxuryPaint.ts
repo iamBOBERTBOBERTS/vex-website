@@ -14,6 +14,12 @@ export function applyCinematicLuxuryPaint(root: THREE.Object3D, opts?: Cinematic
   const sharedTime: THREE.IUniform<number> = { value: 0 };
   root.userData.__cinematicSharedTime = sharedTime;
 
+  let sharedMouse = root.userData.__cinematicMouse as THREE.IUniform<THREE.Vector2> | undefined;
+  if (!sharedMouse) {
+    sharedMouse = { value: new THREE.Vector2(0.5, 0.5) };
+    root.userData.__cinematicMouse = sharedMouse;
+  }
+
   const u: CinematicPaintUniforms = {
     ...DEFAULT_CINEMATIC_UNIFORMS,
     ...opts?.uniforms,
@@ -70,9 +76,9 @@ export function applyCinematicLuxuryPaint(root: THREE.Object3D, opts?: Cinematic
       phys.iridescenceThicknessRange = [100, 420];
 
       if (isChrome) {
-        patchChromePhysicalMaterial(phys, sharedTime, u);
+        patchChromePhysicalMaterial(phys, sharedTime, sharedMouse, u);
       } else {
-        patchBodyPhysicalMaterial(phys, sharedTime, u);
+        patchBodyPhysicalMaterial(phys, sharedTime, sharedMouse, u);
       }
     }
   });

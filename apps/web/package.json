@@ -14,6 +14,7 @@
     "webgpu:build": "next build",
     "glsl:build": "next build",
     "cinematic:apex": "next build",
+    "glsl:apex": "next build",
     "start": "next start -p 3000",
     "lint": "tsc --noEmit",
     "quality:web": "pnpm run lint && pnpm run test:smoke",

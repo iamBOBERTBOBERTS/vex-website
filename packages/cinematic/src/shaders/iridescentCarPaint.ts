@@ -18,6 +18,9 @@ uniform float uIridescenceStrength;
 uniform float uClearCoatIntensity;
 uniform float uAnisotropicChrome;
 uniform float uIridescenceAngle;
+uniform float uClearCoatRefraction;
+uniform float uAnisotropyStrength;
+uniform vec2 uMouseInfluence;
 `;
 
 /** Advanced GLSL body: iridescent thin-film + procedural flake + multi-layer clear-coat. */
@@ -57,14 +60,18 @@ ${METALLIC_FLAKE_NOISE_HELPERS}
 function attachCinematicUniforms(
   shader: { uniforms: Record<string, THREE.IUniform> },
   sharedTime: THREE.IUniform<number>,
+  sharedMouse: THREE.IUniform<THREE.Vector2>,
   u: CinematicPaintUniforms
 ): void {
   shader.uniforms.uCinematicTime = sharedTime;
+  shader.uniforms.uMouseInfluence = sharedMouse;
   shader.uniforms.uFlakeDensity = { value: u.flakeDensity };
   shader.uniforms.uIridescenceStrength = { value: u.iridescenceStrength };
   shader.uniforms.uClearCoatIntensity = { value: u.clearCoatIntensity };
   shader.uniforms.uAnisotropicChrome = { value: u.anisotropicChrome };
   shader.uniforms.uIridescenceAngle = { value: u.iridescenceAngle };
+  shader.uniforms.uClearCoatRefraction = { value: u.clearCoatRefraction };
+  shader.uniforms.uAnisotropyStrength = { value: u.anisotropyStrength };
 }
 
 /**
@@ -74,11 +81,12 @@ function attachCinematicUniforms(
 export function patchBodyPhysicalMaterial(
   phys: THREE.MeshPhysicalMaterial,
   sharedTime: THREE.IUniform<number>,
+  sharedMouse: THREE.IUniform<THREE.Vector2>,
   uniforms: CinematicPaintUniforms
 ): void {
   phys.onBeforeCompile = (shader) => {
     injectGlslPreamble(shader);
-    attachCinematicUniforms(shader, sharedTime, uniforms);
+    attachCinematicUniforms(shader, sharedTime, sharedMouse, uniforms);
     patchOutputFragment(shader, BODY_INJECT);
   };
   phys.needsUpdate = true;
@@ -87,11 +95,17 @@ export function patchBodyPhysicalMaterial(
 export function patchChromePhysicalMaterial(
   phys: THREE.MeshPhysicalMaterial,
   sharedTime: THREE.IUniform<number>,
+  sharedMouse: THREE.IUniform<THREE.Vector2>,
   uniforms: CinematicPaintUniforms
 ): void {
   phys.onBeforeCompile = (shader) => {
-    shader.fragmentShader = shader.fragmentShader.replace("#include <common>", `#include <common>\n${UNIFORM_DECL}`);
-    attachCinematicUniforms(shader, sharedTime, uniforms);
+    shader.fragmentShader = shader.fragmentShader.replace(
+      "#include <common>",
+      `#include <common>
+${UNIFORM_DECL}
+`
+    );
+    attachCinematicUniforms(shader, sharedTime, sharedMouse, uniforms);
     patchOutputFragment(shader, CHROME_INJECT);
   };
   phys.needsUpdate = true;

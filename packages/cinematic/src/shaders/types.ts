@@ -4,8 +4,12 @@ export type CinematicPaintUniforms = {
   iridescenceStrength: number;
   clearCoatIntensity: number;
   anisotropicChrome: number;
-  /** Thin-film phase scale — higher = faster hue cycling across curvature */
+  /** Thin-film phase scale — pseudo optical thickness (Belcour-style path) */
   iridescenceAngle: number;
+  /** Secondary clear-coat refraction / env blend (0–1) */
+  clearCoatRefraction: number;
+  /** Scales tangent-space anisotropic chrome lobes (wheels / trim) */
+  anisotropyStrength: number;
 };
 
 export const DEFAULT_CINEMATIC_UNIFORMS: CinematicPaintUniforms = {
@@ -14,4 +18,6 @@ export const DEFAULT_CINEMATIC_UNIFORMS: CinematicPaintUniforms = {
   clearCoatIntensity: 1,
   anisotropicChrome: 0.72,
   iridescenceAngle: 1,
+  clearCoatRefraction: 0.55,
+  anisotropyStrength: 1,
 };

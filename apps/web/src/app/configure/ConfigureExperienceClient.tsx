@@ -48,6 +48,8 @@ export function ConfigureExperienceClient({ tenantSlug }: { tenantSlug?: string 
   const [clear, setClear] = useState(DEFAULT_CINEMATIC_UNIFORMS.clearCoatIntensity);
   const [chrome, setChrome] = useState(DEFAULT_CINEMATIC_UNIFORMS.anisotropicChrome);
   const [angle, setAngle] = useState(DEFAULT_CINEMATIC_UNIFORMS.iridescenceAngle);
+  const [refraction, setRefraction] = useState(DEFAULT_CINEMATIC_UNIFORMS.clearCoatRefraction);
+  const [anisoStr, setAnisoStr] = useState(DEFAULT_CINEMATIC_UNIFORMS.anisotropyStrength);
   const [exploded, setExploded] = useState(false);
   const priceRef = useRef<HTMLSpanElement>(null);
 
@@ -58,14 +60,23 @@ export function ConfigureExperienceClient({ tenantSlug }: { tenantSlug?: string 
       clearCoatIntensity: clear,
       anisotropicChrome: chrome,
       iridescenceAngle: angle,
+      clearCoatRefraction: refraction,
+      anisotropyStrength: anisoStr,
     }),
-    [flake, irid, clear, chrome, angle],
+    [flake, irid, clear, chrome, angle, refraction, anisoStr],
   );
 
   const displayPrice = useMemo(() => {
-    const bump = flake * 4200 + irid * 3800 + clear * 2100 + chrome * 2600 + angle * 800;
+    const bump =
+      flake * 4200 +
+      irid * 3800 +
+      clear * 2100 +
+      chrome * 2600 +
+      angle * 800 +
+      refraction * 1800 +
+      anisoStr * 900;
     return Math.round(BASE_PRICE + bump);
-  }, [flake, irid, clear, chrome, angle]);
+  }, [flake, irid, clear, chrome, angle, refraction, anisoStr]);
 
   const estPayment = useMemo(() => Math.round(displayPrice / 72), [displayPrice]);
 
@@ -105,6 +116,8 @@ export function ConfigureExperienceClient({ tenantSlug }: { tenantSlug?: string 
         <Slider label="Clear-coat boost" value={clear} min={0} max={2} step={0.02} onChange={setClear} />
         <Slider label="Chrome anisotropy" value={chrome} min={0} max={1.5} step={0.02} onChange={setChrome} />
         <Slider label="Iridescence angle" value={angle} min={0} max={2.5} step={0.02} onChange={setAngle} />
+        <Slider label="Clear-coat refraction" value={refraction} min={0} max={1.2} step={0.02} onChange={setRefraction} />
+        <Slider label="Anisotropy strength" value={anisoStr} min={0} max={1.5} step={0.02} onChange={setAnisoStr} />
       </div>
       <div className={styles.viewerWrap}>
         <CinematicCarViewer glbUrl={glbUrl} paintMode="cinematicLuxury" cinematicUniforms={cinematicUniforms} />

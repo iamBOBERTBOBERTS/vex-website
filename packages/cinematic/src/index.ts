@@ -9,6 +9,7 @@ export { DEFAULT_CINEMATIC_UNIFORMS } from "./shaders/types.js";
 export { hasWebGPU } from "./detect.js";
 export { WebGPUEngine, type WebGPUEngineProps } from "./WebGPUEngine.js";
 export { CinematicPaintTimeTicker } from "./components/CinematicPaintTimeTicker.js";
+export { CinematicMouseUniform } from "./components/CinematicMouseUniform.js";
 export { VortexCarMaterialGLSL, type VortexCarMaterialGLSLProps } from "./components/VortexCarMaterialGLSL.js";
 export { getIridescentTslStub, CINEMATIC_TSL_PHASE } from "./shaders/iridescentCarPaintNode.js";
 export { COMPUTE_PARTICLE_PHASE } from "./shaders/computeParticleVortexStub.js";

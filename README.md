@@ -23,6 +23,13 @@ cd ~/Documents/vex-website   # or: cd /path/to/your/vex-website
 - **Shader moat (GLSL + WebGPU roadmap):** [docs/plans/2026-04-05-vex-shader-moat-expansion.md](docs/plans/2026-04-05-vex-shader-moat-expansion.md)
 - **Site generation v3 (WebGPU strategy):** [docs/plans/2026-04-05-vex-website-generation-v3.md](docs/plans/2026-04-05-vex-website-generation-v3.md)
 
+### Advanced GLSL shader exploration — the visual moat
+
+- **`@vex/cinematic`** — Modular GLSL: thin-film iridescence (RGB optical-path phases), **3D fbm** metallic flake + high-exponent glints, **anisotropic chrome** (tangent-frame stretch × `anisotropyStrength`), **multi-layer clear-coat** (dual Fresnel + analytic warm/cool env blend × `clearCoatRefraction`). Injected via `onBeforeCompile` on `MeshPhysicalMaterial`; PBR base preserved.
+- **Mouse uniform** — `CinematicMouseUniform` drives `uMouseInfluence` for iridescence + flake (hero + configurator).
+- **Turbo:** `pnpm glsl:apex` — production web build through the `glsl:apex` task. **Dev:** `pnpm dev:glsl-apex` — `CINEMATIC_SHADERS_V3` + `CINEMATIC_APEX` + `CINEMATIC_MODE` for maximum cinematic stack locally.
+- **Blueprint + log:** [docs/plans/2026-04-05-vex-cinematic-apex-v4.md](docs/plans/2026-04-05-vex-cinematic-apex-v4.md) (includes **Advanced GLSL exploration log**). Internal narrative: [docs/internal/vex-cinematic-investor-narrative-v4.1.md](docs/internal/vex-cinematic-investor-narrative-v4.1.md).
+
 ### Cinematic Apex v4.0 — the engagement electrification layer
 
 - **What it is:** Scroll-orchestrated bloom + god-ray weight, particle “VEX” formation on load, velocity-driven speed streaks, and CTA-synced burst flash — wired through `@vex/ui/3d` `VortexHeroScene` + `useApexHeroOrchestration` in `apps/web`.

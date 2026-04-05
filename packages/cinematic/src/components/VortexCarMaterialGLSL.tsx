@@ -4,6 +4,7 @@ import { useLayoutEffect } from "react";
 import * as THREE from "three";
 import { applyCinematicLuxuryPaint } from "../shaders/applyCinematicLuxuryPaint.js";
 import type { CinematicLuxuryPaintOptions } from "../shaders/iridescentCarPaint.js";
+import { CinematicMouseUniform } from "./CinematicMouseUniform.js";
 import { CinematicPaintTimeTicker } from "./CinematicPaintTimeTicker.js";
 
 export type VortexCarMaterialGLSLProps = {
@@ -20,5 +21,10 @@ export function VortexCarMaterialGLSL({ object, options }: VortexCarMaterialGLSL
     applyCinematicLuxuryPaint(object, options);
   }, [object, options]);
 
-  return <CinematicPaintTimeTicker root={object} />;
+  return (
+    <>
+      <CinematicPaintTimeTicker root={object} />
+      <CinematicMouseUniform root={object} />
+    </>
+  );
 }
