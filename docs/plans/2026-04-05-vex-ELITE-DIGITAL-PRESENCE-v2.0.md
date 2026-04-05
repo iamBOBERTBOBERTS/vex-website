@@ -5,7 +5,7 @@
 **Supersedes breadth of:** [2026-04-05-vex-ELITE-DIGITAL-PRESENCE-v2.md](2026-04-05-vex-ELITE-DIGITAL-PRESENCE-v2.md) (summary) — use **this file** for wireframes, paths, Gantt, and acceptance criteria.  
 **Operational WebGL + GTM detail:** [2026-04-04-vex-ELITE-DIGITAL-PRESENCE-v1.md](2026-04-04-vex-ELITE-DIGITAL-PRESENCE-v1.md) §21+ (LOD, draw calls, reduced motion), §26–31 (revenue, Cox, autonomy, firepower, pitch deck).
 
-**Branch target:** `elite-digital-presence-v1` → `main` per [PILOT_SHIP.md](../PILOT_SHIP.md).
+**Branch / git:** **`main`** is canonical; **`elite-digital-presence-v1`** / **`cursor/pilot-appraisal-loop`** match `main`. Ship order: [PILOT_SHIP.md](../PILOT_SHIP.md).
 
 **Configurator expansion (v2.1):** [Apex Studio v1.0 plan](2026-04-05-vex-apex-studio-configurator-v1.0.md) — `/build` digital twin factory, schemas, queue stubs, Gantt.
 

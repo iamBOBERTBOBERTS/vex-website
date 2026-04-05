@@ -3,7 +3,7 @@
 **Date:** 2026-04-05  
 **Canonical expanded spec (wireframes, paths, Gantt, Quantum matrix):** [2026-04-05-vex-ELITE-DIGITAL-PRESENCE-v2.0.md](2026-04-05-vex-ELITE-DIGITAL-PRESENCE-v2.0.md)  
 **Status:** Active roadmap (builds on [v1 plan §21–§31](2026-04-04-vex-ELITE-DIGITAL-PRESENCE-v1.md) — WebGL, VLR, Cox, firepower, pitch deck — and [cinematic apex v4](2026-04-05-vex-cinematic-apex-v4.md)).  
-**Branch target:** `elite-digital-presence-v1` (merge to `main` per `docs/PILOT_SHIP.md`).
+**Branch / git:** **`main`** is canonical; **`elite-digital-presence-v1`** and **`cursor/pilot-appraisal-loop`** are aligned to the same tip. Ship order: `docs/PILOT_SHIP.md`.
 
 **Vision — VEX aesthetic:** Obsidian base `#0A0A0A` + violet–gold–neon energy (`#A020F0` → `#FFD700`), optional film grain / DOF in post stack, **60 fps** target, **zero jank** on hero + configurator. White-label tenants inherit the same tokens via CSS + `TenantCinematic3d`.
 
