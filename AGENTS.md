@@ -8,7 +8,7 @@ Build a best-in-class **B2B SaaS platform for auto dealers** (CRM + Inventory + 
 
 - Use `PROJECT_SPACE.md` as the live execution hub.
 - Keep sprint status and must-ship checklist updated there first.
-- **Elite marketing / WebGL north star** (**§0–§30** — perf §21+, VLR, Cox §28 / §28.3, **§29** Cursor modal + **full quit/reopen**, **§30** Resource Arsenal + **`turbo.json` cache** + **Turbo** secrets + **`--dry-run=text`** verification): `docs/plans/2026-04-04-vex-ELITE-DIGITAL-PRESENCE-v1.md` — **Crown Jewel v2.0 (wireframes, paths, Quantum tier):** `docs/plans/2026-04-05-vex-ELITE-DIGITAL-PRESENCE-v2.0.md` — short checklist: `docs/plans/2026-04-05-vex-ELITE-DIGITAL-PRESENCE-v2.md` — **Apex Studio `/build`:** `docs/plans/2026-04-05-vex-apex-studio-configurator-v1.0.md`
+- **Elite marketing / WebGL north star** (**§0–§30** — perf §21+, VLR, Cox §28 / §28.3, **§29** Cursor modal + **full quit/reopen**, **§30** Resource Arsenal + **`turbo.json`** + **`TURBO_CACHE`** / token **write** troubleshooting + **`--dry-run=text`**): `docs/plans/2026-04-04-vex-ELITE-DIGITAL-PRESENCE-v1.md` — **Crown Jewel v2.0 (wireframes, paths, Quantum tier):** `docs/plans/2026-04-05-vex-ELITE-DIGITAL-PRESENCE-v2.0.md` — short checklist: `docs/plans/2026-04-05-vex-ELITE-DIGITAL-PRESENCE-v2.md` — **Apex Studio `/build`:** `docs/plans/2026-04-05-vex-apex-studio-configurator-v1.0.md`
 
 ## Repo Structure
 

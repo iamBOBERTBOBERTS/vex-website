@@ -36,7 +36,7 @@ Use this file as the primary command center for execution.
 - **Elite digital presence v2.0 (Crown Jewel Protocol — full spec):** `docs/plans/2026-04-05-vex-ELITE-DIGITAL-PRESENCE-v2.0.md`
 - **Elite v2 summary checklist:** `docs/plans/2026-04-05-vex-ELITE-DIGITAL-PRESENCE-v2.md`
 - **Apex Studio `/build` (v2.1):** `docs/plans/2026-04-05-vex-apex-studio-configurator-v1.0.md`
-- **Elite digital presence v1** (**§0–§30** — WebGL §21+, VLR, Cox §28 / §28.3, **§29 autonomy**, **§30** Turbo remote cache + **`turbo.json`** + Resource Arsenal): `docs/plans/2026-04-04-vex-ELITE-DIGITAL-PRESENCE-v1.md`
+- **Elite digital presence v1** (**§0–§30** — WebGL §21+, VLR, Cox §28 / §28.3, **§29 autonomy**, **§30** Turbo **`TURBO_CACHE`** + remote-cache **troubleshooting** + **`turbo.json`** + Resource Arsenal): `docs/plans/2026-04-04-vex-ELITE-DIGITAL-PRESENCE-v1.md`
 
 ## Standard Commands
 

@@ -24,6 +24,7 @@
     "INTERNAL_API_URL",
     "TURBO_TOKEN",
     "TURBO_TEAM",
+    "TURBO_CACHE",
     "TURBO_REMOTE_ONLY"
   ],
   "cacheDir": ".turbo/cache",
