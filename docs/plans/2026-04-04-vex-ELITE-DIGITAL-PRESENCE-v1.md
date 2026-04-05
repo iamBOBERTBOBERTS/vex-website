@@ -327,7 +327,7 @@ The first viewport should read as an **obsidian vault**: soft **violet–gold** 
 
 **Lighthouse CI:** `apps/web/lighthouserc.json` asserts performance ≥0.8, a11y ≥0.9 on **`/`**, **`/configure`**, **`/inventory`**, **`/build`**. **100/100 performance** with a live **WebGL** hero + configurator is **not** a guaranteed CI bar (GPU + main-thread cost); treat **0.8+ perf + 0.9+ a11y** as the **merge gate**. **100/100** remains an **aspirational** target for **static-first** or **LQIP** hero variants — validate only with powered A/B, not blocking ship.
 
-**CI / merge hygiene (2026-04-05, `elite-digital-presence-v1` @ `ad0bbfe`+):** GitHub Actions failed on **pnpm setup** (`pnpm/action-setup` + `packageManager: pnpm@9.15.9` conflict) and a **missing** `turborepo/action@v2` reference. **Fix:** pin **`pnpm@9.15.9`** in `.github/workflows/*.yml` and **remove** the broken Turbo action step — remote cache still flows via **`TURBO_TOKEN` / `TURBO_TEAM`** env on `turbo` CLI. **`@vex/api#test:e2e`** needs a **materialized schema** on the workflow’s **service Postgres** before Turbo runs (empty DB → `P2021` on `tenants`). The committed **migration ledger** is not fresh-DB safe (early SQL references `users` before a baseline create). CI therefore runs **`db:generate` + `prisma db push`** once before the Turbo gate; **`scripts/ship-gate.sh` skips `migrate deploy` when `CI=true`** so the gate does not re-apply the broken ledger. **Local / pilot:** keep using **`prisma migrate deploy`** against real databases (see `docs/SHIP.md`). **`Web quality`** workflow runs **`turbo build --filter=@vex/web`** before **`quality:web`** so workspace packages (`@vex/shared`, `@vex/ui`, …) emit **`dist/`** and `tsc --noEmit` resolves. After opening/updating a PR, **re-run checks**; merge to `main` only when CI is green.
+**CI / merge hygiene (2026-04-05, `elite-digital-presence-v1` @ `ad0bbfe`+):** GitHub Actions failed on **pnpm setup** (`pnpm/action-setup` + `packageManager: pnpm@9.15.9` conflict) and a **missing** `turborepo/action@v2` reference. **Fix:** pin **`pnpm@9.15.9`** in `.github/workflows/*.yml` and **remove** the broken Turbo action step — remote cache still flows via **`TURBO_TOKEN` / `TURBO_TEAM`** env on `turbo` CLI. **`@vex/api#test:e2e`** needs a **materialized schema** on the workflow’s **service Postgres** before Turbo runs (empty DB → `P2021` on `tenants`). The committed **migration ledger** is not fresh-DB safe (early SQL references `users` before a baseline create). CI therefore runs **`db:generate` + `prisma db push`** once before the Turbo gate; **`scripts/ship-gate.sh` skips `migrate deploy` when `CI=true`** so the gate does not re-apply the broken ledger. **Local / pilot:** keep using **`prisma migrate deploy`** against real databases (see `docs/SHIP.md`). **`Web quality`** (`.github/workflows/quality.yml`) runs **`pnpm exec turbo run quality:web --filter=@vex/web`** — **`quality:web`** **`dependsOn: ["^build"]`** in **`turbo.json`**, so **`@vex/shared`**, **`@vex/ui`**, … **`dist/`** builds run in the **same** graph before Playwright smoke. After opening/updating a PR, **re-run checks**; merge to `main` only when CI is green.
 
 **Architecture guardrail:** **`HeroCinematicLayer` stays video-only.** Do **not** embed a second R3F Canvas there — the **WebGL hero** is exclusively **`DynamicHeroShell` → `ApexHeroScene` / `VortexHeroScene`** when `vortex` mode is active; duplicating Canvas would fight z-order, double GPU cost, and break the gate model.
 
@@ -399,6 +399,8 @@ apps/crm
 
 ## 26. WebGL supremacy → revenue engine v3 (one-pager)
 
+**One Solution → Revenue Engine v3:** one **tenant-safe** monorepo ships the **cinematic vault** (`vortex` + configure + `/build`) **and** the **GTM velocity stack** — **§29** (**zero-click** workspace autonomy), **§30** (**Turbo remote cache** + **`turbo.json`** graph + Resource Arsenal), plus **human + agent swarm** on this **§0–§30** spec. That combination is the **honest** luxury-segment **production-rate** edge vs **acquisition-siloed** mass-market stacks (**§28**); it is **not** a claim to Cox-scale **DMS / auction** breadth until **named** integrations exist.
+
 | Pillar | Tie to performance |
 |--------|---------------------|
 | **Conversion** | **60 fps immersive** hero (`vortex`) + configurator (**adaptive DPR**, particle LOD, texture mips, idle preload) → **hypothesis**: deeper scroll, higher **hero→configure** and **configure→/build** intent vs **legacy** — instrument PostHog/GA4; **no** published “×3” or fixed **% lift** without powered experiments (see README hypothesis ranges for illustrative **lab** targets only). |
@@ -463,6 +465,7 @@ Cox-scale operators combine **Dealertrack-class DMS**, **VinSolutions-class CRM*
 
 ### 28.4 One-solution → revenue engine v3 (competitive wording + Apex tier)
 
+- **Revenue Engine v3 (internal frame):** **one unified luxury OS** (web + CRM + API) **plus** **production-rate firepower** — **local autonomy** (**§29**), **Turbo remote cache + `turbo.json`** (**§30**), and **swarm parallelism** on the **§0–§30** blueprint — is the **repeatable** way VEX **out-ships** fragmented retail conglomerates **in-segment** without pretending to **out-platform** Cox on **DMS / wholesale** depth.
 - **Positioning line (external):** *“VEX is the unified luxury automotive OS: one cinematic customer vault, one dealer cockpit, one tenant-safe API — built for vehicles and buyers that Cox’s mass-market stack was never designed to romance.”*
 - **Speed advantage (luxury segment):** **One monorepo** + **single design language** + **cinematic-first** roadmap means VEX can **ship** obsidian-vault UX and **digital-twin** surfaces faster than **acquisition-siloed** incumbents can align a **coherent** HNW story — **not** faster at Cox-scale **DMS** depth (§28.1). **Production-rate firepower** compounds that: **§29** locks **workspace-scoped** background runs (**modal checkbox + full Cursor quit/reopen**); **§30** adds **Resource Arsenal** plus **Turbo remote cache** (**`TURBO_TOKEN` / `TURBO_TEAM`** on **local `.env.local` + GitHub Actions**) and a **cache-aware `turbo.json`** (`build`, **`quality:web`**, **`cacheDir`**, safe **`globalPassThroughEnv`**) so **repeat builds / quality** amortize across **machines and CI**; **swarm parallelism** (people + agents) runs against **one** spec — still **honest** vs backend breadth gaps (verify with logs, not slogans).
 - **Apex tier (~$499/mo illustrative):** **Instant access to the full VEX luxury OS** with **cinematic demo provisioning** (when **`tenant-3d-demo-seed`** is **live and audited** — else **target**, see §30.4): white-label **3D portals**, **tenant-scoped** API caps, **glass CRM** cockpit parity with marketing tokens, **custom domains** + SSL.
@@ -506,15 +509,21 @@ Cox-scale operators combine **Dealertrack-class DMS**, **VinSolutions-class CRM*
 
 1. Open [https://turbo.build](https://turbo.build) and sign in (**GitHub**).
 2. Create or select a **team**; generate a **token**; copy **`TURBO_TOKEN`** and **`TURBO_TEAM`** (team slug / ID exactly as the dashboard shows).
-3. **Local (once per machine):** append to **repo root** **`.env.local`** or **`.env`** (both are **gitignored** — **never** commit):
+3. **Local (once per machine):** append to **repo root** **`.env.local`** (preferred — Next.js convention; **`.env`** is also gitignored but avoid mixing Turbo secrets with app env you might copy between machines):
 
 ```bash
 echo 'TURBO_TOKEN=your_actual_token_here' >> .env.local
 echo 'TURBO_TEAM=your_team_slug_here' >> .env.local
 ```
 
-4. **GitHub Actions:** **Settings → Secrets and variables → Actions** → add repository secrets **`TURBO_TOKEN`** and **`TURBO_TEAM`** (same values as Turbo dashboard).
+4. **GitHub Actions:** **Settings → Secrets and variables → Actions** → add repository secrets **`TURBO_TOKEN`** and **`TURBO_TEAM`** (same values as Turbo dashboard). **`quality.yml`** passes these at **job** `env` so **`quality:web`** can **remote-cache** with the main CI graph.
 5. **Verify:** run **`pnpm -w turbo run build`** twice; the second run should show **remote cache** usage and **must not** print **`Remote caching disabled`** (if it still does, secrets are missing or typo’d).
+
+**Verified CLI (Turbo 2 — do not use `--dry`):**
+
+- **Task graph only (no compile):** `pnpm -w turbo run build --dry-run=text` — prints **Packages in Scope**, **Global Hash Inputs** (including **Global Passed Through Env Vars** listing `TURBO_*` **names only**, not values), and per-task **Hash** / **Cached (Local|Remote)** flags. **`turbo run build --dry`** is **not** valid.
+- **Local cache hit smoke (no remote token):** a repeat **`pnpm -w turbo run build`** often ends with a summary like **`Cached:    N cached, 7 total`** (N may be **0–7** depending on what changed). **Remote** hits additionally show tasks **restored** from **Vercel** / Turbo remote in logs when **`TURBO_TOKEN` + `TURBO_TEAM`** are set.
+- **Optional debug:** **`TURBO_REMOTE_ONLY=true`** (see **§30** optional table) — use only when diagnosing remote hits; can slow **cold** runs.
 
 **Turbo cache optimization (committed `turbo.json` + workflows):**
 

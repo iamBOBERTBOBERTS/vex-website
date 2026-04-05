@@ -19,7 +19,7 @@ cd ~/Documents/vex-website   # or: cd /path/to/your/vex-website
 - **Elite digital presence v2.0 (Crown Jewel Protocol — full wireframes, paths, Gantt, Quantum tier):** [docs/plans/2026-04-05-vex-ELITE-DIGITAL-PRESENCE-v2.0.md](docs/plans/2026-04-05-vex-ELITE-DIGITAL-PRESENCE-v2.0.md)
 - **Elite v2 summary (quick checklist):** [docs/plans/2026-04-05-vex-ELITE-DIGITAL-PRESENCE-v2.md](docs/plans/2026-04-05-vex-ELITE-DIGITAL-PRESENCE-v2.md)
 - **Apex Studio — `/build` configurator expansion (v2.1):** [docs/plans/2026-04-05-vex-apex-studio-configurator-v1.0.md](docs/plans/2026-04-05-vex-apex-studio-configurator-v1.0.md)
-- **Elite digital presence v1** (WebGL §21+, VLR halt, Cox §28 / §28.3, **§29 Cursor autonomy**, **§30** Resource Arsenal + **Turbo remote cache** setup): [docs/plans/2026-04-04-vex-ELITE-DIGITAL-PRESENCE-v1.md](docs/plans/2026-04-04-vex-ELITE-DIGITAL-PRESENCE-v1.md)
+- **Elite digital presence v1** (**§0–§30** single source — WebGL §21+, VLR halt, Cox §28 / §28.3, **§29 Cursor autonomy**, **§30** Resource Arsenal + **`turbo.json`** + **Turbo remote cache** verified steps): [docs/plans/2026-04-04-vex-ELITE-DIGITAL-PRESENCE-v1.md](docs/plans/2026-04-04-vex-ELITE-DIGITAL-PRESENCE-v1.md)
 - **Design:** [docs/plans/2025-03-15-vex-luxury-marketplace-design.md](docs/plans/2025-03-15-vex-luxury-marketplace-design.md)
 - **Implementation plan:** [docs/plans/2025-03-15-vex-luxury-marketplace-implementation.md](docs/plans/2025-03-15-vex-luxury-marketplace-implementation.md) (includes **Digital Presence v2 — Cinematic Layer**)
 - **Digital presence v2 (elite framework):** [docs/plans/2026-04-05-vex-DIGITAL-PRESENCE-v2-ELITE.md](docs/plans/2026-04-05-vex-DIGITAL-PRESENCE-v2-ELITE.md)
