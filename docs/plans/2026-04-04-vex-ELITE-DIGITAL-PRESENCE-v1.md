@@ -525,6 +525,30 @@ echo 'TURBO_TEAM=your_team_slug_here' >> .env.local
 - **Local cache hit smoke (no remote token):** a repeat **`pnpm -w turbo run build`** often ends with a summary like **`Cached:    N cached, 7 total`** (N may be **0–7** depending on what changed). **Remote** hits additionally show tasks **restored** from **Vercel** / Turbo remote in logs when **`TURBO_TOKEN` + `TURBO_TEAM`** are set.
 - **Optional debug:** **`TURBO_REMOTE_ONLY=true`** (see **§30** optional table) — use only when diagnosing remote hits; can slow **cold** runs.
 
+**Example — `pnpm -w turbo run build --dry-run=text` (structure only; hashes vary):**
+
+```text
+• turbo 2.9.x
+   • Packages in scope: @vex/3d-configurator, @vex/api, … (7 packages)
+   • Remote caching disabled
+
+Packages in Scope
+Name                 Path
+@vex/shared          packages/shared
+…
+
+Global Hash Inputs
+  Global Passed Through Env Vars        = …, TURBO_REMOTE_ONLY, TURBO_TEAM, TURBO_TOKEN, …
+
+Tasks to Run
+@vex/shared#build
+  Hash                           = <task hash>
+  Cached (Local)                 = true
+  Cached (Remote)                = false
+```
+
+When **`TURBO_TOKEN`** + **`TURBO_TEAM`** are **loaded in the shell** (or CI secrets), the header line should **not** say **`Remote caching disabled`**; remote restores appear on **cache hits** for tasks that match prior CI/local uploads.
+
 **Turbo cache optimization (committed `turbo.json` + workflows):**
 
 | Lever | What shipped | Why |
