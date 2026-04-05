@@ -279,6 +279,10 @@ The first viewport should read as an **obsidian vault**: soft **violet–gold** 
 
 **Lighthouse CI:** `apps/web/lighthouserc.json` asserts performance ≥0.8, a11y ≥0.9 (URLs `/`, `/inventory`, `/build`). **100/100** is **not** guaranteed with a WebGL hero (main-thread + GPU cost); treat **0.9+ perf + 0.9+ a11y** as the realistic CI bar until static/LQIP variants are A/B tuned — then revisit thresholds.
 
+**CI / merge hygiene (2026-04-05, `elite-digital-presence-v1` @ `ad0bbfe`):** GitHub Actions failed on **pnpm setup** (`pnpm/action-setup` + `packageManager: pnpm@9.15.9` conflict) and a **missing** `turborepo/action@v2` reference. **Fix:** pin **`pnpm@9.15.9`** in `.github/workflows/*.yml` and **remove** the broken Turbo action step — remote cache still flows via **`TURBO_TOKEN` / `TURBO_TEAM`** env on `turbo` CLI. After opening/updating a PR, **re-run checks** so workflows execute on the fixed YAML; merge to `main` only when CI is green.
+
+**Architecture guardrail:** **`HeroCinematicLayer` stays video-only.** Do **not** embed a second R3F Canvas there — the **WebGL hero** is exclusively **`DynamicHeroShell` → `ApexHeroScene` / `VortexHeroScene`** when `vortex` mode is active; duplicating Canvas would fight z-order, double GPU cost, and break the gate model.
+
 ---
 
 ## 22. 2026 luxury automotive UX trend matrix → VEX components
@@ -333,7 +337,7 @@ apps/crm
 
 ## 25. Documentation corpus — cross-links (policy)
 
-- **Entry points** (one line each, no full paste of §21–§27): `PROJECT_SPACE.md`, `AGENTS.md`, `README.md`, `docs/SHIP.md`, `docs/ENGINEERING_REALITY.md`, plus master phased roadmap [2026-04-05-vex-ELITE-DIGITAL-PRESENCE-v2.md](2026-04-05-vex-ELITE-DIGITAL-PRESENCE-v2.md).
+- **Entry points** (one line each, no full paste of §21–§27): `PROJECT_SPACE.md`, `AGENTS.md`, `README.md`, `docs/SHIP.md`, `docs/ENGINEERING_REALITY.md`, plus [Crown Jewel v2.0](2026-04-05-vex-ELITE-DIGITAL-PRESENCE-v2.0.md), [v2 summary](2026-04-05-vex-ELITE-DIGITAL-PRESENCE-v2.md), [Apex Studio `/build`](2026-04-05-vex-apex-studio-configurator-v1.0.md).
 - **Integration / vendor playbooks** (`docs/*PLAYBOOK*.md`, `docs/leads-webhooks.md`, etc.): add the same single-line pointer **only when** the doc touches marketing surfaces, web perf, or pilot demo narrative — avoid boilerplate on pure API memos.
 - **Do not** duplicate §21–§25 into playbooks; **link** here for WebGL + luxury UX supremacy specs.
 
@@ -347,6 +351,7 @@ apps/crm
 | **Provisioning** | **BullMQ** `tenant-3d-demo-seed` (§16): idempotent job seeds **branded 3D** demo assets + demo inventory; **phygital** handoff = live GLB + static fallback for email/social. |
 | **Apex tier (~$499/mo illustrative)** | White-label **3D portals**, **AR-ready** embed path (export roadmap), **bespoke CRM** cockpit (glass + metric orbs), **custom domains** + SSL, valuation quota vs Pro. |
 | **Pilot** | **90 s** playbook (§18): Stripe → tenant → **private vault** first paint (`legacy` or `vortex` per flags) + CRM login; **AI personalization** teaser on `/portal` (roadmap) stays **consent + tenant-scoped**. |
+| **CI trust** | Green **`pnpm` + Turbo** workflows on `main` — ship narrative matches what automation proves (`build`, `quality:web`, API gates per repo). |
 
 ---
 
