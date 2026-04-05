@@ -6,7 +6,7 @@
   align-items: center;
   justify-content: space-between;
   gap: 1rem;
-  padding: 0.85rem clamp(1rem, 4vw, 2rem);
+  padding: 0.85rem var(--section-pad-x, clamp(1rem, 4vw, 2rem));
   background: linear-gradient(180deg, rgba(10, 12, 18, 0.94) 0%, rgba(6, 8, 14, 0.88) 100%);
   backdrop-filter: blur(18px) saturate(1.25);
   border-bottom: 1px solid var(--border-vault-soft, rgba(201, 169, 98, 0.12));
