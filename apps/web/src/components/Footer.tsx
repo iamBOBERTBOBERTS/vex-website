@@ -22,6 +22,7 @@ export function Footer() {
   return (
     <footer id="contact" className={styles.footer}>
       <div className={styles.inner}>
+        <p className={styles.brandMark}>Vortex Exotic Exchange</p>
         <div className={styles.links}>
           {FOOTER_LINKS.map(({ href, label }) => (
             <Link key={href} href={href} className={styles.link}>

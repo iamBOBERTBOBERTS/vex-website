@@ -12,9 +12,16 @@
   content: "";
   position: absolute;
   inset: 0;
-  background: linear-gradient(90deg, rgba(201, 169, 98, 0.06), transparent 35%, transparent 65%, rgba(232, 204, 122, 0.05));
+  background: linear-gradient(
+    90deg,
+    rgba(201, 169, 98, 0.07),
+    rgba(160, 32, 240, 0.04) 28%,
+    transparent 40%,
+    transparent 60%,
+    rgba(232, 204, 122, 0.055) 100%
+  );
   pointer-events: none;
-  opacity: 0.85;
+  opacity: 0.88;
 }
 
 .track {

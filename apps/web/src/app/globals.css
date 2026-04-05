@@ -24,6 +24,15 @@
   --text-muted: #6a6863;
   --line: rgba(255, 255, 255, 0.06);
   --line-gold: rgba(201, 169, 98, 0.35);
+  /* Shared surfaces — use across marketing sections for one “vault” read */
+  --border-subtle: rgba(255, 255, 255, 0.065);
+  --border-vault: rgba(201, 169, 98, 0.16);
+  --border-vault-soft: rgba(201, 169, 98, 0.1);
+  --content-max: 72rem;
+  --section-pad-x: clamp(1.25rem, 4vw, 2.5rem);
+  --section-pad-y: clamp(3rem, 7vw, 5.25rem);
+  --surface-card: linear-gradient(155deg, rgba(16, 18, 26, 0.96) 0%, rgba(8, 9, 14, 0.99) 100%);
+  --surface-card-hover: linear-gradient(155deg, rgba(20, 22, 32, 0.98) 0%, rgba(10, 11, 18, 0.99) 100%);
   --accent-06: rgba(201, 169, 98, 0.06);
   --accent-08: rgba(201, 169, 98, 0.08);
   --accent-12: rgba(201, 169, 98, 0.12);
@@ -88,6 +97,15 @@ main {
   z-index: 1;
 }
 
+/* Homepage rhythm: section titles share display + body hierarchy */
+main.home-landing .section h2,
+main.home-landing section[id] h2 {
+  font-family: var(--font-display), Georgia, serif;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  color: var(--text-primary);
+}
+
 ::selection {
   background: rgba(201, 169, 98, 0.3);
   color: var(--text-primary);
@@ -112,6 +130,12 @@ a[class*="cta"]:hover {
 .card-hover:hover {
   transform: translateY(-6px);
   box-shadow: 0 24px 56px rgba(0, 0, 0, 0.55), 0 0 0 1px var(--edge-15);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .card-hover:hover {
+    transform: none;
+  }
 }
 
 a {
@@ -155,8 +179,9 @@ button {
 
 a:focus-visible,
 button:focus-visible {
-  outline: 2px solid var(--accent);
+  outline: 2px solid color-mix(in srgb, var(--accent) 70%, var(--accent-violet) 30%);
   outline-offset: 3px;
+  box-shadow: 0 0 0 4px rgba(160, 32, 240, 0.12);
 }
 
 a:focus:not(:focus-visible),

@@ -152,7 +152,15 @@
 
 .headlineAccent {
   display: block;
-  background: linear-gradient(118deg, #fff 0%, #f4efe6 22%, var(--accent-bright) 48%, var(--accent) 72%, var(--highlight) 92%);
+  background: linear-gradient(
+    118deg,
+    #fff 0%,
+    #f4efe6 20%,
+    var(--accent-bright) 42%,
+    var(--accent) 68%,
+    var(--highlight) 86%,
+    rgba(200, 160, 255, 0.95) 100%
+  );
   background-size: 150% 100%;
   -webkit-background-clip: text;
   background-clip: text;
