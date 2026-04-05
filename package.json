@@ -1,6 +1,11 @@
 {
   "name": "vex-website",
   "private": true,
+  "description": "Vex monorepo: dealer marketing site, CRM portal, API, and shared libraries (pnpm + Turbo).",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/iamBOBERTBOBERTS/vex-website.git"
+  },
   "workspaces": [
     "apps/*",
     "packages/*"
@@ -11,8 +16,9 @@
     "dev:web:cinematic": "NEXT_PUBLIC_CINEMATIC_MODE=true pnpm --filter @vex/web dev",
     "dev:apex": "NEXT_PUBLIC_CINEMATIC_SHADERS_V3=true NEXT_PUBLIC_CINEMATIC_APEX=true pnpm --filter @vex/web dev",
     "dev:glsl-apex": "NEXT_PUBLIC_CINEMATIC_SHADERS_V3=true NEXT_PUBLIC_CINEMATIC_APEX=true NEXT_PUBLIC_CINEMATIC_MODE=true pnpm --filter @vex/web dev",
-    "dev:apex-v42": "NEXT_PUBLIC_CINEMATIC_SHADERS_V3=true pnpm --filter @vex/web dev",
-    "dev:apex-v44": "NEXT_PUBLIC_CINEMATIC_SHADERS_V3=true pnpm --filter @vex/web dev",
+    "dev:web:shaders-v3": "NEXT_PUBLIC_CINEMATIC_SHADERS_V3=true pnpm --filter @vex/web dev",
+    "dev:apex-v42": "pnpm run dev:web:shaders-v3",
+    "dev:apex-v44": "pnpm run dev:web:shaders-v3",
     "dev:crm": "pnpm --filter @vex/crm dev",
     "build": "turbo run build",
     "turbo:build": "turbo run build --filter=[HEAD^1]",
@@ -57,10 +63,5 @@
       "three": "^0.169.0"
     }
   },
-  "packageManager": "pnpm@9.15.9",
-  "dependencies": {
-    "@stripe/react-stripe-js": "^6.0.0",
-    "@stripe/stripe-js": "^9.0.0",
-    "stripe": "^21.0.0"
-  }
+  "packageManager": "pnpm@9.15.9"
 }

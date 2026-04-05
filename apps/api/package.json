@@ -7,7 +7,7 @@
   "scripts": {
     "env:check": "tsx scripts/check-env.ts",
     "dev": "pnpm run env:check -- --require DATABASE_URL,JWT_SECRET --context dev:api && tsx watch src/index.ts",
-    "dev:api": "pnpm run env:check -- --require DATABASE_URL,JWT_SECRET --context dev:api && tsx watch src/index.ts",
+    "dev:api": "pnpm run dev",
     "prebuild": "pnpm run db:generate",
     "build": "tsc",
     "start": "node dist/index.js",
