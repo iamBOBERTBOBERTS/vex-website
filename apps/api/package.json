@@ -31,6 +31,7 @@
     "test:e2e:global-market": "tsx scripts/e2e-global-market-residency.ts",
     "test:global": "tsx scripts/e2e-tenant-residency.ts",
     "test:valuation:unit": "tsx scripts/test-valuation-unit.ts",
+    "test:dms:unit": "tsx scripts/test-dms-adapters-unit.ts",
     "test:valuation:integration": "tsx scripts/test-valuation-integration.ts",
     "load-test:scale": "tsx scripts/load-test-scale.ts"
   },

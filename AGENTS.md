@@ -73,6 +73,21 @@ Build a best-in-class **B2B SaaS platform for auto dealers** (CRM + Inventory + 
 - Web only: `pnpm --filter @vex/web run build`
 - CRM only: `pnpm --filter @vex/crm run build`
 
+## Testing (local + CI)
+
+- **Always from repo root**: all `pnpm -w` and Turbo commands must run from the workspace root (where `pnpm-workspace.yaml` exists).
+- **Web (marketing + hero)**:
+  - `pnpm --filter @vex/web run quality:web` (Playwright smoke + a11y + contracts)
+- **API (tenant isolation + RBAC)**:
+  - `DATABASE_URL=... pnpm --filter @vex/api run test:e2e`
+  - DMS adapter skeleton unit check (no network): `pnpm --filter @vex/api run test:dms:unit`
+- **Full PR bar** (before opening/updating a PR): `pnpm install && pnpm --filter @vex/api run db:generate && pnpm -w turbo run build && pnpm --filter @vex/web run quality:web`
+
+## Implementation plans (single sources of truth)
+
+- **Elite Digital Presence**: `docs/plans/2026-04-05-vex-ELITE-DIGITAL-PRESENCE-v2.0.md`
+- **Apex Studio (/build)**: `docs/plans/2026-04-05-vex-apex-studio-configurator-v1.0.md`
+
 ## Phase 4.5 — Valuation API integration
 
 - Add `ValuationService` with Edmunds primary, MarketCheck fallback, and formula fallback.
