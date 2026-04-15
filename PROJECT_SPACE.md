@@ -8,6 +8,7 @@ Use this file as the primary command center for execution.
 - Keep tenant isolation + RBAC + Stripe idempotency non-negotiable.
 - Convert pilots to paid usage, not feature sprawl.
 - Execute competitive plan: `docs/VEX_COMPETITIVE_EXECUTION_PLAN_2026-04-02.md`.
+- Marketing sandbox: add a safe preview route for a reusable `WebsiteStarter` landing-page component without disturbing the live VEX homepage.
 
 ## 14-Day Beachhead Sprint
 

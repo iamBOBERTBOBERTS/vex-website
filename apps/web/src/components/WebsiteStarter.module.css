@@ -1,0 +1,511 @@
+.page {
+  position: relative;
+  min-height: 100svh;
+  overflow: clip;
+  background:
+    radial-gradient(circle at top, rgba(232, 204, 122, 0.12), transparent 24%),
+    radial-gradient(circle at 85% 18%, rgba(160, 32, 240, 0.16), transparent 28%),
+    linear-gradient(180deg, #050608 0%, #08090d 52%, #050507 100%);
+  color: var(--text-primary);
+}
+
+.ambient {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.glowPrimary,
+.glowSecondary,
+.glowTertiary {
+  position: absolute;
+  border-radius: 999px;
+  filter: blur(90px);
+  opacity: 0.55;
+}
+
+.glowPrimary {
+  top: -4rem;
+  left: 50%;
+  width: min(28rem, 65vw);
+  height: min(28rem, 65vw);
+  transform: translateX(-50%);
+  background: rgba(255, 255, 255, 0.12);
+}
+
+.glowSecondary {
+  top: 24rem;
+  left: 5%;
+  width: 16rem;
+  height: 16rem;
+  background: rgba(232, 204, 122, 0.12);
+}
+
+.glowTertiary {
+  right: 4%;
+  bottom: 8rem;
+  width: 20rem;
+  height: 20rem;
+  background: rgba(160, 32, 240, 0.12);
+}
+
+.header {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(5, 6, 8, 0.72);
+  backdrop-filter: blur(18px);
+}
+
+.headerInner,
+.main {
+  position: relative;
+  z-index: 1;
+  width: min(1240px, calc(100% - 2rem));
+  margin: 0 auto;
+}
+
+.headerInner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1rem 0;
+}
+
+.brand {
+  font-family: var(--font-display), serif;
+  font-size: 1.1rem;
+  letter-spacing: -0.02em;
+}
+
+.nav {
+  display: flex;
+  align-items: center;
+  gap: 1.75rem;
+  color: var(--text-secondary);
+  font-size: 0.95rem;
+}
+
+.nav a {
+  transition: color 180ms ease;
+}
+
+.nav a:hover {
+  color: var(--text-primary);
+}
+
+.headerCta,
+.primaryCta,
+.secondaryCta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  padding: 0.95rem 1.35rem;
+  font-weight: 600;
+  transition:
+    transform 180ms ease,
+    background 180ms ease,
+    border-color 180ms ease,
+    color 180ms ease,
+    box-shadow 180ms ease;
+}
+
+.headerCta,
+.primaryCta {
+  background: linear-gradient(135deg, #f6f0df 0%, #d8bb74 100%);
+  color: #111317;
+  box-shadow: 0 18px 40px rgba(216, 187, 116, 0.16);
+}
+
+.secondaryCta {
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--text-primary);
+}
+
+.headerCta:hover,
+.primaryCta:hover,
+.secondaryCta:hover {
+  transform: translateY(-1px);
+}
+
+.secondaryCta:hover {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.main {
+  display: grid;
+  gap: clamp(4rem, 8vw, 7rem);
+  padding: clamp(2rem, 5vw, 3rem) 0 5rem;
+}
+
+.hero {
+  display: grid;
+  grid-template-columns: minmax(0, 1.02fr) minmax(320px, 0.98fr);
+  gap: clamp(1.75rem, 4vw, 3.5rem);
+  align-items: center;
+  min-height: calc(100svh - 5rem);
+}
+
+.heroCopy {
+  display: grid;
+  gap: 1.5rem;
+}
+
+.badge,
+.sectionEyebrow,
+.previewEyebrow,
+.contactLabel {
+  display: inline-flex;
+  align-items: center;
+  width: fit-content;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--text-secondary);
+  font-size: 0.78rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.badge {
+  padding: 0.55rem 0.95rem;
+}
+
+.title {
+  max-width: 11ch;
+  font-family: var(--font-display), serif;
+  font-size: clamp(3.2rem, 8vw, 6rem);
+  line-height: 0.93;
+  letter-spacing: -0.055em;
+}
+
+.lede {
+  max-width: 40rem;
+  color: var(--text-secondary);
+  font-size: clamp(1rem, 1.5vw, 1.15rem);
+  line-height: 1.9;
+}
+
+.heroActions,
+.contactActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.9rem;
+}
+
+.statsGrid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.9rem;
+  max-width: 42rem;
+}
+
+.statCard,
+.featureCard,
+.showcaseCard,
+.contactCard,
+.previewShell {
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.025)),
+    rgba(8, 10, 14, 0.82);
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.28);
+}
+
+.statCard {
+  border-radius: 1.45rem;
+  padding: 1.1rem 1rem;
+}
+
+.statValue {
+  font-family: var(--font-display), serif;
+  font-size: clamp(1.65rem, 2.8vw, 2.35rem);
+  color: var(--color-white);
+}
+
+.statLabel {
+  margin-top: 0.35rem;
+  color: var(--text-muted);
+  font-size: 0.84rem;
+}
+
+.previewShell {
+  border-radius: 2rem;
+  padding: 1rem;
+  backdrop-filter: blur(18px);
+}
+
+.previewChrome {
+  display: flex;
+  gap: 0.45rem;
+  padding: 0.35rem 0.25rem 0.9rem;
+}
+
+.previewChrome span {
+  width: 0.72rem;
+  height: 0.72rem;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.22);
+}
+
+.previewStage {
+  display: grid;
+  gap: 1rem;
+  border-radius: 1.55rem;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background:
+    radial-gradient(circle at top right, rgba(232, 204, 122, 0.14), transparent 26%),
+    linear-gradient(180deg, rgba(12, 14, 20, 0.94), rgba(8, 10, 14, 0.98));
+  padding: clamp(1.2rem, 3vw, 1.8rem);
+}
+
+.previewHero {
+  display: grid;
+  gap: 0.9rem;
+  min-height: 16rem;
+  align-content: end;
+  padding: clamp(1rem, 3vw, 1.45rem);
+  border-radius: 1.4rem;
+  background:
+    linear-gradient(160deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.02)),
+    radial-gradient(circle at top, rgba(160, 32, 240, 0.14), transparent 32%),
+    rgba(255, 255, 255, 0.03);
+}
+
+.previewEyebrow,
+.contactLabel,
+.sectionEyebrow {
+  padding: 0.45rem 0.85rem;
+}
+
+.previewHero h2 {
+  max-width: 11ch;
+  font-family: var(--font-display), serif;
+  font-size: clamp(1.9rem, 3.2vw, 2.8rem);
+  line-height: 0.96;
+  letter-spacing: -0.04em;
+}
+
+.previewButtons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.65rem;
+}
+
+.previewButtonPrimary,
+.previewButtonGhost {
+  display: inline-flex;
+  border-radius: 999px;
+  padding: 0.72rem 1rem;
+  font-size: 0.82rem;
+  font-weight: 600;
+}
+
+.previewButtonPrimary {
+  background: linear-gradient(135deg, #f6f0df 0%, #d8bb74 100%);
+  color: #111317;
+}
+
+.previewButtonGhost {
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--text-primary);
+}
+
+.previewPanels {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.85rem;
+}
+
+.previewPanel {
+  display: grid;
+  gap: 0.45rem;
+  border-radius: 1.25rem;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.035);
+  padding: 1rem;
+}
+
+.previewPanel p {
+  color: var(--text-muted);
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+}
+
+.previewPanel strong {
+  font-size: 1rem;
+  line-height: 1.5;
+}
+
+.previewFooterRow {
+  display: grid;
+  gap: 0.7rem;
+}
+
+.previewBarWide,
+.previewBarShort {
+  border-radius: 999px;
+  background: linear-gradient(90deg, rgba(255, 255, 255, 0.16), rgba(255, 255, 255, 0.04));
+}
+
+.previewBarWide {
+  height: 0.8rem;
+  width: 78%;
+}
+
+.previewBarShort {
+  height: 0.6rem;
+  width: 42%;
+}
+
+.section,
+.contactSection {
+  display: grid;
+  gap: 1.75rem;
+}
+
+.sectionHeading {
+  display: grid;
+  gap: 1rem;
+  max-width: 52rem;
+}
+
+.sectionHeading h2,
+.contactCopy h2 {
+  font-family: var(--font-display), serif;
+  font-size: clamp(2.2rem, 4vw, 3.6rem);
+  line-height: 1;
+  letter-spacing: -0.04em;
+}
+
+.sectionHeading p,
+.contactCopy p {
+  color: var(--text-secondary);
+  line-height: 1.85;
+  font-size: 1rem;
+}
+
+.featureGrid,
+.cardGrid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.featureCard,
+.showcaseCard {
+  display: grid;
+  gap: 1rem;
+  border-radius: 1.6rem;
+  padding: 1.4rem;
+}
+
+.featureAccent {
+  width: 3.25rem;
+  height: 0.3rem;
+  border-radius: 999px;
+  background: linear-gradient(90deg, var(--accent-bright), rgba(255, 255, 255, 0.08));
+}
+
+.featureCard h3,
+.showcaseCard h3 {
+  font-size: 1.3rem;
+  line-height: 1.2;
+  color: var(--color-white);
+}
+
+.featureCard p,
+.showcaseCard p,
+.contactList li {
+  color: var(--text-secondary);
+  line-height: 1.8;
+}
+
+.cardIndex {
+  color: var(--accent-bright);
+  font-size: 0.82rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.contactSection {
+  grid-template-columns: minmax(0, 1.15fr) minmax(300px, 0.85fr);
+  align-items: start;
+  padding-bottom: 1rem;
+}
+
+.contactCopy {
+  display: grid;
+  gap: 1rem;
+}
+
+.contactCard {
+  border-radius: 1.8rem;
+  padding: 1.5rem;
+}
+
+.contactList {
+  display: grid;
+  gap: 0.9rem;
+  padding-left: 1.1rem;
+  margin-top: 1rem;
+}
+
+@media (max-width: 960px) {
+  .hero,
+  .contactSection,
+  .featureGrid,
+  .cardGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .hero {
+    min-height: auto;
+    padding-top: 1rem;
+  }
+
+  .previewPanels {
+    grid-template-columns: 1fr;
+  }
+
+  .statsGrid {
+    grid-template-columns: 1fr;
+    max-width: 24rem;
+  }
+}
+
+@media (max-width: 760px) {
+  .headerInner {
+    flex-wrap: wrap;
+  }
+
+  .nav {
+    order: 3;
+    width: 100%;
+    justify-content: space-between;
+    gap: 0.75rem;
+    font-size: 0.82rem;
+  }
+
+  .main,
+  .headerInner {
+    width: min(1240px, calc(100% - 1.2rem));
+  }
+
+  .title {
+    max-width: 12ch;
+    font-size: clamp(2.7rem, 14vw, 4rem);
+  }
+
+  .sectionHeading h2,
+  .contactCopy h2 {
+    font-size: clamp(1.9rem, 10vw, 2.8rem);
+  }
+}
