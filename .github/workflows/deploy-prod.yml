@@ -13,8 +13,8 @@ jobs:
         image: postgres:16-alpine
         env:
           POSTGRES_USER: postgres
-          POSTGRES_PASSWORD: test-password-123
           POSTGRES_DB: vex
+          POSTGRES_HOST_AUTH_METHOD: trust
         ports:
           - 5432:5432
         options: >-
@@ -23,9 +23,8 @@ jobs:
           --health-timeout 5s
           --health-retries 10
     env:
-      DATABASE_URL: postgresql://postgres:postgres@localhost:5432/vex
-      DIRECT_DATABASE_URL: postgresql://postgres:postgres@localhost:5432/vex
-      JWT_SECRET: ci-deploy-workflow-not-production
+      DATABASE_URL: postgresql://postgres@localhost:5432/vex
+      DIRECT_DATABASE_URL: postgresql://postgres@localhost:5432/vex
       SKIP_VALUATION_ENV_CHECK: "1"
     steps:
       - uses: actions/checkout@v4
@@ -38,6 +37,13 @@ jobs:
           cache: pnpm
       - name: Install
         run: pnpm install --frozen-lockfile
+      - name: Generate CI JWT secret
+        run: echo "JWT_SECRET=$(openssl rand -hex 32)" >> "$GITHUB_ENV"
+      - name: Turbo Remote Cache
+        uses: turborepo/action@v2
+        with:
+          token: ${{ secrets.TURBO_TOKEN }}
+          team: ${{ secrets.TURBO_TEAM }}
       - name: Prisma generate
         run: pnpm --filter @vex/api run db:generate
       - name: Migrate (API E2E prerequisite)
