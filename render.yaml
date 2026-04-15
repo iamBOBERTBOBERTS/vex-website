@@ -2,7 +2,6 @@ services:
   - type: web
     name: vex-api
     runtime: node
-    rootDir: apps/api
     buildCommand: pnpm install --frozen-lockfile && pnpm --filter @vex/shared run build && pnpm --filter @vex/api run build
     startCommand: pnpm --filter @vex/api run start
     healthCheckPath: /health
@@ -21,11 +20,99 @@ services:
         sync: false
       - key: JWT_SECRET
         sync: false
+      - key: CORS_ORIGIN
+        sync: false
+      - key: PUBLIC_WEB_URL
+        sync: false
+      - key: PUBLIC_APPRAISAL_TENANT_ID
+        sync: false
+      - key: INTERNAL_PILOT_METRICS_KEY
+        sync: false
+      - key: EDMUNDS_API_KEY
+        sync: false
+      - key: EDMUNDS_SECRET
+        sync: false
+      - key: MARKETCHECK_API_KEY
+        sync: false
       - key: STRIPE_SECRET_KEY
         sync: false
       - key: STRIPE_WEBHOOK_SECRET
         sync: false
+      - key: STRIPE_PRICE_STARTER
+        sync: false
+      - key: STRIPE_PRICE_PRO
+        sync: false
+      - key: STRIPE_PRICE_ENTERPRISE
+        sync: false
+      - key: STRIPE_PRICE_STARTER_YEARLY
+        sync: false
+      - key: STRIPE_PRICE_PRO_YEARLY
+        sync: false
+      - key: STRIPE_PRICE_ENTERPRISE_YEARLY
+        sync: false
+      - key: FORTELLIS_CLIENT_ID
+        sync: false
+      - key: FORTELLIS_CLIENT_SECRET
+        sync: false
+      - key: FORTELLIS_SUBSCRIPTION_ID
+        sync: false
+      - key: FORTELLIS_TOKEN_URL
+        sync: false
+      - key: FORTELLIS_API_BASE_URL
+        sync: false
+      - key: FORTELLIS_WEBHOOK_SECRET
+        sync: false
+      - key: FORTELLIS_SANDBOX
+        sync: false
+      - key: TEKION_CLIENT_ID
+        sync: false
+      - key: TEKION_CLIENT_SECRET
+        sync: false
+      - key: TEKION_SUBSCRIPTION_ID
+        sync: false
+      - key: TEKION_TOKEN_URL
+        sync: false
+      - key: TEKION_API_BASE_URL
+        sync: false
+      - key: TEKION_WEBHOOK_SECRET
+        sync: false
+      - key: TEKION_SANDBOX
+        sync: false
+      - key: REYNOLDS_CLIENT_ID
+        sync: false
+      - key: REYNOLDS_CLIENT_SECRET
+        sync: false
+      - key: REYNOLDS_SUBSCRIPTION_ID
+        sync: false
+      - key: REYNOLDS_TOKEN_URL
+        sync: false
+      - key: REYNOLDS_API_BASE_URL
+        sync: false
+      - key: REYNOLDS_WEBHOOK_SECRET
+        sync: false
+      - key: REYNOLDS_SANDBOX
+        sync: false
+      - key: DEALERTRACK_CLIENT_ID
+        sync: false
+      - key: DEALERTRACK_CLIENT_SECRET
+        sync: false
+      - key: DEALERTRACK_SUBSCRIPTION_ID
+        sync: false
+      - key: DEALERTRACK_TOKEN_URL
+        sync: false
+      - key: DEALERTRACK_API_BASE_URL
+        sync: false
+      - key: DEALERTRACK_WEBHOOK_SECRET
+        sync: false
+      - key: DEALERTRACK_SANDBOX
+        sync: false
+      - key: CDK_SANDBOX
+        sync: false
       - key: RESEND_API_KEY
+        sync: false
+      - key: RESEND_FROM
+        sync: false
+      - key: SMS_PROVIDER
         sync: false
 
 databases:

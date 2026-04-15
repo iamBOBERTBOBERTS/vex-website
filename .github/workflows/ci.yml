@@ -55,6 +55,9 @@ jobs:
         env:
           CI: true
 
+      - name: Generate CI JWT secret
+        run: echo "JWT_SECRET=$(openssl rand -hex 32)" >> "$GITHUB_ENV"
+
       - name: Install Playwright (Chromium) for web E2E
         run: pnpm --filter @vex/web exec playwright install --with-deps chromium
 
@@ -71,7 +74,6 @@ jobs:
           TURBO_TEAM: ${{ secrets.TURBO_TEAM }}
           DATABASE_URL: postgresql://postgres:postgres@localhost:5432/vex
           DIRECT_DATABASE_URL: postgresql://postgres:postgres@localhost:5432/vex
-          JWT_SECRET: ci-ship-gate-not-a-real-secret
           SKIP_VALUATION_ENV_CHECK: "true"
 
       - name: Upload coverage / artifacts (optional but fast)

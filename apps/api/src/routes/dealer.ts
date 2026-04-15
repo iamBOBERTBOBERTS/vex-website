@@ -11,12 +11,12 @@ export const dealerRouter: Router = Router();
 /**
  * Cross-tenant pilot seed metrics for ops / investor proxy only.
  * Not available to tenant JWTs (would leak network-wide aggregates).
- * Authenticate with header `x-internal-key: <INTERNAL_PILOT_METRICS_KEY>` or `?key=` (same value).
+ * Authenticate with header `x-internal-key: <INTERNAL_PILOT_METRICS_KEY>` only.
+ * Never accept this key via query string because URLs are more likely to leak into logs and intermediaries.
  */
 dealerRouter.get("/pilots", async (req, res) => {
   const headerKey = req.header("x-internal-key");
-  const q = req.query["key"];
-  const key = (typeof headerKey === "string" && headerKey) || (typeof q === "string" ? q : "");
+  const key = typeof headerKey === "string" ? headerKey : "";
   const expected = process.env.INTERNAL_PILOT_METRICS_KEY;
   if (!expected) {
     return res.status(503).json({
