@@ -1,70 +1,104 @@
-import { notFound } from "next/navigation";
+import Image from "next/image";
 import Link from "next/link";
-import { getVehicleById, formatPrice } from "@/lib/vehicles";
+import { notFound } from "next/navigation";
+import { formatPrice, getVehicleById } from "@/lib/vehicles";
+import styles from "./detail.module.css";
+
+const SERVICE_POINTS = [
+  "Private introductions handled by a concierge, not an anonymous lead queue.",
+  "Inspection, shipping, and final handover coordinated around buyer and seller timelines.",
+  "Presentation built for confidence: verified seller status, tighter storytelling, and reduced noise.",
+];
 
 export default function VehicleDetailPage({ params }: { params: { id: string } }) {
   const vehicle = getVehicleById(params.id);
+
   if (!vehicle) {
     notFound();
   }
 
   const contactPhone = process.env.NEXT_PUBLIC_CONTACT_PHONE || "";
   const phoneHref = contactPhone.replace(/\D/g, "");
-  const maskedVin = vehicle.vin.slice(-6).padStart(vehicle.vin.length, "*");
+  const maskedVin = `${"*".repeat(Math.max(0, vehicle.vin.length - 6))}${vehicle.vin.slice(-6)}`;
 
   return (
-    <main className="section">
-      <div className="vehicle-hero">
-        <img src={vehicle.image} alt={`${vehicle.year} ${vehicle.make} ${vehicle.model}`} className="vehicle-hero-image" />
-      </div>
+    <main className={styles.main}>
+      <Link href="/inventory" className={styles.back}>
+        Back to inventory
+      </Link>
 
-      <div className="grid-2" style={{ gap: "2rem", alignItems: "start" }}>
-        <div>
-          <p className="hero-eyebrow">{vehicle.badge}</p>
-          <h1 className="sectionHeading" style={{ fontSize: "4rem", marginTop: "0.5rem" }}>
-            {vehicle.year} {vehicle.make} {vehicle.model}
-          </h1>
-          <p className="feature-copy" style={{ color: "var(--color-silver)", marginTop: "1rem" }}>
-            {vehicle.color} · {vehicle.miles.toLocaleString()} mi · VIN {maskedVin}
-          </p>
-          <p className="cardPrice" style={{ margin: "1.5rem 0" }}>
-            {formatPrice(vehicle.price)}
-          </p>
-          <p className="feature-copy" style={{ marginBottom: "2rem", maxWidth: "42rem" }}>
-            {vehicle.description}
-          </p>
-          <div className="hero-actions" style={{ flexWrap: "wrap" }}>
-            <Link href={`/contact?vehicle=${vehicle.id}`} className="btn btnPrimary">
-              Request More Info
-            </Link>
-            <Link href="/contact" className="btn btnGhost">
-              Schedule Viewing
-            </Link>
+      <section className={styles.hero}>
+        <div className={styles.mediaPanel}>
+          <div className={styles.imageFrame}>
+            <Image
+              src={vehicle.image}
+              alt={`${vehicle.year} ${vehicle.make} ${vehicle.model}`}
+              fill
+              priority
+              className={styles.heroImage}
+              sizes="(max-width: 960px) 100vw, 58vw"
+            />
+          </div>
+
+          <div className={styles.serviceStrip}>
+            {SERVICE_POINTS.map((point) => (
+              <article key={point} className={styles.serviceCard}>
+                <p className={styles.serviceCopy}>{point}</p>
+              </article>
+            ))}
           </div>
         </div>
 
-        <aside className="contact-card">
-          <p className="feature-title">Seller Info</p>
-          <div className="badge" style={{ marginTop: "1rem", display: "inline-flex" }}>
-            Verified Seller
+        <aside className={styles.summaryPanel}>
+          <p className={styles.badge}>{vehicle.badge}</p>
+          <h1 className={styles.title}>
+            {vehicle.year} {vehicle.make} {vehicle.model}
+          </h1>
+          <p className={styles.meta}>
+            {vehicle.color} / {vehicle.miles.toLocaleString()} miles / VIN {maskedVin}
+          </p>
+          <p className={styles.price}>{formatPrice(vehicle.price)}</p>
+          <p className={styles.description}>{vehicle.description}</p>
+
+          <div className={styles.ctas}>
+            <Link href={`/contact?vehicle=${vehicle.id}`} className={styles.primaryCta}>
+              Request more information
+            </Link>
+            <Link href="/contact" className={styles.secondaryCta}>
+              Schedule private viewing
+            </Link>
           </div>
-          <p className="feature-copy" style={{ marginTop: "1.2rem" }}>
-            Member since {vehicle.sellerSince}
-          </p>
-          <p className="feature-copy" style={{ marginTop: "1rem" }}>
-            Discreet service with direct vehicle introductions and individual support.
-          </p>
-          {phoneHref ? (
-            <a href={`tel:${phoneHref}`} className="btn btnGhost" style={{ width: "100%", justifyContent: "center", marginTop: "1.6rem" }}>
-              {contactPhone}
-            </a>
-          ) : (
-            <p className="feature-copy" style={{ marginTop: "1.6rem" }}>
-              Contact number is not configured.
+
+          <div className={styles.specPanel}>
+            <div className={styles.specRow}>
+              <span className={styles.specLabel}>Seller status</span>
+              <span className={styles.specValue}>Verified since {vehicle.sellerSince}</span>
+            </div>
+            <div className={styles.specRow}>
+              <span className={styles.specLabel}>Market stance</span>
+              <span className={styles.specValue}>Privately presented</span>
+            </div>
+            <div className={styles.specRow}>
+              <span className={styles.specLabel}>Delivery support</span>
+              <span className={styles.specValue}>Inspection, transport, and handover</span>
+            </div>
+          </div>
+
+          <div className={styles.contactPanel}>
+            <p className={styles.contactEyebrow}>Direct line</p>
+            <p className={styles.contactCopy}>
+              A dedicated VEX concierge handles this vehicle from first inquiry through final closing.
             </p>
-          )}
+            {phoneHref ? (
+              <a href={`tel:${phoneHref}`} className={styles.phoneLink}>
+                {contactPhone}
+              </a>
+            ) : (
+              <p className={styles.contactCopy}>Phone contact is not configured.</p>
+            )}
+          </div>
         </aside>
-      </div>
+      </section>
     </main>
   );
 }

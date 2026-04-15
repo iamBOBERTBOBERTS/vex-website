@@ -1,0 +1,187 @@
+.page {
+  width: min(1180px, calc(100% - 3rem));
+  margin: 0 auto;
+  padding: 2.5rem 0 5rem;
+  display: grid;
+  gap: 2rem;
+}
+
+.hero {
+  display: grid;
+  gap: 1rem;
+  padding: 2rem;
+  border-radius: 1.8rem;
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  background:
+    radial-gradient(circle at top right, rgba(201, 168, 76, 0.16), transparent 34%),
+    linear-gradient(180deg, rgba(10, 10, 13, 0.92), rgba(5, 5, 7, 0.96));
+}
+
+.eyebrow {
+  color: var(--accent-bright);
+  text-transform: uppercase;
+  letter-spacing: 0.16em;
+  font-size: 0.78rem;
+}
+
+.title {
+  max-width: 11ch;
+  font-family: var(--font-display), serif;
+  font-size: clamp(2.8rem, 6vw, 4.7rem);
+  line-height: 0.96;
+  letter-spacing: -0.04em;
+  color: var(--color-white);
+}
+
+.intro {
+  max-width: 44rem;
+  color: var(--text-secondary);
+  line-height: 1.9;
+  font-size: 1.02rem;
+}
+
+.grid2,
+.grid3 {
+  display: grid;
+  gap: 1rem;
+}
+
+.grid2 {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.grid3 {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.panel {
+  padding: 1.4rem;
+  border-radius: 1.5rem;
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.03), rgba(255, 255, 255, 0.015)),
+    rgba(9, 9, 12, 0.84);
+}
+
+.number {
+  color: rgba(201, 168, 76, 0.35);
+  font-family: var(--font-display), serif;
+  font-size: 3rem;
+  line-height: 0.9;
+}
+
+.panelTitle {
+  margin-top: 0.8rem;
+  color: var(--color-white);
+  font-size: 1.12rem;
+  font-weight: 600;
+}
+
+.copy {
+  margin-top: 0.55rem;
+  color: var(--text-secondary);
+  line-height: 1.8;
+}
+
+.list {
+  margin-top: 1rem;
+  padding-left: 1rem;
+  color: var(--text-secondary);
+  line-height: 1.9;
+}
+
+.ctaRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.85rem;
+  align-items: center;
+  margin-top: 1rem;
+}
+
+.contactCard {
+  display: grid;
+  gap: 0.8rem;
+}
+
+.contactLine {
+  color: var(--color-white);
+}
+
+.form {
+  display: grid;
+  gap: 1rem;
+}
+
+.field {
+  display: grid;
+  gap: 0.45rem;
+}
+
+.label {
+  color: var(--text-muted);
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+}
+
+.input,
+.textarea {
+  width: 100%;
+  border-radius: 1rem;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.03);
+  color: var(--color-white);
+  padding: 0.95rem 1rem;
+  font: inherit;
+}
+
+.textarea {
+  min-height: 170px;
+  resize: vertical;
+}
+
+.radioGroup {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.radioOption {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.7rem;
+  padding: 0.95rem 1rem;
+  border-radius: 1rem;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.03);
+  color: var(--text-secondary);
+}
+
+.radioOption input {
+  accent-color: var(--color-gold);
+}
+
+.success {
+  padding: 1rem 1.1rem;
+  border-radius: 1rem;
+  border: 1px solid rgba(201, 168, 76, 0.2);
+  background: rgba(201, 168, 76, 0.08);
+  color: var(--color-white);
+}
+
+@media (max-width: 900px) {
+  .grid2,
+  .grid3 {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 760px) {
+  .page {
+    width: min(100% - 1.5rem, 1180px);
+  }
+
+  .hero,
+  .panel {
+    padding: 1.2rem;
+  }
+}

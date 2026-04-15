@@ -1,7 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { useState, useEffect } from "react";
+import { usePathname } from "next/navigation";
+import { useEffect, useState } from "react";
 import styles from "./Header.module.css";
 
 const NAV_LINKS = [
@@ -12,11 +13,13 @@ const NAV_LINKS = [
 ];
 
 export function Header() {
+  const pathname = usePathname();
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
 
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 20);
+    const onScroll = () => setScrolled(window.scrollY > 12);
+    onScroll();
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
@@ -32,48 +35,66 @@ export function Header() {
 
   return (
     <header className={`${styles.header} ${scrolled ? styles.scrolled : ""}`}>
-      <div className={styles.left}>
+      <div className={styles.shell}>
         <Link href="/" className={styles.brand} onClick={() => setMenuOpen(false)}>
-          VEX
+          <span className={styles.brandWord}>VEX</span>
+          <span className={styles.brandSub}>Private motor market</span>
         </Link>
-      </div>
 
-      <nav className={styles.navDesktop} aria-label="Primary navigation">
-        {NAV_LINKS.map(({ href, label }) => (
-          <Link key={href} href={href} className={styles.navLink} onClick={() => setMenuOpen(false)}>
-            {label}
+        <nav className={styles.navDesktop} aria-label="Primary navigation">
+          {NAV_LINKS.map(({ href, label }) => {
+            const active = pathname === href;
+            return (
+              <Link
+                key={href}
+                href={href}
+                className={`${styles.navLink} ${active ? styles.navLinkActive : ""}`}
+                onClick={() => setMenuOpen(false)}
+              >
+                {label}
+              </Link>
+            );
+          })}
+        </nav>
+
+        <div className={styles.actions}>
+          <Link href="/contact" className={styles.cta} onClick={() => setMenuOpen(false)}>
+            Begin Concierge Review
           </Link>
-        ))}
-      </nav>
-
-      <div className={styles.right}>
-        <Link href="/contact" className={styles.cta} onClick={() => setMenuOpen(false)}>
-          Request Access
-        </Link>
-        <button
-          type="button"
-          className={styles.menuButton}
-          aria-expanded={menuOpen}
-          aria-label={menuOpen ? "Close menu" : "Open menu"}
-          onClick={() => setMenuOpen((state) => !state)}
-        >
-          <span className={menuOpen ? styles.burgerOpen : styles.burger} />
-        </button>
+          <button
+            type="button"
+            className={styles.menuButton}
+            aria-expanded={menuOpen}
+            aria-label={menuOpen ? "Close menu" : "Open menu"}
+            onClick={() => setMenuOpen((state) => !state)}
+          >
+            <span className={menuOpen ? styles.burgerOpen : styles.burger} />
+          </button>
+        </div>
       </div>
 
       {menuOpen ? (
         <div className={styles.mobileMenu}>
-          <div className={styles.mobileLinks}>
-            {NAV_LINKS.map(({ href, label }) => (
-              <Link key={href} href={href} className={styles.mobileLink} onClick={() => setMenuOpen(false)}>
-                {label}
-              </Link>
-            ))}
+          <button type="button" className={styles.mobileOverlay} onClick={() => setMenuOpen(false)} aria-label="Close menu" />
+          <div className={styles.mobileSheet}>
+            <p className={styles.mobileEyebrow}>Navigate the private market</p>
+            {NAV_LINKS.map(({ href, label }) => {
+              const active = pathname === href;
+              return (
+                <Link
+                  key={href}
+                  href={href}
+                  className={`${styles.mobileLink} ${active ? styles.mobileLinkActive : ""}`}
+                  onClick={() => setMenuOpen(false)}
+                >
+                  {label}
+                </Link>
+              );
+            })}
             <Link href="/contact" className={styles.mobileCta} onClick={() => setMenuOpen(false)}>
-              Request Access
+              Begin Concierge Review
             </Link>
           </div>
-          <button type="button" className={styles.mobileOverlay} onClick={() => setMenuOpen(false)} aria-label="Close menu" />
         </div>
       ) : null}
     </header>
