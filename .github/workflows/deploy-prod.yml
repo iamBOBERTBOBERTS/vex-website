@@ -25,7 +25,6 @@ jobs:
     env:
       DATABASE_URL: postgresql://postgres:postgres@localhost:5432/vex
       DIRECT_DATABASE_URL: postgresql://postgres:postgres@localhost:5432/vex
-      JWT_SECRET: ci-deploy-workflow-not-production
       SKIP_VALUATION_ENV_CHECK: "1"
     steps:
       - uses: actions/checkout@v4
@@ -38,6 +37,8 @@ jobs:
           cache: pnpm
       - name: Install
         run: pnpm install --frozen-lockfile
+      - name: Generate CI JWT secret
+        run: echo "JWT_SECRET=$(openssl rand -hex 32)" >> "$GITHUB_ENV"
       - name: Turbo Remote Cache
         uses: turborepo/action@v2
         with:

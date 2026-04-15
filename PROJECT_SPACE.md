@@ -8,6 +8,7 @@ Use this file as the primary command center for execution.
 - Keep tenant isolation + RBAC + Stripe idempotency non-negotiable.
 - Convert pilots to paid usage, not feature sprawl.
 - Execute competitive plan: `docs/VEX_COMPETITIVE_EXECUTION_PLAN_2026-04-02.md`.
+- Security cleanup: remove the hardcoded GitHub Actions deploy JWT and replace it with a runtime-generated CI secret before the next publish cycle.
 
 ## 14-Day Beachhead Sprint
 
