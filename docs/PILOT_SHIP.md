@@ -94,7 +94,7 @@ Optional:
 
 Deploy `apps/web` and `apps/crm` with the **same** `NEXT_PUBLIC_API_URL` as the origin you used in Step 5.
 
-For **live pilot network metrics** on `/investor` and `/investor-deck` (via `GET /api/investor/pilot-network` → `GET /dealer/pilots`), set **`INTERNAL_PILOT_METRICS_KEY` on both the API and `apps/web`** to the **same** secret (see `apps/api/.env.example` and `apps/web/.env.local.example`). Generate one with `openssl rand -hex 32`.
+For **live pilot network metrics** on `/investor` and `/investor-deck` (via `GET /api/investor/pilot-network` → `GET /dealer/pilots`), set **`INTERNAL_PILOT_METRICS_KEY` on both the API and `apps/web`** to the **same** secret (see `apps/api/.env.example` and `apps/web/.env.local.example`). Generate one with `openssl rand -hex 32`, keep it **server-only** on the web app, and send it only via the `x-internal-key` header.
 
 ---
 
