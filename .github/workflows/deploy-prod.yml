@@ -58,7 +58,7 @@ jobs:
       - name: API e2e
         run: pnpm --filter @vex/api run test:e2e
       - name: Trivy filesystem scan
-        uses: aquasecurity/trivy-action@0.24.0
+        uses: aquasecurity/trivy-action@0.35.0
         with:
           scan-type: fs
           severity: CRITICAL,HIGH
