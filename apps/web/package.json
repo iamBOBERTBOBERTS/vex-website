@@ -39,6 +39,7 @@
     "@theatre/r3f": "^0.7.2",
     "@vex/3d-configurator": "workspace:*",
     "@vex/cinematic": "workspace:*",
+    "@vex/design-system": "workspace:*",
     "@vex/shared": "workspace:*",
     "@vex/ui": "workspace:*",
     "framer-motion": "^12.38.0",

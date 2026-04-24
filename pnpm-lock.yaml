@@ -191,6 +191,9 @@ importers:
       '@vex/cinematic':
         specifier: workspace:*
         version: link:../../packages/cinematic
+      '@vex/design-system':
+        specifier: workspace:*
+        version: link:../../packages/design-system
       '@vex/shared':
         specifier: workspace:*
         version: link:../../packages/shared
@@ -307,6 +310,12 @@ importers:
       three:
         specifier: ^0.169.0
         version: 0.169.0
+      typescript:
+        specifier: ^5.6.0
+        version: 5.9.3
+
+  packages/design-system:
+    devDependencies:
       typescript:
         specifier: ^5.6.0
         version: 5.9.3

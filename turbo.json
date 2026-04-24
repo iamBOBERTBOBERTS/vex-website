@@ -48,6 +48,7 @@
         "packages/**/tsconfig.json",
         "packages/shared/**",
         "packages/ui/**",
+        "packages/design-system/**",
         "packages/cinematic/**",
         "packages/3d-configurator/**"
       ],
@@ -153,6 +154,7 @@
         "apps/web/playwright.config.*",
         "packages/shared/**",
         "packages/ui/**",
+        "packages/design-system/**",
         "packages/cinematic/**",
         "packages/3d-configurator/**"
       ],

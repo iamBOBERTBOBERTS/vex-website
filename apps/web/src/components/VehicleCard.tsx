@@ -3,7 +3,28 @@ import Link from "next/link";
 import type { Vehicle } from "@/lib/vehicles";
 import { formatPrice } from "@/lib/vehicles";
 
+const conditionByBadge: Record<string, string> = {
+  BESPOKE: "Commission grade",
+  EXCLUSIVE: "Track verified",
+  RARE: "Collector reserve",
+  VERIFIED: "Dealer reviewed",
+  "NEW ARRIVAL": "Intake review",
+};
+
+function getVehicleMetadata(vehicle: Vehicle) {
+  const mileageQuality = vehicle.miles < 500 ? "Delivery-mile" : vehicle.miles < 1500 ? "Low-mile" : "Driven";
+
+  return [
+    "Verified seller",
+    mileageQuality,
+    conditionByBadge[vehicle.badge] ?? "Concierge reviewed",
+    "Private acquisition",
+  ];
+}
+
 export function VehicleCard({ vehicle }: { vehicle: Vehicle }) {
+  const metadata = getVehicleMetadata(vehicle);
+
   return (
     <Link
       href={`/inventory/${vehicle.id}`}
@@ -32,6 +53,16 @@ export function VehicleCard({ vehicle }: { vehicle: Vehicle }) {
         <p className="text-sm text-[#a99f8d]">
           {vehicle.color} | {vehicle.miles.toLocaleString()} mi
         </p>
+        <div className="grid grid-cols-2 gap-2">
+          {metadata.map((item) => (
+            <span
+              key={item}
+              className="flex min-h-10 items-center justify-center rounded-full border border-white/10 bg-white/[0.04] px-3 py-2 text-center text-[0.68rem] uppercase leading-4 text-[#cfc4b2]"
+            >
+              {item}
+            </span>
+          ))}
+        </div>
         <div className="flex items-center justify-between gap-4">
           <p className="text-xl font-semibold text-[#f1d38a]">{formatPrice(vehicle.price)}</p>
           <span className="rounded-full border border-white/12 bg-white/[0.05] px-4 py-2 text-sm text-[#f5f1e8] transition group-hover:border-[#f1d38a]/30 group-hover:text-[#fff8eb]">

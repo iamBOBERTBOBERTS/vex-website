@@ -8,21 +8,6 @@ const contactPhone = process.env.NEXT_PUBLIC_CONTACT_PHONE || "";
 const contactEmail = process.env.NEXT_PUBLIC_CONTACT_EMAIL || "";
 const heroVideoUrl = process.env.NEXT_PUBLIC_HERO_VIDEO_URL || "";
 
-const pillars = [
-  {
-    title: "Private market presence",
-    copy: "An atmosphere built around scarcity, confidence, and editorial control rather than the noise of public marketplaces.",
-  },
-  {
-    title: "Concierge-led transaction flow",
-    copy: "Qualified access, high-context communication, and human-led support from first inquiry through transport and handover.",
-  },
-  {
-    title: "Dealer-grade operating logic",
-    copy: "The frontend looks rare, but the platform underneath still supports appraisal, inventory, lead, and subscription workflows.",
-  },
-];
-
 const processSteps = [
   {
     number: "01",
@@ -62,6 +47,53 @@ const confidenceCards = [
     copy: "Escrow support, logistics guidance, financing coordination, and human concierge ownership reduce uncertainty across the deal.",
   },
 ];
+
+const collectionPrinciples = [
+  {
+    title: "Curated before listed",
+    copy: "VEX is built for vehicles that need context, not commodity placement. Every eligible car should enter with a point of view: why it matters, who it fits, and what makes the opportunity worth private attention.",
+  },
+  {
+    title: "Private network first",
+    copy: "The best exotic transactions often begin before public visibility. The platform is structured around qualified access, direct relationships, and controlled presentation instead of broad, low-signal exposure.",
+  },
+  {
+    title: "Concierge owned",
+    copy: "Acquisition is treated as a guided process. Inquiry, qualification, appraisal support, documentation, transport, and handover all need a single calm operating layer.",
+  },
+];
+
+const verificationLayers = [
+  "Seller identity review",
+  "Dealer or specialist confidence signal",
+  "VIN and listing consistency checks",
+  "Condition and provenance notes",
+  "Escrow and logistics coordination",
+  "Human concierge follow-through",
+];
+
+const conciergeStages = [
+  {
+    stage: "Consult",
+    copy: "Clarify intent, budget posture, collection goals, trade context, and acquisition timeline before surfacing serious opportunities.",
+  },
+  {
+    stage: "Source",
+    copy: "Match the buyer with visible and off-market inventory using rarity, condition, history, and ownership fit as the filter.",
+  },
+  {
+    stage: "Secure",
+    copy: "Coordinate appraisal confidence, seller communication, documentation, escrow path, transport planning, and final handover.",
+  },
+];
+
+const intelligenceSignals = [
+  { value: "Market position", label: "Pricing posture compared against comparable listings and recent movement." },
+  { value: "Asset quality", label: "Mileage, configuration, history, demand profile, and condition class reviewed together." },
+  { value: "Exit confidence", label: "Collector-grade framing helps buyers understand desirability beyond the first transaction." },
+];
+
+const collectionBadges = ["Verified", "Concierge available", "Condition class noted", "Private inquiry"];
 
 export default function HomePage() {
   const spotlightVehicle = FEATURED_VEHICLES[0];
@@ -186,16 +218,16 @@ export default function HomePage() {
 
       <section className="shell py-20">
         <MotionReveal className="max-w-3xl">
-          <p className="section-kicker">Foundation</p>
-          <h2 className="section-title">A luxury frontend sitting on usable platform logic.</h2>
+          <p className="section-kicker">Private collection philosophy</p>
+          <h2 className="section-title">The platform exists for vehicles that deserve context before exposure.</h2>
           <p className="section-copy">
-            The aesthetic is cinematic, but the structure remains practical: inventory routes, appraisal flows,
-            lead capture, subscriptions, and dealer-grade operations are all still part of the product surface.
+            VEX is not trying to become another high-volume listing wall. It is designed for curated exotic acquisition,
+            controlled seller visibility, and buyer confidence around assets where provenance, condition, rarity, and timing matter.
           </p>
         </MotionReveal>
 
         <div className="mt-10 grid gap-5 lg:grid-cols-3">
-          {pillars.map((pillar, index) => (
+          {collectionPrinciples.map((pillar, index) => (
             <MotionReveal key={pillar.title} delay={index * 0.08} className="glass-panel rounded-[1.75rem] p-6">
               <div className="mb-6 flex h-12 w-12 items-center justify-center rounded-full border border-[#f1d38a]/20 bg-[#d4af37]/10 text-sm font-semibold text-[#f1d38a]">
                 0{index + 1}
@@ -204,6 +236,81 @@ export default function HomePage() {
               <p className="mt-4 text-sm leading-7 text-[#d8d0c2]">{pillar.copy}</p>
             </MotionReveal>
           ))}
+        </div>
+      </section>
+
+      <section className="shell py-20">
+        <div className="grid gap-8 lg:grid-cols-[0.9fr_1.1fr] lg:items-start">
+          <MotionReveal>
+            <p className="section-kicker">Verification layer</p>
+            <h2 className="section-title">Trust is presented as part of the product, not hidden behind the inquiry.</h2>
+            <p className="section-copy">
+              Exotic buyers do not only evaluate design, mileage, and price. They evaluate confidence. VEX surfaces the
+              checks and ownership signals that reduce uncertainty before the conversation becomes serious.
+            </p>
+          </MotionReveal>
+
+          <MotionReveal delay={0.08} className="cinema-panel rounded-[2rem] p-7 sm:p-9">
+            <div className="grid gap-4 sm:grid-cols-2">
+              {verificationLayers.map((signal) => (
+                <div key={signal} className="rounded-[1.35rem] border border-white/10 bg-black/24 p-5">
+                  <span className="mb-4 block h-1 w-12 rounded-full bg-[#f1d38a]" aria-hidden="true" />
+                  <p className="text-lg text-[#fff8eb]">{signal}</p>
+                </div>
+              ))}
+            </div>
+            <p className="mt-7 text-sm leading-7 text-[#a99f8d]">
+              The goal is not to overpromise automation. The goal is to make the confidence layer visible, human-owned,
+              and consistent across inventory, appraisal, and acquisition flows.
+            </p>
+          </MotionReveal>
+        </div>
+      </section>
+
+      <section className="shell py-20">
+        <MotionReveal className="cinema-panel rounded-[2rem] p-7 sm:p-10">
+          <div className="grid gap-8 lg:grid-cols-[0.85fr_1.15fr]">
+            <div>
+              <p className="section-kicker">Concierge acquisition</p>
+              <h2 className="section-title">A private purchase should feel orchestrated from the first conversation.</h2>
+              <p className="section-copy max-w-xl">
+                The VEX acquisition flow is built around fewer unknowns: buyer intent, collection fit, seller readiness,
+                appraisal confidence, logistics, and final delivery are treated as one connected experience.
+              </p>
+            </div>
+            <div className="grid gap-4 md:grid-cols-3">
+              {conciergeStages.map((item, index) => (
+                <div key={item.stage} className="rounded-[1.5rem] border border-white/10 bg-black/24 p-5">
+                  <p className="text-[0.72rem] uppercase tracking-[0.28em] text-[#f1d38a]/70">0{index + 1}</p>
+                  <h3 className="mt-4 text-2xl text-[#fff8eb]">{item.stage}</h3>
+                  <p className="mt-4 text-sm leading-7 text-[#d8d0c2]">{item.copy}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </MotionReveal>
+      </section>
+
+      <section className="shell py-20">
+        <div className="grid gap-8 lg:grid-cols-[1fr_0.85fr] lg:items-end">
+          <MotionReveal>
+            <p className="section-kicker">Market intelligence</p>
+            <h2 className="section-title">The appraisal layer gives the experience financial gravity.</h2>
+            <p className="section-copy">
+              Premium presentation has to be supported by pricing awareness. VEX frames each acquisition or appraisal
+              with the signals that matter to owners, collectors, dealers, and high-intent buyers.
+            </p>
+          </MotionReveal>
+          <MotionReveal delay={0.08} className="glass-panel rounded-[2rem] p-7">
+            <div className="space-y-5">
+              {intelligenceSignals.map((signal) => (
+                <div key={signal.value} className="border-b border-white/10 pb-5 last:border-b-0 last:pb-0">
+                  <p className="text-xl text-[#fff8eb]">{signal.value}</p>
+                  <p className="mt-2 text-sm leading-7 text-[#a99f8d]">{signal.label}</p>
+                </div>
+              ))}
+            </div>
+          </MotionReveal>
         </div>
       </section>
 
@@ -231,12 +338,20 @@ export default function HomePage() {
       <section className="shell py-20">
         <MotionReveal className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
           <div className="max-w-2xl">
-            <p className="section-kicker">Featured inventory</p>
-            <h2 className="section-title">A tighter collection framed like a private catalog.</h2>
+            <p className="section-kicker">Featured private collection</p>
+            <h2 className="section-title">A tighter collection framed like an editorial acquisition file.</h2>
           </div>
           <p className="max-w-md text-sm leading-7 text-[#ad9f8a]">
-            Fewer listings, richer presentation, stronger hierarchy, and a calmer path to inquiry.
+            Fewer listings, richer presentation, stronger hierarchy, and visible confidence signals before the buyer opens a detail page.
           </p>
+        </MotionReveal>
+
+        <MotionReveal delay={0.05} className="mt-8 flex flex-wrap gap-3">
+          {collectionBadges.map((badge) => (
+            <span key={badge} className="rounded-full border border-[#f1d38a]/18 bg-[#d4af37]/10 px-4 py-2 text-xs uppercase text-[#f1d38a]">
+              {badge}
+            </span>
+          ))}
         </MotionReveal>
 
         <div className="mt-10 grid gap-5 lg:grid-cols-3">

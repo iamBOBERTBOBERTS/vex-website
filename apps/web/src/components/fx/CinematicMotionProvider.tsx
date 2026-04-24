@@ -3,11 +3,7 @@
 import { useEffect } from "react";
 import { usePathname } from "next/navigation";
 import { usePrefersReducedMotion } from "@/hooks/usePrefersReducedMotion";
-
-type LenisLike = {
-  raf: (time: number) => void;
-  destroy: () => void;
-};
+import { destroyLenis, initLenis } from "@/lib/scroll/lenis";
 
 const SCENE_BY_PATH: Array<{ test: (path: string) => boolean; scene: string }> = [
   { test: (path) => path === "/", scene: "home" },
@@ -31,38 +27,18 @@ export function CinematicMotionProvider({ children }: { children: React.ReactNod
   }, [pathname, reduced]);
 
   useEffect(() => {
-    let rafId = 0;
-    let lenis: LenisLike | null = null;
-
     async function setup() {
       if (reduced) return;
 
-      const [{ default: Lenis }, { gsap }, { ScrollTrigger }] = await Promise.all([
-        import("lenis"),
-        import("gsap"),
-        import("gsap/ScrollTrigger"),
-      ]);
+      const [{ gsap }, { ScrollTrigger }] = await Promise.all([import("gsap"), import("gsap/ScrollTrigger")]);
 
       gsap.registerPlugin(ScrollTrigger);
-      const instance = new Lenis({
-        duration: 1.1,
-        wheelMultiplier: 0.95,
-        smoothWheel: true,
-      });
-      lenis = instance;
-      instance.on("scroll", ScrollTrigger.update);
-
-      const loop = (time: number) => {
-        lenis?.raf(time);
-        rafId = requestAnimationFrame(loop);
-      };
-      rafId = requestAnimationFrame(loop);
+      initLenis({ onScroll: ScrollTrigger.update });
     }
 
     setup().catch(() => {});
     return () => {
-      if (rafId) cancelAnimationFrame(rafId);
-      lenis?.destroy();
+      destroyLenis();
     };
   }, [reduced]);
 
