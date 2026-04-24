@@ -19,6 +19,15 @@ export const vexLuxuryTokens = {
   neonBloomEmerald: "0 0 24px rgba(0, 201, 167, 0.35)",
   neonBloomGold: "0 0 32px rgba(201, 169, 98, 0.28)",
   surfaceGlassLuxury: "linear-gradient(165deg, rgba(14,18,28,0.82), rgba(6,8,14,0.72))",
+
+  /** Glassmorphism tokens — MacOS-like premium blur */
+  glassBlurHeavy: "blur(36px) saturate(1.2)",
+  glassBlurMedium: "blur(28px) saturate(1.15)",
+  glassBlurLight: "blur(20px) saturate(1.15)",
+  glassBlurSubtle: "blur(14px) saturate(1.1)",
+  insetHighlight: "inset 0 0 12px rgba(255, 255, 255, 0.06)",
+  insetHighlightStrong: "inset 0 0 16px rgba(255, 255, 255, 0.08)",
+  goldGlow: "0 0 28px rgba(201, 169, 98, 0.1) inset",
 } as const;
 
 export type VexLuxuryTokenKey = keyof typeof vexLuxuryTokens;

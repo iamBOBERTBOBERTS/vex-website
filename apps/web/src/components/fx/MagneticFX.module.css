@@ -26,6 +26,10 @@
   opacity: 1;
 }
 
+.magnetic:hover {
+  box-shadow: 0 0 24px rgba(201, 169, 98, 0.15), 0 8px 32px rgba(0, 0, 0, 0.2);
+}
+
 .magnetic:active {
   transform: translate3d(calc(var(--mx, 0px) * 0.2), calc(var(--my, 0px) * 0.2), 0) scale(0.98);
 }

@@ -17,18 +17,21 @@
     color-mix(in srgb, var(--surface-elevated) 78%, transparent) 0%,
     color-mix(in srgb, var(--surface) 55%, transparent) 100%
   );
-  backdrop-filter: blur(14px);
+  backdrop-filter: blur(20px) saturate(1.25);
   box-shadow:
     0 1px 0 color-mix(in srgb, #fff 6%, transparent) inset,
+    0 0 16px color-mix(in srgb, #fff 4%, transparent) inset,
     0 18px 48px rgba(0, 0, 0, 0.35);
-  transition: transform 0.35s ease, box-shadow 0.35s ease;
+  transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.35s cubic-bezier(0.22, 1, 0.36, 1), backdrop-filter 0.35s ease;
 }
 
 .glassSliders:hover {
   transform: perspective(900px) rotateX(1.2deg) rotateY(-0.8deg);
+  backdrop-filter: blur(24px) saturate(1.3);
   box-shadow:
     0 1px 0 color-mix(in srgb, var(--accent-bright) 18%, transparent) inset,
-    0 22px 56px rgba(0, 0, 0, 0.42);
+    0 0 20px color-mix(in srgb, #fff 6%, transparent) inset,
+    0 28px 64px rgba(0, 0, 0, 0.45);
 }
 
 .sliderLabel {

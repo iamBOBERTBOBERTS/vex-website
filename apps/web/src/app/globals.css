@@ -129,8 +129,9 @@ main {
     border: 1px solid var(--line);
     box-shadow:
       inset 0 1px 0 rgba(255, 255, 255, 0.12),
+      inset 0 0 12px rgba(255, 255, 255, 0.06),
       var(--shadow-panel);
-    backdrop-filter: blur(24px);
+    backdrop-filter: blur(28px) saturate(1.15);
   }
 
   .cinema-panel {
@@ -140,8 +141,40 @@ main {
     border: 1px solid var(--line-gold);
     box-shadow:
       inset 0 1px 0 rgba(255, 255, 255, 0.12),
+      inset 0 0 16px rgba(255, 255, 255, 0.08),
       0 36px 96px rgba(0, 0, 0, 0.4);
-    backdrop-filter: blur(30px);
+    backdrop-filter: blur(36px) saturate(1.2);
+  }
+
+  .glass-divider {
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.06), transparent);
+    backdrop-filter: blur(8px);
+  }
+
+  .glass-button {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.875rem 1.75rem;
+    border-radius: 999px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0.02));
+    backdrop-filter: blur(16px) saturate(1.1);
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.1),
+      0 4px 24px rgba(0, 0, 0, 0.15);
+    transition: all 0.25s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  .glass-button:hover {
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.04));
+    border-color: rgba(201, 169, 98, 0.25);
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.15),
+      0 0 24px rgba(201, 169, 98, 0.12),
+      0 8px 32px rgba(0, 0, 0, 0.2);
   }
 
   .section-kicker {
