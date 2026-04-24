@@ -1,93 +1,159 @@
-import Image from "next/image";
 import Link from "next/link";
-import { colors, radius, spacing, typography } from "@vex/design-system";
-import { formatPrice } from "@/lib/vehicles";
+import { colors, glass, radius, spacing, typography } from "@vex/design-system";
 import type { Vehicle } from "@/lib/vehicles";
-import { vehicleImageProps } from "@/lib/media/responsiveImage";
+import { formatPrice } from "@/lib/vehicles";
+import { SaveVehicleButton } from "@/components/inventory/SaveVehicleButton";
+import { VehicleImageFrame } from "@/components/inventory/VehicleImageFrame";
+import { WowFactorList } from "@/components/inventory/WowFactorList";
 
-function getVehicleMetadata(vehicle: Vehicle) {
-  const mileageQuality = vehicle.miles < 500 ? "Delivery-mile" : vehicle.miles < 1500 ? "Low-mile" : "Driven";
-
-  return [
-    vehicle.verificationStatus,
-    mileageQuality,
-    vehicle.conditionClass,
-    vehicle.acquisitionStatus,
-  ];
+function metadataPills(vehicle: Vehicle) {
+  return [vehicle.verifiedBadge, vehicle.availabilityBadge, vehicle.conditionClass];
 }
 
 export function VehicleCard({ vehicle }: { vehicle: Vehicle }) {
-  const metadata = getVehicleMetadata(vehicle);
+  const metadata = metadataPills(vehicle);
 
   return (
-    <Link
-      href={`/inventory/${vehicle.id}`}
-      prefetch={false}
-      data-analytics-event="vehicle_detail_engagement"
-      data-analytics-surface="vehicle_card"
-      data-analytics-vehicle-id={String(vehicle.id)}
-      data-analytics-vehicle={`${vehicle.year} ${vehicle.make} ${vehicle.model}`}
-      className="group glass-panel archive-card vehicle-tile overflow-hidden transition duration-300 hover:-translate-y-1 hover:border-[#f1d38a]/32"
+    <article
+      className="group overflow-hidden border border-white/10 bg-[#090909]/82 transition duration-300 hover:-translate-y-1 hover:border-[#f1d38a]/30"
+      style={{ borderRadius: radius.xl, background: glass.cardGlass }}
     >
-      <div className="relative aspect-[16/11] overflow-hidden">
-        <Image
-          {...vehicleImageProps(vehicle.image)}
-          alt={`${vehicle.year} ${vehicle.make} ${vehicle.model}`}
-          fill
-          className="luxury-photo object-cover transition duration-700 group-hover:scale-[1.045]"
-        />
-        <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(255,255,255,0.08),transparent_22%),linear-gradient(0deg,rgba(0,0,0,0.82),rgba(0,0,0,0.08)_58%,transparent)]" />
-        <span
-          className="absolute left-4 top-4 rounded-full border border-[#f1d38a]/22 bg-black/55 px-3 py-1 text-[#f1d38a]"
-          style={{ ...typography.metadata }}
+      <div className="relative">
+        <Link
+          href={`/inventory/${vehicle.id}`}
+          prefetch={false}
+          data-analytics-event="vehicle_detail_engagement"
+          data-analytics-surface="vehicle_card_image"
+          data-analytics-vehicle-id={String(vehicle.id)}
+          data-analytics-vehicle={`${vehicle.year} ${vehicle.make} ${vehicle.model}`}
+          className="block"
         >
-          {vehicle.badge}
-        </span>
+          <VehicleImageFrame vehicle={vehicle} />
+          <div className="pointer-events-none absolute inset-x-4 top-4 flex flex-wrap gap-2">
+            {[vehicle.listingBadge, vehicle.rarityTier, vehicle.primaryImage.status === "pending" ? "Image verification pending" : null]
+              .filter(Boolean)
+              .map((item) => (
+                <span
+                  key={item}
+                  className="rounded-full border border-white/12 bg-black/45 px-3 py-1.5 text-[0.68rem] uppercase tracking-[0.18em] text-[#fff3cf]"
+                  style={typography.metadata}
+                >
+                  {item}
+                </span>
+              ))}
+          </div>
+        </Link>
       </div>
-      <div className="space-y-4 p-5" style={{ padding: spacing.stackLg }}>
-        <div className="space-y-2">
-          <p className="text-[#fff8eb]" style={{ ...typography.displaySection, fontSize: "clamp(2rem, 4vw, 2.45rem)" }}>
-            {vehicle.year} {vehicle.make}
-          </p>
-          <p className="text-base text-[#d8d0c2]" style={{ ...typography.bodyLarge, marginTop: 0 }}>
-            {vehicle.model}
-          </p>
-        </div>
-        <div className="editorial-rule" />
-        <p className="text-sm text-[#a99f8d]" style={{ ...typography.metadata, color: colors.textMuted, letterSpacing: "0.18em" }}>
-          {vehicle.color} · {vehicle.miles.toLocaleString()} miles
-        </p>
-        <div
-          className="grid gap-2 border border-[#f1d38a]/12 bg-[#d4af37]/7 p-3"
-          style={{ borderRadius: radius.lg }}
-        >
-          <p style={{ ...typography.metadata, color: colors.goldSoft }}>Rarity tier</p>
-          <p className="text-sm leading-6 text-[#fff8eb]">{vehicle.rarityTier}</p>
-          <p className="text-xs leading-5 text-[#a99f8d]">
-            {vehicle.drivetrain} · {vehicle.performance}
+
+      <div className="space-y-5 p-5 sm:p-6" style={{ padding: spacing.stackLg }}>
+        <div className="space-y-3">
+          <div className="flex flex-wrap items-start justify-between gap-4">
+            <div>
+              <p className="text-[#fff8eb]" style={{ ...typography.displaySection, fontSize: "clamp(1.8rem, 3vw, 2.5rem)" }}>
+                {vehicle.year} {vehicle.make} {vehicle.model}
+              </p>
+              <p className="mt-1 text-sm uppercase tracking-[0.22em] text-[#bfa987]">{vehicle.trim}</p>
+            </div>
+            <div className="text-right">
+              <p style={{ ...typography.metadata, color: colors.textMuted }}>Private file value</p>
+              <p className="mt-2 text-2xl font-semibold text-[#f1d38a]">{formatPrice(vehicle.price)}</p>
+            </div>
+          </div>
+
+          <p className="max-w-2xl text-sm leading-7 text-[#d8d0c2]" style={typography.bodyStandard}>
+            {vehicle.editorialHeadline}
           </p>
         </div>
-        <div className="grid grid-cols-2 gap-2">
+
+        <div className="grid gap-3 sm:grid-cols-2">
+          <div className="rounded-[1.25rem] border border-white/10 bg-white/[0.035] p-4">
+            <p style={{ ...typography.metadata, color: colors.textMuted }}>At a glance</p>
+            <div className="mt-3 grid gap-2 text-sm text-[#e8dfd1]">
+              <div className="flex items-center justify-between gap-4">
+                <span className="text-[#a99f8d]">Mileage</span>
+                <span>{vehicle.miles.toLocaleString()} mi</span>
+              </div>
+              <div className="flex items-center justify-between gap-4">
+                <span className="text-[#a99f8d]">Location</span>
+                <span>{vehicle.location}</span>
+              </div>
+              <div className="flex items-center justify-between gap-4">
+                <span className="text-[#a99f8d]">Availability</span>
+                <span>{vehicle.acquisitionStatus}</span>
+              </div>
+            </div>
+          </div>
+
+          <div className="rounded-[1.25rem] border border-[#f1d38a]/16 bg-[#d4af37]/8 p-4">
+            <p style={{ ...typography.metadata, color: colors.goldSoft }}>Key spec profile</p>
+            <div className="mt-3 grid gap-2 text-sm text-[#fff8eb]">
+              <div className="flex items-center justify-between gap-4">
+                <span className="text-[#d9c9ad]">Power</span>
+                <span>{vehicle.horsepower} hp</span>
+              </div>
+              <div className="flex items-center justify-between gap-4">
+                <span className="text-[#d9c9ad]">Drive</span>
+                <span>{vehicle.drivetrain}</span>
+              </div>
+              <div className="flex items-center justify-between gap-4">
+                <span className="text-[#d9c9ad]">Transmission</span>
+                <span>{vehicle.transmission}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="grid gap-2 sm:grid-cols-3">
           {metadata.map((item) => (
             <span
               key={item}
-              className="flex min-h-10 items-center justify-center rounded-full border border-white/10 bg-white/[0.04] px-3 py-2 text-center leading-4 text-[#cfc4b2]"
+              className="flex min-h-10 items-center justify-center rounded-full border border-white/10 bg-white/[0.04] px-3 py-2 text-center text-[#d6ccbc]"
               style={{ ...typography.metadata, letterSpacing: "0.14em" }}
             >
               {item}
             </span>
           ))}
         </div>
-        <div className="flex items-center justify-between gap-4">
-          <div>
-            <p style={{ ...typography.metadata, color: colors.textMuted }}>Private file value</p>
-            <p className="mt-2 text-xl font-semibold text-[#f1d38a]">{formatPrice(vehicle.price)}</p>
+
+        <div>
+          <p className="mb-3 text-[0.72rem] uppercase tracking-[0.26em] text-[#a99f8d]" style={typography.metadata}>
+            Why this vehicle matters
+          </p>
+          <WowFactorList items={vehicle.wowFactors} compact />
+        </div>
+
+        <div className="rounded-[1.2rem] border border-white/10 bg-black/24 p-4">
+          <div className="grid gap-2 text-sm text-[#d8d0c2]">
+            <div className="flex items-center justify-between gap-4">
+              <span className="text-[#a99f8d]">Exterior / Interior</span>
+              <span>{vehicle.exteriorColor} / {vehicle.interiorColor}</span>
+            </div>
+            <div className="flex items-center justify-between gap-4">
+              <span className="text-[#a99f8d]">Engine</span>
+              <span>{vehicle.engine}</span>
+            </div>
+            <div className="flex items-center justify-between gap-4">
+              <span className="text-[#a99f8d]">Concierge</span>
+              <span>{vehicle.conciergeAvailability}</span>
+            </div>
           </div>
-          <span className="rounded-full border border-white/12 bg-white/[0.05] px-4 py-2 text-sm text-[#f5f1e8] transition group-hover:border-[#f1d38a]/30 group-hover:text-[#fff8eb]">
-            Private file
-          </span>
+        </div>
+
+        <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between">
+          <div className="flex flex-1 flex-col gap-3 sm:flex-row">
+            <Link href={`/contact?vehicle=${vehicle.id}`} className="gold-button text-center">
+              {vehicle.ctas.primary}
+            </Link>
+            <Link href={`/inventory/${vehicle.id}`} className="ghost-button text-center">
+              {vehicle.ctas.secondary}
+            </Link>
+            <Link href={`/appraisal?vehicle=${vehicle.id}`} className="ghost-button text-center">
+              {vehicle.ctas.tertiary}
+            </Link>
+          </div>
+          <SaveVehicleButton vehicleId={vehicle.id} />
         </div>
       </div>
-    </Link>
+    </article>
   );
 }

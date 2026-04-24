@@ -65,10 +65,23 @@ test("capture desktop route audit screenshots", async ({ page }) => {
   await page.getByText("Filter the collection").scrollIntoViewIfNeeded();
   await page.waitForTimeout(500);
   await saveShot(page, "inventory/inventory-filters-desktop.png");
+  await saveShot(page, "inventory/filters-open-desktop.png");
 
   await page.getByText("Showing", { exact: false }).scrollIntoViewIfNeeded();
   await page.waitForTimeout(500);
   await saveShot(page, "inventory/inventory-cards-desktop.png");
+  await saveLocatorShot(page, "inventory/vehicle-card-closeup-desktop.png", page.locator("article").first());
+  await saveLocatorShot(page, "inventory/bugatti-listing-desktop.png", page.locator("article").filter({ hasText: /bugatti chiron/i }).first());
+  await saveLocatorShot(page, "inventory/lamborghini-listing-desktop.png", page.locator("article").filter({ hasText: /lamborghini huracan/i }).first());
+
+  await stabilizePage(page, "/inventory/bugatti-chiron-sport-2023");
+  await saveShot(page, "inventory/detail-hero-desktop.png");
+  await page.getByText("Key specs").scrollIntoViewIfNeeded();
+  await page.waitForTimeout(500);
+  await saveShot(page, "inventory/detail-specs-desktop.png");
+  await page.getByRole("link", { name: /request private access/i }).first().scrollIntoViewIfNeeded();
+  await page.waitForTimeout(500);
+  await saveShot(page, "inventory/inquiry-cta-desktop.png");
 
   await stabilizePage(page, "/appraisal");
   await expect(page.getByRole("heading", { name: /premium appraisal flow/i })).toBeVisible();
@@ -107,6 +120,17 @@ test("capture mobile route audit screenshots", async ({ browser }) => {
 
   await stabilizePage(page, "/inventory");
   await saveShot(page, "mobile/inventory-mobile.png");
+  await saveShot(page, "inventory/mobile-inventory-top.png");
+
+  await page.getByText("Filter the collection").scrollIntoViewIfNeeded();
+  await page.waitForTimeout(500);
+  await saveShot(page, "inventory/mobile-filters.png");
+
+  await saveLocatorShot(page, "inventory/mobile-vehicle-card.png", page.locator("article").first());
+
+  await stabilizePage(page, "/inventory/bugatti-chiron-sport-2023");
+  await saveShot(page, "inventory/mobile-detail-hero.png");
+  await saveShot(page, "inventory/mobile-sticky-cta.png");
 
   await stabilizePage(page, "/appraisal");
   await saveShot(page, "mobile/appraisal-mobile.png");

@@ -1,4 +1,3 @@
-import Image from "next/image";
 import Link from "next/link";
 import { colors, radius, spacing, typography } from "@vex/design-system";
 import { FEATURED_VEHICLES, formatPrice } from "@/lib/vehicles";
@@ -6,9 +5,9 @@ import { AutomotiveAtmosphere } from "@/components/atmosphere";
 import { EntrySequence } from "@/components/entry/EntrySequence";
 import { EditorialContainer, EditorialHeader, FeatureGrid, SectionShell } from "@/components/layout";
 import { VehicleCard } from "@/components/VehicleCard";
+import { VehicleImageFrame } from "@/components/inventory/VehicleImageFrame";
 import { MotionReveal } from "@/components/site/MotionReveal";
 import { getVideoProps } from "@/lib/media/videoLoader";
-import { responsiveImage } from "@/lib/media/responsiveImage";
 
 const contactPhone = process.env.NEXT_PUBLIC_CONTACT_PHONE || "";
 const contactEmail = process.env.NEXT_PUBLIC_CONTACT_EMAIL || "";
@@ -210,15 +209,8 @@ export default function HomePage() {
                   </div>
 
                   <div className="mt-6 overflow-hidden rounded-[1.75rem]">
-                    <div className="relative aspect-[16/10]">
-                      <Image
-                        {...responsiveImage(spotlightVehicle.image, "hero")}
-                        alt={`${spotlightVehicle.year} ${spotlightVehicle.make} ${spotlightVehicle.model}`}
-                        fill
-                        priority
-                        className="luxury-photo object-cover"
-                      />
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/65 via-transparent to-transparent" />
+                    <div className="relative">
+                      <VehicleImageFrame vehicle={spotlightVehicle} variant="hero" priority />
                       <div className="absolute inset-x-4 bottom-4">
                         <p className="text-3xl font-medium tracking-[-0.05em] text-[#fff8eb]">{formatPrice(spotlightVehicle.price)}</p>
                         <p className="mt-1 text-sm text-[#d8d0c2]">
