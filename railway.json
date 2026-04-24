@@ -2,7 +2,7 @@
   "$schema": "https://railway.com/railway.schema.json",
   "build": {
     "builder": "NIXPACKS",
-    "buildCommand": "corepack pnpm install --frozen-lockfile && corepack pnpm --filter @vex/shared run build && corepack pnpm --filter @vex/api run build"
+    "buildCommand": "corepack pnpm install --frozen-lockfile --prod=false && corepack pnpm --filter @vex/shared run build && corepack pnpm --filter @vex/api run build"
   },
   "deploy": {
     "startCommand": "corepack pnpm --filter @vex/api run start",
