@@ -85,35 +85,40 @@ export default function HomePage() {
         <div className="gate-film" aria-hidden />
         <div className="gate-grade" aria-hidden />
 
-        <div className="shell relative">
-          <div className="grid items-center gap-10 lg:grid-cols-[1.05fr_0.95fr]">
-            <MotionReveal className="max-w-3xl">
+        <div className="shell hero-stage relative">
+          <div className="mx-auto grid max-w-6xl items-center gap-10 lg:grid-cols-[1fr_0.86fr] lg:gap-14">
+            <MotionReveal className="hero-copy-lux">
               <p className="section-kicker">Iron gate private market</p>
-              <h1 className="mt-6 font-[var(--font-display)] text-5xl leading-[0.92] tracking-[-0.06em] text-[#fff8eb] sm:text-6xl lg:text-7xl">
-                The cinematic private market for vehicles that should never feel public.
+              <h1 className="hero-title-lux mt-6 font-[var(--font-display)] text-5xl leading-[0.92] tracking-[-0.06em] text-[#fff8eb] sm:text-6xl lg:text-7xl">
+                Private access to the next era of exotic acquisition.
               </h1>
-              <p className="mt-7 max-w-2xl text-base leading-8 text-[#d8d0c2] sm:text-lg">
-                VEX Atelier is built for ultra-premium inventory, discreet sellers, and serious buyers.
-                The experience is deliberately dark, composed, and modern, with the kind of restraint that
-                makes a machine feel rarer before a single conversation begins.
+              <p className="hero-lede-lux mt-7 text-base leading-8 text-[#d8d0c2] sm:text-lg">
+                A cinematic marketplace for verified exotic inventory, private appraisal, and concierge acquisition.
+                Built to feel calm, expensive, and deliberately out of reach.
               </p>
 
-              <div className="mt-8 flex flex-col gap-4 sm:flex-row">
+              <div className="hero-actions-lux mt-8 flex flex-col gap-4 sm:flex-row">
                 <Link href="/inventory" className="gold-button" data-magnetic="true">
-                  Browse the collection
+                  Explore Inventory
                 </Link>
-                <Link href="/sell" className="ghost-button" data-magnetic="true">
-                  Submit a private vehicle
+                <Link href="/appraisal" className="ghost-button" data-magnetic="true">
+                  Request Private Appraisal
                 </Link>
               </div>
 
-              <div className="mt-10 grid gap-4 sm:grid-cols-3">
+              <div className="hero-trust-strip mt-9" aria-label="Platform trust signals">
+                {trustSignals.slice(0, 4).map((signal) => (
+                  <span key={signal}>{signal}</span>
+                ))}
+              </div>
+
+              <div className="hero-metrics-lux mt-8 grid gap-4 sm:grid-cols-3">
                 {[
                   { value: `${FEATURED_VEHICLES.length}`, label: "spotlight vehicles" },
                   { value: "24h", label: "average response target" },
                   { value: "1:1", label: "concierge ownership" },
                 ].map((metric) => (
-                  <div key={metric.label} className="glass-panel rounded-[1.6rem] p-5">
+                  <div key={metric.label} className="glass-panel stat-glass rounded-[1.35rem] p-5">
                     <p className="text-[0.72rem] uppercase tracking-[0.28em] text-[#a99f8d]">{metric.label}</p>
                     <p className="mt-3 text-3xl font-semibold text-[#fff8eb]">{metric.value}</p>
                   </div>
@@ -143,7 +148,7 @@ export default function HomePage() {
                         alt={`${spotlightVehicle.year} ${spotlightVehicle.make} ${spotlightVehicle.model}`}
                         fill
                         priority
-                        className="object-cover"
+                        className="luxury-photo object-cover"
                         sizes="(max-width: 1100px) 100vw, 34vw"
                       />
                       <div className="absolute inset-0 bg-gradient-to-t from-black/65 via-transparent to-transparent" />

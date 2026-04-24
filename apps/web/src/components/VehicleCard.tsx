@@ -7,7 +7,7 @@ export function VehicleCard({ vehicle }: { vehicle: Vehicle }) {
   return (
     <Link
       href={`/inventory/${vehicle.id}`}
-      className="group glass-panel overflow-hidden rounded-[1.75rem] transition duration-300 hover:-translate-y-1 hover:border-[#f1d38a]/24"
+      className="group glass-panel vehicle-tile overflow-hidden rounded-[1.55rem] transition duration-300 hover:-translate-y-1 hover:border-[#f1d38a]/32"
     >
       <div className="relative aspect-[16/11] overflow-hidden">
         <Image
@@ -15,9 +15,9 @@ export function VehicleCard({ vehicle }: { vehicle: Vehicle }) {
           alt={`${vehicle.year} ${vehicle.make} ${vehicle.model}`}
           fill
           sizes="(max-width: 980px) 100vw, 33vw"
-          className="object-cover transition duration-700 group-hover:scale-[1.04]"
+          className="luxury-photo object-cover transition duration-700 group-hover:scale-[1.045]"
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent" />
+        <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(255,255,255,0.08),transparent_22%),linear-gradient(0deg,rgba(0,0,0,0.82),rgba(0,0,0,0.08)_58%,transparent)]" />
         <span className="absolute left-4 top-4 rounded-full border border-[#f1d38a]/22 bg-black/55 px-3 py-1 text-[0.7rem] uppercase tracking-[0.24em] text-[#f1d38a]">
           {vehicle.badge}
         </span>

@@ -35,19 +35,16 @@ export function Header() {
 
   return (
     <header
-      className={`sticky top-0 z-50 border-b transition ${
-        scrolled
-          ? "border-white/10 bg-[#070707]/84 backdrop-blur-2xl"
-          : "border-transparent bg-transparent"
-      }`}
+      className={`sticky top-0 z-50 transition ${scrolled ? "pt-3" : "pt-4"}`}
     >
-      <div className="shell flex items-center justify-between gap-4 py-4">
+      <div className="shell pb-3">
+        <div className="luxury-nav-bar flex items-center justify-between gap-4 px-3 py-3 sm:px-4">
         <Link href="/" className="flex items-center gap-3" onClick={() => setMenuOpen(false)}>
-          <span className="flex h-11 w-11 items-center justify-center rounded-full border border-[#f1d38a]/20 bg-white/[0.05] text-sm font-semibold tracking-[0.2em] text-[#f1d38a] shadow-[0_0_48px_rgba(212,175,55,0.08)]">
+          <span className="flex h-10 w-10 items-center justify-center rounded-full border border-[#f1d38a]/24 bg-white/[0.06] text-xs font-semibold tracking-[0.2em] text-[#f1d38a] shadow-[0_0_48px_rgba(212,175,55,0.08)]">
             VX
           </span>
           <span>
-            <span className="block text-sm uppercase tracking-[0.32em] text-[#f1d38a]">VEX Atelier</span>
+            <span className="block text-xs uppercase tracking-[0.32em] text-[#f1d38a]">VEX Atelier</span>
             <span className="block text-xs text-[#bcae97]">Private market luxury platform</span>
           </span>
         </Link>
@@ -59,8 +56,8 @@ export function Header() {
               <Link
                 key={item.href}
                 href={item.href}
-                className={`text-sm transition ${
-                  active ? "text-[#fff8eb]" : "text-[#d6ccbd]/72 hover:text-[#f1d38a]"
+                className={`relative rounded-full px-3 py-2 text-xs uppercase tracking-[0.16em] transition ${
+                  active ? "bg-white/[0.07] text-[#fff8eb]" : "text-[#d6ccbd]/72 hover:bg-white/[0.04] hover:text-[#f1d38a]"
                 }`}
                 onClick={() => setMenuOpen(false)}
               >
@@ -71,11 +68,11 @@ export function Header() {
         </nav>
 
         <div className="flex items-center gap-3">
-          <Link href="/appraisal" className="hidden rounded-full border border-white/12 bg-white/[0.04] px-4 py-2 text-sm text-[#f5f1e8] transition hover:border-[#f1d38a]/28 hover:bg-white/[0.08] sm:inline-flex">
-            Appraise a Vehicle
+          <Link href="/appraisal" className="hidden rounded-full border border-white/12 bg-white/[0.04] px-4 py-2 text-xs uppercase tracking-[0.14em] text-[#f5f1e8] transition hover:border-[#f1d38a]/28 hover:bg-white/[0.08] lg:inline-flex">
+            Request Appraisal
           </Link>
           <Link href="/contact" className="gold-button hidden sm:inline-flex">
-            Reserve Concierge
+            Private Access
           </Link>
           <button
             type="button"
@@ -90,6 +87,7 @@ export function Header() {
               <span className={`block h-0.5 w-4 bg-current transition ${menuOpen ? "-translate-y-2 -rotate-45" : ""}`} />
             </span>
           </button>
+        </div>
         </div>
       </div>
 
