@@ -3,7 +3,6 @@ import Link from "next/link";
 import { FEATURED_VEHICLES, formatPrice } from "@/lib/vehicles";
 import { VehicleCard } from "@/components/VehicleCard";
 import { MotionReveal } from "@/components/site/MotionReveal";
-import { HeroParticleFieldClient } from "@/components/landing/HeroParticleFieldClient";
 
 const contactPhone = process.env.NEXT_PUBLIC_CONTACT_PHONE || "";
 const contactEmail = process.env.NEXT_PUBLIC_CONTACT_EMAIL || "";
@@ -69,8 +68,7 @@ export default function HomePage() {
 
   return (
     <main id="main-content">
-      <section className="relative overflow-hidden pb-20 pt-10 sm:pt-16">
-        <HeroParticleFieldClient />
+      <section id="universe" className="cinematic-gate-hero relative overflow-hidden pb-20 pt-10 sm:pt-16">
         {heroVideoUrl ? (
           <video
             className="absolute inset-0 h-full w-full object-cover opacity-30"
@@ -81,12 +79,16 @@ export default function HomePage() {
             src={heroVideoUrl}
           />
         ) : null}
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(212,175,55,0.12),transparent_28%),linear-gradient(180deg,rgba(7,7,7,0.14),rgba(7,7,7,0.84),#070707)]" />
+        <div className="gate-backplate" aria-hidden />
+        <div className="gate-beams" aria-hidden />
+        <div className="gate-aperture" aria-hidden />
+        <div className="gate-film" aria-hidden />
+        <div className="gate-grade" aria-hidden />
 
         <div className="shell relative">
           <div className="grid items-center gap-10 lg:grid-cols-[1.05fr_0.95fr]">
             <MotionReveal className="max-w-3xl">
-              <p className="section-kicker">Private market architecture</p>
+              <p className="section-kicker">Iron gate private market</p>
               <h1 className="mt-6 font-[var(--font-display)] text-5xl leading-[0.92] tracking-[-0.06em] text-[#fff8eb] sm:text-6xl lg:text-7xl">
                 The cinematic private market for vehicles that should never feel public.
               </h1>
@@ -120,8 +122,8 @@ export default function HomePage() {
             </MotionReveal>
 
             <MotionReveal delay={0.1} className="relative">
-              <div className="absolute -right-6 top-10 h-28 w-28 rounded-full border border-[#f1d38a]/18 bg-[#f1d38a]/10 blur-sm" />
-              <div className="cinema-panel relative overflow-hidden rounded-[2rem] p-6 sm:p-8 md:[transform:perspective(1400px)_rotateY(-8deg)_rotateX(2deg)] md:transition-transform md:duration-500 md:hover:[transform:perspective(1400px)_rotateY(-4deg)_rotateX(0deg)]">
+              <div className="gate-specular-line" aria-hidden />
+              <div className="cinema-panel gate-showpiece relative overflow-hidden rounded-[2rem] p-6 sm:p-8 md:[transform:perspective(1400px)_rotateY(-8deg)_rotateX(2deg)] md:transition-transform md:duration-500 md:hover:[transform:perspective(1400px)_rotateY(-4deg)_rotateX(0deg)]">
                 <div className="absolute inset-0 bg-[linear-gradient(140deg,rgba(255,255,255,0.14),transparent_34%,transparent_68%,rgba(241,211,138,0.16))]" />
                 <div className="relative">
                   <div className="flex items-center justify-between border-b border-white/10 pb-4">
