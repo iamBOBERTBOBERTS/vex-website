@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useAuth } from "@/contexts/AuthContext";
 import { VexSkeletonTableRows } from "@/components/VexSkeleton";
 import { getCurrentTenantBilling, listAppraisals } from "@/lib/api";
+import { getCrmWebBase } from "@/lib/runtimeConfig";
 import { type AppraisalOutput, isDealDeskRole } from "@vex/shared";
 import { useQuery } from "@tanstack/react-query";
 import type { CSSProperties } from "react";
@@ -12,7 +13,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 /** IDs for which the "new public appraisal" banner was dismissed, auto-dismissed, or opened from the banner link. */
 const LS_BANNER_ACK_KEY = "vex_dealdesk_public_appraisal_banner_ack_v1";
-const WEB_BASE = process.env.NEXT_PUBLIC_WEB_URL || "http://localhost:3000";
+const WEB_BASE = getCrmWebBase();
 
 type PublicNotes = {
   vin?: string | null;

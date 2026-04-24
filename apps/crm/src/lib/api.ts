@@ -1,6 +1,7 @@
 import type { AnalyticsResponse, AppraisalOutput, CreateAppraisalInput, UpdateAppraisalInput, ValuationInput, AppraisalValuateResponse } from "@vex/shared";
+import { getCrmApiBase } from "@/lib/runtimeConfig";
 
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
+const API_BASE = getCrmApiBase();
 
 function authHeaders(token: string) {
   return { Authorization: `Bearer ${token}` };

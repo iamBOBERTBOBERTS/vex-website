@@ -11,7 +11,6 @@
  */
 
 // NOTE: Removed stale fallback URL. Production MUST set NEXT_PUBLIC_API_URL.
-// Previous fallback "https://2dycb8hl.up.railway.app" is no longer valid.
 
 function trimTrailingSlash(value: string) {
   return value.replace(/\/$/, "");

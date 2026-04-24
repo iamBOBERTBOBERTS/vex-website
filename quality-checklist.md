@@ -18,7 +18,7 @@ Every release must prove deployment integrity, runtime health, and luxury-platfo
 ## Production Truth
 
 - Public frontend: `https://vortex-exotics.netlify.app`
-- Expected public API env: `NEXT_PUBLIC_API_URL=https://2dycb8hl.up.railway.app`
+- Expected public API env: `NEXT_PUBLIC_API_URL=https://<real-railway-domain>`
 - Expected backend health path: `/health`
 - Any production request to `localhost`, any CORS failure, or any silent API fallback fails release validation.
 

@@ -4,10 +4,12 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useAuth } from "@/contexts/AuthContext";
 import { completeOnboarding, getCurrentTenantBilling } from "@/lib/api";
+import { getCrmWebBase } from "@/lib/runtimeConfig";
 
 export function OnboardingWizard() {
   const { token } = useAuth();
   const [open, setOpen] = useState(false);
+  const webBase = getCrmWebBase();
 
   useEffect(() => {
     if (!token) return;
@@ -39,7 +41,7 @@ export function OnboardingWizard() {
       <ol style={{ marginLeft: "1.25rem", color: "var(--text-secondary)", fontSize: "0.95rem", lineHeight: 1.6 }}>
         <li>
           Connect billing:{" "}
-          <a href={(process.env.NEXT_PUBLIC_WEB_URL || "http://localhost:3000") + "/portal/subscriptions"} target="_blank" rel="noopener noreferrer">
+          <a href={`${webBase}/portal/subscriptions`} target="_blank" rel="noopener noreferrer">
             Stripe / subscriptions
           </a>
         </li>

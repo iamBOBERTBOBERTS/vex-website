@@ -18,6 +18,7 @@ import { createCheckoutSession, type StripePlanId } from "../lib/stripe.js";
 import { sendLifecycleNotification } from "../lib/notify.js";
 import { pickUniquePilotSubdomain } from "../lib/pilotSubdomain.js";
 import { storePilotEmailCode, verifyAndConsumePilotEmailCode } from "../lib/pilotEmailVerification.js";
+import { getPublicCrmOrigin, getPublicWebOrigin } from "../lib/publicOrigins.js";
 
 export const onboardRouter: Router = Router();
 
@@ -290,8 +291,17 @@ onboardRouter.post("/pilot", validateBody(PilotOnboardSchema), async (req, res) 
     });
   }
 
-  const webBase = process.env.PUBLIC_WEB_URL || "http://localhost:3000";
-  const crmBase = process.env.PUBLIC_CRM_URL || "http://localhost:3002";
+  let webBase: string;
+  let crmBase: string;
+  try {
+    webBase = getPublicWebOrigin();
+    crmBase = getPublicCrmOrigin();
+  } catch (error) {
+    return res.status(503).json({
+      code: "NOT_CONFIGURED",
+      message: error instanceof Error ? error.message : "PUBLIC web and CRM origins must be configured in production.",
+    });
+  }
   const demoAppraisalUrl = `${webBase.replace(/\/$/, "")}/appraisal?tenantId=${encodeURIComponent(created.tenantId)}`;
   void sendLifecycleNotification({
     type: "WELCOME",
@@ -322,7 +332,7 @@ onboardRouter.post("/pilot", validateBody(PilotOnboardSchema), async (req, res) 
       billingStatus: "PENDING",
       checkout,
       pilotSubdomain: pilotSubdomainForResponse,
-      demoAppraisalUrl: `${(process.env.PUBLIC_WEB_URL || "http://localhost:3000").replace(/\/$/, "")}/appraisal?tenantId=${encodeURIComponent(created.tenantId)}`,
+      demoAppraisalUrl,
     },
     error: null,
   });

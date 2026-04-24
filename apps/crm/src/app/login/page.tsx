@@ -3,10 +3,12 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/contexts/AuthContext";
+import { getCrmApiHealthUrl } from "@/lib/runtimeConfig";
 
 export default function CRMLoginPage() {
   const router = useRouter();
   const { token, loading, login } = useAuth();
+  const healthUrl = getCrmApiHealthUrl();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
@@ -46,7 +48,14 @@ export default function CRMLoginPage() {
         )}
         {error && error.includes("Cannot reach API") && (
           <p style={{ color: "var(--text-muted)", marginBottom: "0.5rem", fontSize: "0.8rem" }}>
-            Open <a href="http://localhost:3001/health" target="_blank" rel="noopener noreferrer" style={{ color: "var(--accent)" }}>http://localhost:3001/health</a> in a new tab to check if the API is running. Restart the CRM dev server after changing <code style={{ fontSize: "0.75rem" }}>.env.local</code>.
+            {healthUrl ? (
+              <>
+                Open <a href={healthUrl} target="_blank" rel="noopener noreferrer" style={{ color: "var(--accent)" }}>{healthUrl}</a> in a new tab to check if the API is running.
+              </>
+            ) : (
+              <>Set <code style={{ fontSize: "0.75rem" }}>NEXT_PUBLIC_API_URL</code> to the live backend before retrying.</>
+            )}{" "}
+            Restart the CRM dev server after changing <code style={{ fontSize: "0.75rem" }}>.env.local</code>.
           </p>
         )}
         <button type="submit" disabled={submitting} className="crm-btn crm-btn-primary" style={{ width: "100%" }}>

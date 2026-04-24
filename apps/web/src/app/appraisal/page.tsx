@@ -1,13 +1,14 @@
 "use client";
 
-import { Suspense, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
-import { useSearchParams } from "next/navigation";
 import { createAppraisal } from "@/lib/api";
 import { trackEvent } from "@/lib/analytics/posthog";
 import { MotionReveal } from "@/components/site/MotionReveal";
 
 const CONDITIONS = ["excellent", "good", "fair", "poor"] as const;
+const contactPhone = process.env.NEXT_PUBLIC_CONTACT_PHONE || "";
+const contactEmail = process.env.NEXT_PUBLIC_CONTACT_EMAIL || "";
 
 const methodology = [
   {
@@ -30,9 +31,14 @@ const timeline = [
   "A concierge follow-up frames next steps, documentation, and optional acquisition path.",
 ];
 
-function AppraisalForm() {
-  const searchParams = useSearchParams();
-  const tenantId = searchParams.get("tenantId");
+function buildMailtoHref(subject: string, lines: Array<string | null | undefined>) {
+  if (!contactEmail) return null;
+  const body = lines.filter(Boolean).join("\n");
+  return `mailto:${contactEmail}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+}
+
+export default function AppraisalPage() {
+  const [tenantId, setTenantId] = useState<string | null>(null);
   const [vin, setVin] = useState("");
   const [mileage, setMileage] = useState("");
   const [condition, setCondition] = useState<(typeof CONDITIONS)[number] | "">("");
@@ -40,6 +46,23 @@ function AppraisalForm() {
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<{ id: string; message: string } | null>(null);
   const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    setTenantId(new URLSearchParams(window.location.search).get("tenantId"));
+  }, []);
+
+  const conciergeFallbackHref = useMemo(
+    () =>
+      buildMailtoHref("Private appraisal request", [
+        "Private appraisal details",
+        `VIN: ${vin.trim() || "Not provided"}`,
+        `Mileage: ${mileage.trim() || "Not provided"}`,
+        `Condition: ${condition || "Not provided"}`,
+        `Notes: ${notes.trim() || "Not provided"}`,
+      ]),
+    [condition, mileage, notes, vin]
+  );
 
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
@@ -195,6 +218,27 @@ function AppraisalForm() {
               >
                 {loading ? "Submitting..." : "Request Private Valuation"}
               </button>
+
+              <div className="mt-6 rounded-[1.35rem] border border-white/10 bg-black/20 p-4 text-sm leading-7 text-[#d8d0c2]">
+                <p className="section-kicker">Manual fallback</p>
+                <p className="mt-3">
+                  If the live intake line is unavailable, the concierge team can still review the vehicle directly.
+                </p>
+                <div className="mt-4 flex flex-col gap-3 sm:flex-row">
+                  {conciergeFallbackHref ? (
+                    <a href={conciergeFallbackHref} className="ghost-button">
+                      Email The Intake
+                    </a>
+                  ) : (
+                    <Link href="/contact" className="ghost-button">
+                      Continue To Concierge
+                    </Link>
+                  )}
+                  <Link href="/contact" className="gold-button">
+                    Open Private Contact
+                  </Link>
+                </div>
+              </div>
             </form>
           )}
         </div>
@@ -245,23 +289,12 @@ function AppraisalForm() {
             <p>Excellent: documented care, strong cosmetics, clean ownership story.</p>
             <p>Good: usable quality with normal wear and clear maintenance expectations.</p>
             <p>Fair/Poor: disclose needs early so valuation confidence stays realistic.</p>
+            <p>
+              Direct line: {contactPhone || "Phone on request"}{contactEmail ? ` • ${contactEmail}` : ""}
+            </p>
           </div>
         </div>
       </MotionReveal>
     </main>
-  );
-}
-
-export default function AppraisalPage() {
-  return (
-    <Suspense
-      fallback={
-        <main id="main-content" className="shell py-20">
-          <p className="text-[#d8d0c2]">Loading...</p>
-        </main>
-      }
-    >
-      <AppraisalForm />
-    </Suspense>
   );
 }

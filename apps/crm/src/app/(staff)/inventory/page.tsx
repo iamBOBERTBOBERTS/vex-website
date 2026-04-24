@@ -11,8 +11,9 @@ import {
   listAppraisals,
   type MarketListing,
 } from "@/lib/api";
+import { getCrmWebBase } from "@/lib/runtimeConfig";
 
-const WEB_URL = process.env.NEXT_PUBLIC_WEB_URL || "http://localhost:3000";
+const WEB_URL = getCrmWebBase();
 
 type InventoryItem = {
   id: string;

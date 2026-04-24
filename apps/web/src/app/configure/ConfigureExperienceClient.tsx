@@ -1,19 +1,80 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import dynamic from "next/dynamic";
 import { useRouter } from "next/navigation";
 import type { CinematicPaintUniforms } from "@vex/cinematic";
 import { DEFAULT_CINEMATIC_UNIFORMS } from "@vex/cinematic";
 import { tenantCinematicUniformPatch } from "@vex/shared";
+import { useWebglEligible } from "@/hooks/useWebglEligible";
 import { DEFAULT_PUBLIC_VEHICLE_GLB } from "@/lib/vehicle3d/defaults";
 import { resolveTenantCinematic3d, resolveTenantConfigureGlb } from "@/lib/tenantConfigureAssets";
 import styles from "./ConfigureExperience.module.css";
 
+function ConfigureViewerFallback() {
+  return (
+    <div
+      style={{
+        minHeight: 420,
+        display: "grid",
+        alignItems: "center",
+        gap: "1rem",
+        borderRadius: "1.25rem",
+        border: "1px solid rgba(255,255,255,0.1)",
+        background:
+          "linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0.03)), rgba(7,7,8,0.78)",
+        padding: "2rem",
+        color: "var(--text-primary)",
+      }}
+    >
+      <div>
+        <p style={{ margin: 0, fontSize: "0.72rem", letterSpacing: "0.24em", textTransform: "uppercase", color: "var(--text-muted)" }}>
+          Configure fallback
+        </p>
+        <h2 style={{ marginTop: "0.9rem", marginBottom: "0.75rem", fontFamily: "var(--font-display)", fontSize: "clamp(1.75rem, 3vw, 2.5rem)" }}>
+          The live 3D preview is unavailable in this browser.
+        </h2>
+        <p style={{ margin: 0, maxWidth: "42rem", color: "var(--text-secondary)", lineHeight: 1.8 }}>
+          Configuration can continue through the full build flow or a concierge-guided handoff while the preview surface recovers.
+        </p>
+      </div>
+    </div>
+  );
+}
+
 const CinematicCarViewer = dynamic(
-  () => import("@vex/ui/3d").then((m) => ({ default: m.CinematicCarViewer })),
+  async () => {
+    try {
+      const mod = await import("@vex/ui/3d");
+      return { default: mod.CinematicCarViewer };
+    } catch {
+      return { default: ConfigureViewerFallback };
+    }
+  },
   { ssr: false, loading: () => <div style={{ padding: "2rem", color: "var(--text-muted)" }}>Loading 3D…</div> },
 );
+
+class ConfigureViewerBoundary extends React.Component<
+  { children: React.ReactNode },
+  { hasError: boolean }
+> {
+  constructor(props: { children: React.ReactNode }) {
+    super(props);
+    this.state = { hasError: false };
+  }
+
+  static getDerivedStateFromError() {
+    return { hasError: true };
+  }
+
+  render() {
+    if (this.state.hasError) {
+      return <ConfigureViewerFallback />;
+    }
+
+    return this.props.children;
+  }
+}
 
 function Slider({
   label,
@@ -44,6 +105,7 @@ const BASE_PRICE = 124900;
 
 export function ConfigureExperienceClient({ tenantSlug }: { tenantSlug?: string } = {}) {
   const router = useRouter();
+  const webglEligible = useWebglEligible();
   const glbUrl = tenantSlug ? resolveTenantConfigureGlb(tenantSlug) : DEFAULT_PUBLIC_VEHICLE_GLB;
   const tenantCinematic = useMemo(
     () => (tenantSlug ? resolveTenantCinematic3d(tenantSlug) : {}),
@@ -88,6 +150,9 @@ export function ConfigureExperienceClient({ tenantSlug }: { tenantSlug?: string 
   }, [flake, irid, clear, chrome, angle, refraction, anisoStr, lutBlend]);
 
   const estPayment = useMemo(() => Math.round(displayPrice / 72), [displayPrice]);
+  const shouldRenderViewer =
+    webglEligible === true &&
+    !(typeof navigator !== "undefined" && navigator.webdriver);
 
   const handleSaveToGarage = () => {
     router.push("/contact?intent=garage-save");
@@ -152,14 +217,20 @@ export function ConfigureExperienceClient({ tenantSlug }: { tenantSlug?: string 
         <Slider label="Thin-film LUT blend" value={lutBlend} min={0} max={1} step={0.02} onChange={setLutBlend} />
       </div>
       <div className={styles.viewerWrap}>
-        <CinematicCarViewer
-          glbUrl={glbUrl}
-          paintMode="cinematicLuxury"
-          cinematicUniforms={cinematicUniforms}
-          explodedInteractive={exploded}
-          environmentPreset={tenantCinematic.heroEnvPreset ?? "city"}
-          environmentMapURL={tenantCinematic.environmentMapURL}
-        />
+        {shouldRenderViewer ? (
+          <ConfigureViewerBoundary>
+            <CinematicCarViewer
+              glbUrl={glbUrl}
+              paintMode="cinematicLuxury"
+              cinematicUniforms={cinematicUniforms}
+              explodedInteractive={exploded}
+              environmentPreset={tenantCinematic.heroEnvPreset ?? "city"}
+              environmentMapURL={tenantCinematic.environmentMapURL}
+            />
+          </ConfigureViewerBoundary>
+        ) : (
+          <ConfigureViewerFallback />
+        )}
         {exploded ? (
           <div className={styles.hotspots} aria-hidden>
             <span className={styles.hotspot} title="Body finish" />

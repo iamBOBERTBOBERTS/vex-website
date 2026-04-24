@@ -6,6 +6,7 @@ import { requireRole } from "../middleware/requireRole.js";
 import { validateBody } from "../middleware/validate.js";
 import { prisma } from "../lib/tenant.js";
 import { valuationConfig } from "../config/valuation.js";
+import { getPublicWebOrigin } from "../lib/publicOrigins.js";
 
 const usageEventSchema = z.object({
   kind: z.string().min(1),
@@ -88,7 +89,15 @@ billingRouter.get("/usage", requireAuth, requireRole("STAFF", "ADMIN", "GROUP_AD
   const projectedRemainingEodUsd = Math.max(0, dailyCap - projectedSpendEodUsd);
 
   const gs = tenantRow?.groupSettings as { pilotSubdomain?: string; pilotNpsSubmittedAt?: string } | null;
-  const webBase = process.env.PUBLIC_WEB_URL || "http://localhost:3000";
+  let webBase: string;
+  try {
+    webBase = getPublicWebOrigin();
+  } catch (error) {
+    return res.status(503).json({
+      code: "NOT_CONFIGURED",
+      message: error instanceof Error ? error.message : "PUBLIC_WEB_URL must be configured in production.",
+    });
+  }
   const inviteCustomerUrl = `${webBase.replace(/\/$/, "")}/appraisal?tenantId=${encodeURIComponent(tenantId)}`;
   const npsAlreadySubmitted = Boolean(gs?.pilotNpsSubmittedAt);
 

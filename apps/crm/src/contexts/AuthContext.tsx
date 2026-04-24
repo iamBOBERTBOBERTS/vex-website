@@ -3,6 +3,7 @@
 import React, { createContext, useContext, useState, useEffect, useCallback } from "react";
 import { isCrmPortalRole } from "@vex/shared";
 import { getMe, login as apiLogin, refreshSession } from "@/lib/api";
+import { getCrmApiBase } from "@/lib/runtimeConfig";
 
 const TOKEN_KEY = "vex_crm_token";
 const REFRESH_KEY = "vex_crm_refresh";
@@ -25,8 +26,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const logout = useCallback(() => {
     if (typeof window !== "undefined") {
       const t = localStorage.getItem(TOKEN_KEY);
-      if (t) {
-        void fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001"}/auth/logout`, {
+      const apiBase = getCrmApiBase();
+      if (t && apiBase) {
+        void fetch(`${apiBase}/auth/logout`, {
           method: "POST",
           headers: { Authorization: `Bearer ${t}` },
         });

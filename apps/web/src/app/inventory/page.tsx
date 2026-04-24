@@ -122,6 +122,23 @@ export default function InventoryPage() {
     { label: "Mileage", value: mileage, onChange: setMileage, options: mileageRanges },
     { label: "Sort", value: sort, onChange: setSort, options: sortOptions },
   ];
+  const hasActiveFilters =
+    make !== "All" || priceRange !== "all" || mileage !== "all" || sort !== "newest" || collectionTab !== collectionTabs[0].label;
+  const activeFilterLabels = [
+    make !== "All" ? make : null,
+    priceRange !== "all" ? priceRanges.find((option) => option.value === priceRange)?.label ?? null : null,
+    mileage !== "all" ? mileageRanges.find((option) => option.value === mileage)?.label ?? null : null,
+    sort !== "newest" ? sortOptions.find((option) => option.value === sort)?.label ?? null : null,
+    collectionTab !== collectionTabs[0].label ? activeTab.label : null,
+  ].filter(Boolean) as string[];
+
+  const resetFilters = () => {
+    setMake("All");
+    setPriceRange("all");
+    setMileage("all");
+    setSort("newest");
+    setCollectionTab(collectionTabs[0].label);
+  };
 
   return (
     <main id="main-content" className="shell py-14 sm:py-18">
@@ -193,14 +210,14 @@ export default function InventoryPage() {
         </div>
       </MotionReveal>
 
-      <div className="mt-10 grid gap-6 xl:grid-cols-[320px_1fr]">
+      <div className="mt-10 grid gap-8 xl:grid-cols-[340px_1fr]">
         <MotionReveal className="glass-panel rounded-[1.75rem] p-6 xl:sticky xl:top-28 xl:self-start">
           <p className="section-kicker">Refine the room</p>
           <h2 className="mt-4 text-3xl text-[#fff8eb]">Filter the collection</h2>
 
-          <div className="mt-6 grid gap-5">
+          <div className="mt-6 grid gap-5 sm:grid-cols-2 xl:grid-cols-1">
             {filters.map((filter) => (
-              <label key={filter.label} className="grid gap-2">
+              <label key={filter.label} className="grid gap-2 rounded-[1.25rem] border border-white/8 bg-black/18 p-4">
                 <span className="text-xs uppercase tracking-[0.24em] text-[#b8ac98]">{filter.label}</span>
                 <select
                   className="field-base"
@@ -217,6 +234,23 @@ export default function InventoryPage() {
             ))}
           </div>
 
+          <div className="mt-5 flex flex-wrap gap-2">
+            {activeFilterLabels.map((label) => (
+              <span
+                key={label}
+                className="rounded-full border border-[#f1d38a]/18 bg-[#d4af37]/10 px-3 py-1.5 text-[0.7rem] uppercase tracking-[0.18em] text-[#f1d38a]"
+              >
+                {label}
+              </span>
+            ))}
+          </div>
+
+          {hasActiveFilters ? (
+            <button type="button" className="ghost-button mt-5 w-full" onClick={resetFilters}>
+              Reset Filters
+            </button>
+          ) : null}
+
           <div className="mt-6 rounded-[1.4rem] border border-[#f1d38a]/16 bg-[#d4af37]/7 p-4 text-sm leading-7 text-[#d8d0c2]">
             Collector-grade pace means fewer listings, tighter framing, stronger confidence, and category context that explains why each vehicle deserves private attention.
           </div>
@@ -228,7 +262,7 @@ export default function InventoryPage() {
             <p className="text-sm text-[#bcae97]">Verified sellers, editorial framing, direct inquiry flow.</p>
           </MotionReveal>
 
-          <div className="grid gap-5 lg:grid-cols-2 2xl:grid-cols-3">
+          <div className="grid gap-6 lg:grid-cols-2 2xl:grid-cols-3">
             {sorted.length > 0 ? (
               sorted.map((vehicle, index) => (
                 <MotionReveal key={vehicle.id} delay={index * 0.04}>

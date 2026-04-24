@@ -3,6 +3,7 @@ import type { CreateSubscriptionInput } from "@vex/shared";
 import { requireAuth } from "../middleware/auth.js";
 import Stripe from "stripe";
 import { prisma } from "../lib/tenant.js";
+import { resolveBrowserOrPublicWebOrigin } from "../lib/publicOrigins.js";
 
 function getStripe(): Stripe | null {
   const key = process.env.STRIPE_SECRET_KEY;
@@ -71,10 +72,17 @@ export async function createStripeCheckoutSession(req: Request, res: Response) {
     });
   }
 
-  const origin =
-    (typeof req.headers.origin === "string" && req.headers.origin) ||
-    process.env.PUBLIC_WEB_URL ||
-    "http://localhost:3000";
+  let origin: string;
+  try {
+    origin = resolveBrowserOrPublicWebOrigin(
+      typeof req.headers.origin === "string" ? req.headers.origin : null
+    );
+  } catch (error) {
+    return res.status(503).json({
+      code: "NOT_CONFIGURED",
+      message: error instanceof Error ? error.message : "PUBLIC_WEB_URL must be configured in production.",
+    });
+  }
 
   const session = await stripe.checkout.sessions.create({
     mode: "subscription",

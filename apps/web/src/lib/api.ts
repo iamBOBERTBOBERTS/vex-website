@@ -2,6 +2,8 @@ import type { RaisePackage } from "@vex/shared";
 import { getPublicApiBase } from "@/lib/apiBase";
 
 const API_BASE = getPublicApiBase();
+const PUBLIC_INTAKE_UNAVAILABLE_MESSAGE =
+  "Private intake is temporarily unavailable while the production connection is being confirmed. Contact concierge directly.";
 
 function authHeaders(token: string) {
   return { Authorization: `Bearer ${token}` };
@@ -18,6 +20,12 @@ function errorMessageFromBody(body: unknown): string | null {
   if (!body || typeof body !== "object") return null;
   const msg = (body as { message?: unknown }).message;
   return typeof msg === "string" ? msg : null;
+}
+
+function ensurePublicApiAvailable() {
+  if (!API_BASE) {
+    throw new Error(PUBLIC_INTAKE_UNAVAILABLE_MESSAGE);
+  }
 }
 
 export interface InventoryItem {
@@ -252,18 +260,24 @@ export async function createAppraisal(
   estimatedValue: number | null;
   message: string;
 }> {
-  const res = await fetch(`${API_BASE}/public/quick-appraisal${quickAppraisalQuery(opts?.tenantId)}`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(payload),
-  });
+  ensurePublicApiAvailable();
+  let res: Response;
+  try {
+    res = await fetch(`${API_BASE}/public/quick-appraisal${quickAppraisalQuery(opts?.tenantId)}`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    });
+  } catch {
+    throw new Error(PUBLIC_INTAKE_UNAVAILABLE_MESSAGE);
+  }
   let body: unknown;
   try {
     body = await res.json();
   } catch {
     throw new Error("Failed to parse appraisal response");
   }
-  if (!res.ok) throw new Error(errorMessageFromBody(body) ?? "Failed to submit appraisal");
+  if (!res.ok) throw new Error(errorMessageFromBody(body) ?? PUBLIC_INTAKE_UNAVAILABLE_MESSAGE);
   return unwrap(body) as {
     id: string;
     status: string;
@@ -510,12 +524,21 @@ export async function runDealAnalysis(
 }
 
 export async function createLead(payload: { source?: string; email?: string; phone?: string; name?: string; vehicleInterest?: string; notes?: string }): Promise<{ id: string }> {
-  const res = await fetch(`${API_BASE}/leads`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(payload),
-  });
-  if (!res.ok) throw new Error("Failed to submit");
+  ensurePublicApiAvailable();
+  let res: Response;
+  try {
+    res = await fetch(`${API_BASE}/leads`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    });
+  } catch {
+    throw new Error(PUBLIC_INTAKE_UNAVAILABLE_MESSAGE);
+  }
+  if (!res.ok) {
+    const body = await res.json().catch(() => null);
+    throw new Error(errorMessageFromBody(body) ?? PUBLIC_INTAKE_UNAVAILABLE_MESSAGE);
+  }
   return res.json();
 }
 

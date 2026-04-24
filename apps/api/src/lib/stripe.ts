@@ -1,4 +1,5 @@
 import Stripe from "stripe";
+import { getPublicWebOrigin } from "./publicOrigins.js";
 
 export type StripePlanId = "STARTER" | "PRO" | "ENTERPRISE";
 
@@ -27,7 +28,7 @@ export async function createCheckoutSession(
   urls?: { successPath: string; cancelPath: string }
 ) {
   const stripe = getStripeClient();
-  const origin = process.env.PUBLIC_WEB_URL || "http://localhost:3000";
+  const origin = getPublicWebOrigin();
   const successPath = urls?.successPath ?? "/portal/subscriptions?stripe=success";
   const cancelPath = urls?.cancelPath ?? "/pricing?stripe=cancel";
   const priceEnv =

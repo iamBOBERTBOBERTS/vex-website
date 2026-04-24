@@ -411,14 +411,26 @@ export default function HomePage() {
         </MotionReveal>
       </section>
 
-      <section className="shell py-20">
-        <MotionReveal className="grid gap-6 lg:grid-cols-[1fr_0.85fr]">
-          <div className="glass-panel rounded-[2rem] p-7 sm:p-10">
+      <section className="shell py-24">
+        <MotionReveal className="grid gap-6 lg:grid-cols-[1.1fr_0.9fr]">
+          <div className="cinema-panel rounded-[2rem] p-7 sm:p-10">
             <p className="section-kicker">Direct line</p>
             <h2 className="section-title">Ready to acquire, consign, or structure a private deal?</h2>
             <p className="section-copy max-w-xl">
               Reach the team directly for discreet market guidance, curated acquisition support, or a seller-first review.
             </p>
+            <div className="mt-8 grid gap-3 sm:grid-cols-3">
+              {[
+                { label: "Response standard", value: "24h" },
+                { label: "Concierge ownership", value: "1:1" },
+                { label: "Private handoff", value: "Human-led" },
+              ].map((signal) => (
+                <div key={signal.label} className="rounded-[1.25rem] border border-white/10 bg-black/24 p-4">
+                  <p className="text-[0.68rem] uppercase tracking-[0.22em] text-[#a99f8d]">{signal.label}</p>
+                  <p className="mt-3 text-xl text-[#fff8eb]">{signal.value}</p>
+                </div>
+              ))}
+            </div>
             <div className="mt-8 flex flex-col gap-4 sm:flex-row">
               <Link
                 href="/contact"
@@ -442,8 +454,10 @@ export default function HomePage() {
           </div>
 
           <div className="glass-panel rounded-[2rem] p-7 sm:p-10">
-            <p className="section-kicker">Contact</p>
+            <p className="section-kicker">Response protocol</p>
+            <h3 className="mt-4 text-3xl text-[#fff8eb]">A flagship CTA should feel like a private handoff, not a generic footer.</h3>
             <div className="mt-6 space-y-4 text-sm leading-7 text-[#d8d0c2]">
+              <p>Every inquiry is expected to move into a controlled, high-context conversation with verification, timing, and next-step clarity.</p>
               <p>{contactPhone || "Phone line configured on request"}</p>
               <p>{contactEmail || "Email contact configured on request"}</p>
               <p>Human response only. No generic queue, no low-context handoff.</p>

@@ -5,6 +5,7 @@ import { requireAnyAuthenticatedRole, requireRole } from "../middleware/requireR
 import { createPortalSessionSchema } from "@vex/shared";
 import { getStripeClient } from "../lib/stripe.js";
 import { prisma } from "../lib/tenant.js";
+import { getPublicWebOrigin } from "../lib/publicOrigins.js";
 
 export const pricingRouter: Router = Router();
 
@@ -57,7 +58,17 @@ pricingRouter.post(
 
     const body = req.body as { returnUrl?: string };
     const stripe = getStripeClient();
-    const returnUrl = body.returnUrl || `${process.env.PUBLIC_WEB_URL || "http://localhost:3000"}/portal/subscriptions`;
+    let returnUrl = body.returnUrl;
+    if (!returnUrl) {
+      try {
+        returnUrl = `${getPublicWebOrigin()}/portal/subscriptions`;
+      } catch (error) {
+        return res.status(503).json({
+          code: "NOT_CONFIGURED",
+          message: error instanceof Error ? error.message : "PUBLIC_WEB_URL must be configured in production.",
+        });
+      }
+    }
 
     const session = await stripe.billingPortal.sessions.create({
       customer: tenant.stripeCustomerId,

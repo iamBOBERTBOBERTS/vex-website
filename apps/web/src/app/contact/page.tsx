@@ -1,16 +1,21 @@
 "use client";
 
-import { Suspense, useMemo, useState } from "react";
-import { useSearchParams } from "next/navigation";
+import Link from "next/link";
+import { useEffect, useMemo, useState } from "react";
 import { createLead } from "@/lib/api";
 import { MotionReveal } from "@/components/site/MotionReveal";
 
 const contactPhone = process.env.NEXT_PUBLIC_CONTACT_PHONE || "";
 const contactEmail = process.env.NEXT_PUBLIC_CONTACT_EMAIL || "";
 
-function ContactPageClient() {
-  const searchParams = useSearchParams();
-  const vehicleId = searchParams.get("vehicle");
+function buildMailtoHref(subject: string, lines: Array<string | null | undefined>) {
+  if (!contactEmail) return null;
+  const body = lines.filter(Boolean).join("\n");
+  return `mailto:${contactEmail}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+}
+
+export default function ContactPage() {
+  const [vehicleId, setVehicleId] = useState<string | null>(null);
   const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -22,7 +27,25 @@ function ContactPageClient() {
     role: "Buyer",
   });
 
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    setVehicleId(new URLSearchParams(window.location.search).get("vehicle"));
+  }, []);
+
   const source = useMemo(() => (vehicleId ? `CONTACT_VEHICLE_${vehicleId}` : "CONTACT_PAGE"), [vehicleId]);
+  const conciergeFallbackHref = useMemo(
+    () =>
+      buildMailtoHref("Private VEX inquiry", [
+        `Name: ${values.name.trim() || "Not provided"}`,
+        `Role: ${values.role}`,
+        `Email: ${values.email.trim() || "Not provided"}`,
+        `Phone: ${values.phone.trim() || "Not provided"}`,
+        `Vehicle: ${vehicleId || "Not specified"}`,
+        "",
+        values.message.trim() || "No message provided.",
+      ]),
+    [values, vehicleId]
+  );
 
   const handleSubmit = async () => {
     setError(null);
@@ -139,7 +162,27 @@ function ContactPageClient() {
             {loading ? "Submitting..." : "Submit inquiry"}
           </button>
 
-          {error ? <div className="mt-4 rounded-[1.2rem] border border-red-400/20 bg-red-500/10 px-4 py-3 text-sm text-red-100">{error}</div> : null}
+          {error ? (
+            <div className="mt-4 rounded-[1.2rem] border border-red-400/20 bg-red-500/10 px-4 py-3 text-sm text-red-100">
+              <p>{error}</p>
+              <div className="mt-4 flex flex-col gap-3 sm:flex-row">
+                {conciergeFallbackHref ? (
+                  <a href={conciergeFallbackHref} className="ghost-button">
+                    Email Concierge
+                  </a>
+                ) : null}
+                {contactPhone ? (
+                  <a href={`tel:${contactPhone.replace(/\D/g, "")}`} className="gold-button">
+                    Call Concierge
+                  </a>
+                ) : (
+                  <Link href="/appraisal" className="gold-button">
+                    Open Appraisal Intake
+                  </Link>
+                )}
+              </div>
+            </div>
+          ) : null}
           {submitted ? (
             <div className="mt-4 rounded-[1.2rem] border border-[#f1d38a]/18 bg-[#d4af37]/8 px-4 py-3 text-sm text-[#fff8eb]">
               Thank you. Your message has been submitted and the team will follow up shortly.
@@ -148,19 +191,5 @@ function ContactPageClient() {
         </MotionReveal>
       </div>
     </main>
-  );
-}
-
-export default function ContactPage() {
-  return (
-    <Suspense
-      fallback={
-        <main id="main-content" className="shell py-20">
-          <p className="text-[#d8d0c2]">Loading...</p>
-        </main>
-      }
-    >
-      <ContactPageClient />
-    </Suspense>
   );
 }
