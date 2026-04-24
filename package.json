@@ -20,6 +20,7 @@
     "morning-gate": "pnpm turbo run build test:e2e ship:gate pilot:verify",
     "build:api": "pnpm --filter @vex/api build",
     "build:web": "pnpm --filter @vex/web build",
+    "build:web:vercel": "pnpm --filter @vex/shared run build && pnpm --filter @vex/cinematic run build && pnpm --filter @vex/3d-configurator run build && pnpm --filter @vex/ui run build && pnpm --filter @vex/web run build",
     "build:crm": "pnpm --filter @vex/crm build",
     "quality:web": "pnpm --filter @vex/web run test:e2e && pnpm --filter @vex/web run test:smoke && pnpm --filter @vex/web run test:lighthouse",
     "cinematic:build": "turbo run cinematic:build",
