@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Syne, Fraunces, Plus_Jakarta_Sans, Outfit, Playfair_Display } from "next/font/google";
+import { Analytics } from "@vercel/analytics/next";
 import { BuildProvider } from "@/contexts/BuildContext";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { TenantThemeProvider } from "@/components/TenantThemeProvider";
@@ -108,6 +109,7 @@ export default function RootLayout({
             </QueryProvider>
           </TenantThemeProvider>
         </CinematicMotionProvider>
+        <Analytics />
       </body>
     </html>
   );
