@@ -1,24 +1,16 @@
 import Image from "next/image";
 import Link from "next/link";
-import type { Vehicle } from "@/lib/vehicles";
 import { formatPrice } from "@/lib/vehicles";
-
-const conditionByBadge: Record<string, string> = {
-  BESPOKE: "Commission grade",
-  EXCLUSIVE: "Track verified",
-  RARE: "Collector reserve",
-  VERIFIED: "Dealer reviewed",
-  "NEW ARRIVAL": "Intake review",
-};
+import type { Vehicle } from "@/lib/vehicles";
 
 function getVehicleMetadata(vehicle: Vehicle) {
   const mileageQuality = vehicle.miles < 500 ? "Delivery-mile" : vehicle.miles < 1500 ? "Low-mile" : "Driven";
 
   return [
-    "Verified seller",
+    vehicle.verificationStatus,
     mileageQuality,
-    conditionByBadge[vehicle.badge] ?? "Concierge reviewed",
-    "Private acquisition",
+    vehicle.conditionClass,
+    vehicle.acquisitionStatus,
   ];
 }
 
@@ -28,6 +20,7 @@ export function VehicleCard({ vehicle }: { vehicle: Vehicle }) {
   return (
     <Link
       href={`/inventory/${vehicle.id}`}
+      prefetch={false}
       className="group glass-panel vehicle-tile overflow-hidden rounded-[1.55rem] transition duration-300 hover:-translate-y-1 hover:border-[#f1d38a]/32"
     >
       <div className="relative aspect-[16/11] overflow-hidden">
@@ -53,6 +46,13 @@ export function VehicleCard({ vehicle }: { vehicle: Vehicle }) {
         <p className="text-sm text-[#a99f8d]">
           {vehicle.color} | {vehicle.miles.toLocaleString()} mi
         </p>
+        <div className="grid gap-2 rounded-[1.2rem] border border-[#f1d38a]/12 bg-[#d4af37]/7 p-3">
+          <p className="text-[0.68rem] uppercase text-[#f1d38a]">Rarity tier</p>
+          <p className="text-sm leading-6 text-[#fff8eb]">{vehicle.rarityTier}</p>
+          <p className="text-xs leading-5 text-[#a99f8d]">
+            {vehicle.drivetrain} | {vehicle.performance}
+          </p>
+        </div>
         <div className="grid grid-cols-2 gap-2">
           {metadata.map((item) => (
             <span
@@ -66,7 +66,7 @@ export function VehicleCard({ vehicle }: { vehicle: Vehicle }) {
         <div className="flex items-center justify-between gap-4">
           <p className="text-xl font-semibold text-[#f1d38a]">{formatPrice(vehicle.price)}</p>
           <span className="rounded-full border border-white/12 bg-white/[0.05] px-4 py-2 text-sm text-[#f5f1e8] transition group-hover:border-[#f1d38a]/30 group-hover:text-[#fff8eb]">
-            View detail
+            Private file
           </span>
         </div>
       </div>

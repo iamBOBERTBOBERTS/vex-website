@@ -1,0 +1,162 @@
+.sequence {
+  position: fixed;
+  inset: 0;
+  z-index: 240;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  pointer-events: none;
+  background:
+    radial-gradient(circle at 50% 48%, rgba(241, 211, 138, 0.12), transparent 26%),
+    linear-gradient(180deg, #030304 0%, #070706 58%, #030304 100%);
+  animation: entry-exit 3.2s cubic-bezier(0.65, 0, 0.35, 1) forwards;
+}
+
+.overlay {
+  position: absolute;
+  inset: 0;
+}
+
+.aperture {
+  position: absolute;
+  inset: 12%;
+  border: 1px solid rgba(241, 211, 138, 0.12);
+  border-radius: 50%;
+  filter: blur(0.2px);
+  opacity: 0;
+  transform: scale(0.88);
+  animation: aperture-open 2.4s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+.vignette {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(90deg, rgba(0, 0, 0, 0.92), transparent 36%, transparent 64%, rgba(0, 0, 0, 0.92)),
+    radial-gradient(circle at center, transparent 0%, rgba(0, 0, 0, 0.72) 70%);
+}
+
+.lightSweep {
+  position: absolute;
+  inset: 0;
+  transform: translateX(-120%) rotate(-12deg);
+  background: linear-gradient(90deg, transparent, rgba(241, 211, 138, 0.2), rgba(255, 255, 255, 0.08), transparent);
+  filter: blur(1px);
+  animation: light-sweep 2.4s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+.particles {
+  position: absolute;
+  inset: 0;
+}
+
+.particles span {
+  position: absolute;
+  left: calc(8% + ((var(--particle-index) * 47) % 84) * 1%);
+  top: calc(12% + ((var(--particle-index) * 31) % 72) * 1%);
+  width: 2px;
+  height: 2px;
+  border-radius: 999px;
+  background: rgba(241, 211, 138, 0.66);
+  opacity: 0;
+  transform: translate3d(0, 18px, 0);
+  animation: particle-rise 2.6s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  animation-delay: calc(0.12s + var(--particle-index) * 0.035s);
+}
+
+.brandLockup {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  justify-items: center;
+  gap: 0.85rem;
+  opacity: 0;
+  transform: translateY(10px);
+  animation: brand-reveal 2.8s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+.brandLockup p {
+  margin: 0;
+  font-family: var(--font-display), serif;
+  font-size: clamp(4rem, 11vw, 9rem);
+  line-height: 0.85;
+  letter-spacing: 0;
+  color: #fff8eb;
+  text-shadow: 0 24px 90px rgba(241, 211, 138, 0.18);
+}
+
+.brandLockup span {
+  color: rgba(216, 208, 194, 0.86);
+  font-size: 0.75rem;
+  letter-spacing: 0.34em;
+  text-transform: uppercase;
+}
+
+@keyframes entry-exit {
+  0%,
+  78% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    visibility: hidden;
+  }
+}
+
+@keyframes aperture-open {
+  0% {
+    opacity: 0;
+    transform: scale(0.74);
+  }
+  42%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes light-sweep {
+  0% {
+    transform: translateX(-120%) rotate(-12deg);
+  }
+  62%,
+  100% {
+    transform: translateX(120%) rotate(-12deg);
+  }
+}
+
+@keyframes particle-rise {
+  0% {
+    opacity: 0;
+    transform: translate3d(0, 18px, 0);
+  }
+  35% {
+    opacity: 0.75;
+  }
+  100% {
+    opacity: 0;
+    transform: translate3d(0, -18px, 0);
+  }
+}
+
+@keyframes brand-reveal {
+  0% {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  30%,
+  76% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sequence {
+    display: none;
+  }
+}

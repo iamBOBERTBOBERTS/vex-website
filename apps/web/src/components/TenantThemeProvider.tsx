@@ -2,8 +2,9 @@
 
 import { useEffect } from "react";
 import { tenantThemeJsonSchema, type TenantThemeJson } from "@vex/shared";
+import { getPublicApiBase, hasConfiguredPublicApiBase } from "@/lib/apiBase";
 
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
+const API_BASE = getPublicApiBase();
 
 function applyTheme(theme: TenantThemeJson | null) {
   const root = document.documentElement;
@@ -41,6 +42,11 @@ function applyTheme(theme: TenantThemeJson | null) {
 export function TenantThemeProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     if (typeof window === "undefined") return;
+    if (!hasConfiguredPublicApiBase()) {
+      applyTheme(null);
+      return;
+    }
+
     const domain =
       process.env.NEXT_PUBLIC_TENANT_DOMAIN || window.location.hostname;
     const ctrl = new AbortController();

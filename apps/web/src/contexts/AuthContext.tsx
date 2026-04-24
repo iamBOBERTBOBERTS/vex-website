@@ -1,8 +1,9 @@
 "use client";
 
 import React, { createContext, useContext, useState, useEffect, useCallback } from "react";
+import { getPublicApiBase } from "@/lib/apiBase";
 
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
+const API_BASE = getPublicApiBase();
 const TOKEN_KEY = "vex_token";
 const REFRESH_KEY = "vex_refresh";
 

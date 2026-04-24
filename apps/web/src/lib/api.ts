@@ -1,6 +1,7 @@
 import type { RaisePackage } from "@vex/shared";
+import { getPublicApiBase } from "@/lib/apiBase";
 
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
+const API_BASE = getPublicApiBase();
 
 function authHeaders(token: string) {
   return { Authorization: `Bearer ${token}` };

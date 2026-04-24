@@ -11,6 +11,14 @@ export type Vehicle = {
   vin: string;
   description: string;
   sellerSince: number;
+  rarityTier: string;
+  verificationStatus: string;
+  acquisitionStatus: string;
+  conciergeStatus: string;
+  conditionClass: string;
+  drivetrain: string;
+  performance: string;
+  collectionTags: string[];
 };
 
 export const FEATURED_VEHICLES: Vehicle[] = [
@@ -28,6 +36,14 @@ export const FEATURED_VEHICLES: Vehicle[] = [
     description:
       "A limited-run off-road supercar with artistic presence, ready for private acquisition and bespoke delivery.",
     sellerSince: 2020,
+    rarityTier: "Limited terrain series",
+    verificationStatus: "Seller verified",
+    acquisitionStatus: "New arrival review",
+    conciergeStatus: "Concierge available",
+    conditionClass: "Low-mile collector",
+    drivetrain: "AWD V10",
+    performance: "Rally-bred supercar geometry",
+    collectionTags: ["New Arrivals", "Ultra Rare", "Open-Air"],
   },
   {
     id: 2,
@@ -43,6 +59,14 @@ export const FEATURED_VEHICLES: Vehicle[] = [
     description:
       "Ultra-responsive V6 hybrid performance, curated for collectors who value route-winning agility and provenance.",
     sellerSince: 2019,
+    rarityTier: "Hybrid performance allocation",
+    verificationStatus: "Dealer reviewed",
+    acquisitionStatus: "Private acquisition ready",
+    conciergeStatus: "Concierge available",
+    conditionClass: "Delivery-mile quality",
+    drivetrain: "RWD hybrid V6",
+    performance: "819 hp electrified response",
+    collectionTags: ["Investment Grade", "Grand Touring", "All Collection"],
   },
   {
     id: 3,
@@ -58,6 +82,14 @@ export const FEATURED_VEHICLES: Vehicle[] = [
     description:
       "A track-bred legend with aerodynamic precision and a restrained interior, offered off-market to qualified buyers.",
     sellerSince: 2021,
+    rarityTier: "Track-focused allocation",
+    verificationStatus: "Specialist reviewed",
+    acquisitionStatus: "Qualified inquiry",
+    conciergeStatus: "Concierge available",
+    conditionClass: "Track prepared",
+    drivetrain: "RWD flat-six",
+    performance: "Motorsport aero package",
+    collectionTags: ["Track Focused", "Investment Grade", "All Collection"],
   },
   {
     id: 4,
@@ -73,6 +105,14 @@ export const FEATURED_VEHICLES: Vehicle[] = [
     description:
       "A drop-top supercar with hypercar-level performance and an intimate membership-only acquisition pathway.",
     sellerSince: 2018,
+    rarityTier: "Longtail open-air",
+    verificationStatus: "Seller verified",
+    acquisitionStatus: "Private access",
+    conciergeStatus: "Concierge available",
+    conditionClass: "Enthusiast driven",
+    drivetrain: "RWD twin-turbo V8",
+    performance: "765PS longtail calibration",
+    collectionTags: ["Open-Air", "Ultra Rare", "Private Access"],
   },
   {
     id: 5,
@@ -88,6 +128,14 @@ export const FEATURED_VEHICLES: Vehicle[] = [
     description:
       "A whisper-quiet, all-electric grand tourer that blends hand-finished luxury with an invitation-only customer experience.",
     sellerSince: 2022,
+    rarityTier: "Bespoke electric GT",
+    verificationStatus: "Dealer reviewed",
+    acquisitionStatus: "Commission inquiry",
+    conciergeStatus: "Concierge available",
+    conditionClass: "Commission grade",
+    drivetrain: "Dual-motor electric",
+    performance: "Silent grand touring torque",
+    collectionTags: ["Grand Touring", "Investment Grade", "All Collection"],
   },
   {
     id: 6,
@@ -103,6 +151,14 @@ export const FEATURED_VEHICLES: Vehicle[] = [
     description:
       "One of the most collectible hypercars on earth, delivered with discreet concierge service and secure handover.",
     sellerSince: 2017,
+    rarityTier: "Hypercar reserve",
+    verificationStatus: "Specialist reviewed",
+    acquisitionStatus: "Private access only",
+    conciergeStatus: "Dedicated concierge",
+    conditionClass: "Museum-grade",
+    drivetrain: "AWD quad-turbo W16",
+    performance: "1,479 hp collector benchmark",
+    collectionTags: ["Ultra Rare", "Investment Grade", "Private Access"],
   },
 ];
 

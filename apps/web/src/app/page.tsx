@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { FEATURED_VEHICLES, formatPrice } from "@/lib/vehicles";
+import { EntrySequence } from "@/components/entry/EntrySequence";
 import { VehicleCard } from "@/components/VehicleCard";
 import { MotionReveal } from "@/components/site/MotionReveal";
 
@@ -11,18 +12,28 @@ const heroVideoUrl = process.env.NEXT_PUBLIC_HERO_VIDEO_URL || "";
 const processSteps = [
   {
     number: "01",
-    title: "Frame the opportunity",
-    copy: "Every vehicle is positioned with stronger narrative, cleaner hierarchy, and a visual system worthy of the asset.",
+    title: "Discover",
+    copy: "Enter a curated collection where each vehicle is framed by rarity, use case, condition posture, and acquisition fit.",
   },
   {
     number: "02",
-    title: "Qualify the room",
-    copy: "Buyer and seller interactions are filtered toward serious, high-intent conversations rather than generic traffic.",
+    title: "Verify",
+    copy: "Review seller confidence, provenance notes, mileage quality, and market posture before moving into private discussion.",
   },
   {
     number: "03",
-    title: "Close with control",
-    copy: "Appraisal, concierge coordination, logistics, and direct communication move inside a calmer premium flow.",
+    title: "Consult",
+    copy: "Work with a high-context concierge layer that clarifies intent, budget posture, ownership goals, and timing.",
+  },
+  {
+    number: "04",
+    title: "Acquire",
+    copy: "Coordinate documentation, escrow path, seller communication, appraisal confidence, and final transaction movement.",
+  },
+  {
+    number: "05",
+    title: "Deliver",
+    copy: "Close with transport planning, handover expectations, and a calmer post-acquisition path for the buyer or seller.",
   },
 ];
 
@@ -100,6 +111,7 @@ export default function HomePage() {
 
   return (
     <main id="main-content">
+      <EntrySequence />
       <section id="universe" className="cinematic-gate-hero relative overflow-hidden pb-20 pt-10 sm:pt-16">
         {heroVideoUrl ? (
           <video
@@ -374,7 +386,7 @@ export default function HomePage() {
                 qualified access, and real human orchestration around the transaction.
               </p>
             </div>
-            <div className="grid gap-4 sm:grid-cols-3">
+            <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-5">
               {processSteps.map((step) => (
                 <div key={step.number} className="rounded-[1.5rem] border border-white/10 bg-black/24 p-5">
                   <p className="text-3xl text-[#f1d38a]">{step.number}</p>
@@ -397,10 +409,10 @@ export default function HomePage() {
             </p>
             <div className="mt-8 flex flex-col gap-4 sm:flex-row">
               <Link href="/contact" className="gold-button" data-magnetic="true">
-                Begin an inquiry
+                Request Private Access
               </Link>
-              <Link href="/how-it-works" className="ghost-button" data-magnetic="true">
-                Review the process
+              <Link href="/inventory" className="ghost-button" data-magnetic="true">
+                Explore The Collection
               </Link>
             </div>
           </div>
