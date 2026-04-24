@@ -5,6 +5,24 @@
 export function assertProductionReady(): void {
   if (process.env.NODE_ENV !== "production") return;
 
+  const requireCompleteIntegrationEnv = (
+    label: string,
+    requiredKeys: string[],
+    enablementHint: string
+  ): void => {
+    const provided = requiredKeys.filter((k) => process.env[k]?.trim());
+    if (provided.length === 0) return;
+
+    const missing = requiredKeys.filter((k) => !process.env[k]?.trim());
+    if (missing.length > 0) {
+      console.error(
+        `[production] ${label} integration is partially configured. Missing env vars: ${missing.join(", ")}. ` +
+          enablementHint
+      );
+      process.exit(1);
+    }
+  };
+
   const cors = process.env.CORS_ORIGIN?.trim() ?? "";
   if (!cors || cors === "*") {
     console.error(
@@ -26,65 +44,29 @@ export function assertProductionReady(): void {
     );
   }
 
-  const fortellisRequired = [
-    "FORTELLIS_CLIENT_ID",
-    "FORTELLIS_CLIENT_SECRET",
-    "FORTELLIS_SUBSCRIPTION_ID",
-    "FORTELLIS_TOKEN_URL",
-  ];
-  const missingFortellis = fortellisRequired.filter((k) => !process.env[k]?.trim());
-  if (missingFortellis.length > 0) {
-    console.error(
-      `[production] Missing Fortellis env vars: ${missingFortellis.join(", ")}. ` +
-        "Set Fortellis credentials before enabling dealer integrations."
-    );
-    process.exit(1);
-  }
+  requireCompleteIntegrationEnv(
+    "Fortellis",
+    ["FORTELLIS_CLIENT_ID", "FORTELLIS_CLIENT_SECRET", "FORTELLIS_SUBSCRIPTION_ID", "FORTELLIS_TOKEN_URL"],
+    "Set Fortellis credentials only when you are enabling dealer integrations."
+  );
 
-  const tekionRequired = [
-    "TEKION_CLIENT_ID",
-    "TEKION_CLIENT_SECRET",
-    "TEKION_SUBSCRIPTION_ID",
-    "TEKION_TOKEN_URL",
-  ];
-  const missingTekion = tekionRequired.filter((k) => !process.env[k]?.trim());
-  if (missingTekion.length > 0) {
-    console.error(
-      `[production] Missing Tekion env vars: ${missingTekion.join(", ")}. ` +
-        "Set Tekion APC credentials before enabling dealer integrations."
-    );
-    process.exit(1);
-  }
+  requireCompleteIntegrationEnv(
+    "Tekion",
+    ["TEKION_CLIENT_ID", "TEKION_CLIENT_SECRET", "TEKION_SUBSCRIPTION_ID", "TEKION_TOKEN_URL"],
+    "Set Tekion APC credentials only when you are enabling dealer integrations."
+  );
 
-  const reynoldsRequired = [
-    "REYNOLDS_CLIENT_ID",
-    "REYNOLDS_CLIENT_SECRET",
-    "REYNOLDS_SUBSCRIPTION_ID",
-    "REYNOLDS_TOKEN_URL",
-  ];
-  const missingReynolds = reynoldsRequired.filter((k) => !process.env[k]?.trim());
-  if (missingReynolds.length > 0) {
-    console.error(
-      `[production] Missing Reynolds env vars: ${missingReynolds.join(", ")}. ` +
-        "Set Reynolds RCI credentials before enabling dealer integrations."
-    );
-    process.exit(1);
-  }
+  requireCompleteIntegrationEnv(
+    "Reynolds",
+    ["REYNOLDS_CLIENT_ID", "REYNOLDS_CLIENT_SECRET", "REYNOLDS_SUBSCRIPTION_ID", "REYNOLDS_TOKEN_URL"],
+    "Set Reynolds RCI credentials only when you are enabling dealer integrations."
+  );
 
-  const dealertrackRequired = [
-    "DEALERTRACK_CLIENT_ID",
-    "DEALERTRACK_CLIENT_SECRET",
-    "DEALERTRACK_SUBSCRIPTION_ID",
-    "DEALERTRACK_TOKEN_URL",
-  ];
-  const missingDealertrack = dealertrackRequired.filter((k) => !process.env[k]?.trim());
-  if (missingDealertrack.length > 0) {
-    console.error(
-      `[production] Missing Dealertrack env vars: ${missingDealertrack.join(", ")}. ` +
-        "Set Dealertrack OpenTrack credentials before enabling F&I integrations."
-    );
-    process.exit(1);
-  }
+  requireCompleteIntegrationEnv(
+    "Dealertrack",
+    ["DEALERTRACK_CLIENT_ID", "DEALERTRACK_CLIENT_SECRET", "DEALERTRACK_SUBSCRIPTION_ID", "DEALERTRACK_TOKEN_URL"],
+    "Set Dealertrack OpenTrack credentials only when you are enabling F&I integrations."
+  );
 
   const cdkSandbox = process.env.CDK_SANDBOX;
   if (cdkSandbox && cdkSandbox !== "true" && cdkSandbox !== "false") {
