@@ -5,12 +5,13 @@
   # Build from workspace root but target only the web app
   base = "."
   publish = "apps/web/.next"
-  command = "pnpm install --frozen-lockfile && pnpm --filter @vex/shared run build && pnpm --filter @vex/cinematic run build && pnpm --filter @vex/3d-configurator run build && pnpm --filter @vex/ui run build && pnpm --filter @vex/web run build"
+  command = "pnpm install --frozen-lockfile --prod=false && pnpm --filter @vex/shared run build && pnpm --filter @vex/cinematic run build && pnpm --filter @vex/3d-configurator run build && pnpm --filter @vex/ui run build && pnpm --filter @vex/web run build"
 
 [build.environment]
   # Explicit versions for reproducibility
   NODE_VERSION = "20"
   NPM_FLAGS = "--version" # Prevents npm from running, we use pnpm
+  NPM_CONFIG_PRODUCTION = "false"
   # pnpm version is controlled by packageManager field in package.json
 
 # Next.js on Netlify requires specific handling
